@@ -4,28 +4,28 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./
-    image: hirota/docsim
+    image: hirota/bowi
     volumes:
-      - "${HOME}/docsim:/workplace"
-      - "${HOME}/docsim/docsim:/usr/local/lib/python3.8/site-packages/docsim:ro"
+      - "${HOME}/bowi:/workplace"
+      - "${HOME}/bowi/bowi:/usr/local/lib/python3.8/site-packages/bowi:ro"
     networks:
-      - docsim_default
+      - bowi_default
     environment:
       - ES_URL=elas:9200
       - PROJECT_ROOT=/workplace
 
   actions:
-    image: hirota/docsim
+    image: hirota/bowi
     networks:
-      - docsim_default
+      - bowi_default
     volumes:
       - "${GITHUB_WORKSPACE}:/workplace"
-      - "${GITHUB_WORKSPACE}/docsim:/usr/local/lib/python3.8/site-packages/docsim:ro"
+      - "${GITHUB_WORKSPACE}/bowi:/usr/local/lib/python3.8/site-packages/bowi:ro"
     environment:
       - ES_URL=localhost  # dummy
       - PROJECT_ROOT=/workplace
     working_dir: /workplace
 
 networks:
-  docsim_default:
+  bowi_default:
     external: true
