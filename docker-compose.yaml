@@ -1,0 +1,31 @@
+version: "2.4"
+services:
+  python:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    image: hirota/docsim
+    volumes:
+      - "${HOME}/docsim:/workplace"
+      - "${HOME}/docsim/docsim:/usr/local/lib/python3.8/site-packages/docsim:ro"
+    networks:
+      - docsim_default
+    environment:
+      - ES_URL=elas:9200
+      - PROJECT_ROOT=/workplace
+
+  actions:
+    image: hirota/docsim
+    networks:
+      - docsim_default
+    volumes:
+      - "${GITHUB_WORKSPACE}:/workplace"
+      - "${GITHUB_WORKSPACE}/docsim:/usr/local/lib/python3.8/site-packages/docsim:ro"
+    environment:
+      - ES_URL=localhost  # dummy
+      - PROJECT_ROOT=/workplace
+    working_dir: /workplace
+
+networks:
+  docsim_default:
+    external: true
