@@ -1,0 +1,14 @@
+cython
+dataclasses-json
+elasticsearch
+fasttext
+gitpython
+lxml
+nltk
+numpy>=1.17.3
+pandas
+PuLP
+pyyaml
+requests
+spherecluster
+tqdm
