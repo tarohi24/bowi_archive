@@ -5,10 +5,13 @@ fasttext
 gitpython
 lxml
 nltk
-numpy>=1.17.3
+numpy
 pandas
 PuLP
 pyyaml
+pybind11
 requests
+scipy
 spherecluster
 tqdm
+https://github.com/tarohi24/typedflow/archive/develop.zip

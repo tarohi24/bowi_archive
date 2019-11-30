@@ -1,28 +1,32 @@
-FROM python:3.8-buster
+FROM buildpack-deps:18.04
 
-WORKDIR /workplace
 RUN apt-get update && \
-        apt-get install -y gcc build-essential libomp-dev libopenblas-dev cmake pkg-config gfortran
+        apt-get install -y gcc build-essential libomp-dev libopenblas-dev cmake pkg-config gfortran git wget curl zlib1g-dev libssl-dev
 
-RUN pip install --upgrade pip
 
-# install sentencepiece
-WORKDIR /tmp
-RUN git clone https://github.com/google/sentencepiece.git
-RUN mkdir ./sentencepiece/build
-WORKDIR ./sentencepiece/build
-RUN cmake .. && make -j $(nproc) && make install
-WORKDIR ../python
-RUN python setup.py build && python setup.py install
+# Create user
+RUN useradd -u 1001 -m jovyan
+USER jovyan
+# Declare environment variables  (Locate them *after* user creation)
+ENV HOME=/home/jovyan
+ENV PYENV_ROOT="${HOME}/.pyenv"
+ENV PATH=${PYENV_ROOT}/bin:${PATH}
+ENV PYTHON_VERSION=3.8.0
 
+
+# Install pyenv
+RUN git clone --recursive --shallow-submodules \
+        https://github.com/pyenv/pyenv.git \
+        $PYENV_ROOT
+RUN pyenv install ${PYTHON_VERSION} && \
+        pyenv global ${PYTHON_VERSION}
+
+# Instal dependencies
 ARG CACHEBUST=1
-WORKDIR /workplace
-RUN pip install numpy scipy Cython
-ADD requirements_mine.txt /workplace/
-RUN pip install -r requirements_mine.txt
-ADD requirements_dev.txt /workplace/
-RUN pip install -r requirements_dev.txt
-ADD requirements.txt /workplace/
-RUN pip install -r requirements.txt
-# NLP Kits
-RUN python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
+WORKDIR ${HOME}
+ADD pip_install.bash ${HOME}/pip_install.bash
+ADD requirements.txt ${HOME}/requirements.txt
+ADD requirements_dev.txt ${HOME}/requirements_dev.txt
+RUN bash pip_install.bash
+
+RUN echo 'eval "$(pyenv init -)"' >> ${HOME}/.bashrc

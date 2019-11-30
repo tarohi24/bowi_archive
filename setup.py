@@ -1,10 +1,6 @@
-#!/usr/bin/env python
-
-"""The setup script."""
-
 from setuptools import setup, find_packages
 
-requirements = [ ]
+requirements = list()
 
 setup_requirements = ['pytest-runner', ]
 
@@ -13,9 +9,9 @@ test_requirements = ['pytest>=3', ]
 setup(
     author="Wataru Hirota",
     author_email='hirota@whiro.me',
-    python_requires='>=3.8',
+    python_requires='>=3.7',
     classifiers=[
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.7',
     ],
     description="BoW Improved",
     install_requires=requirements,

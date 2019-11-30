@@ -11,7 +11,7 @@ case $1 in
         docker-compose run --workdir="/workplace" -e IS_TEST=1 --rm python pytest ${options}
         ;;
     "bash" )
-        docker-compose run --rm python bash
+        docker-compose run --rm python bash -l
         ;;
     "python" )
         docker-compose run --rm python python
