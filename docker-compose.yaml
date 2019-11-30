@@ -13,6 +13,7 @@ services:
     environment:
       - ES_URL=elas:9200
       - PROJECT_ROOT=/workplace
+    working_dir: /workplace
 
   actions:
     image: hirota/bowi
@@ -25,6 +26,18 @@ services:
       - ES_URL=localhost  # dummy
       - PROJECT_ROOT=/workplace
     working_dir: /workplace
+
+  lsp:
+    image: hirota/bowi
+    volumes:
+      - "${HOME}/bowi:${HOME}/bowi"
+      - "${HOME}/bowi/bowi:/usr/local/lib/python3.8/site-packages/bowi:ro"
+    ports:
+      - 11001:11001
+    working_dir: "${HOME}/bowi"
+    command: pyls --port 11001
+    stdin_open: true
+
 
 networks:
   bowi_default:
