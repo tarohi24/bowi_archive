@@ -4,6 +4,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./
+      args:
+        homedir: /home/jovyan
     image: hirota/bowi
     volumes:
       - "${HOME}/bowi:/home/jovyan/bowi"
@@ -11,6 +13,7 @@ services:
     networks:
       - bowi_default
     environment:
+      - HOME=/home/jovyan
       - ES_URL=elas:9200
       - PROJECT_ROOT=/home/jovyan/bowi
     working_dir: /home/jovyan/bowi
@@ -31,14 +34,17 @@ services:
     build:
       dockerfile: Dockerfile.lsp
       context: ./
+      args:
+        NEW_USER: ${USER}
     image: hirota/lsp-bowi
     volumes:
-      - "${HOME}/bowi:${HOME}/bowi"
-      - "${HOME}/bowi/bowi:/usr/local/lib/python3.8/site-packages/bowi:ro"
+      - "/home/${USER}/bowi:/home/${USER}/bowi"
+      - "/home/${USER}/bowi/bowi:/usr/local/lib/python3.8/site-packages/bowi:ro"
     ports:
       - 11001:11001
-    command: pyls --port 11001
     stdin_open: true
+    working_dir: "/home/${USER}/bowi"
+    command: bash lsp_entrypoint.bash
 
 
 networks:
