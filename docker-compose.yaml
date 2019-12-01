@@ -44,7 +44,6 @@ services:
       - 11001:11001
     stdin_open: true
     working_dir: "/home/${USER}/bowi"
-    command: bash lsp_entrypoint.bash
 
 
 networks:

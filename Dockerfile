@@ -1,4 +1,5 @@
 FROM buildpack-deps:18.04
+SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && \
         apt-get install -y gcc build-essential libomp-dev libopenblas-dev cmake pkg-config gfortran git wget curl zlib1g-dev libssl-dev
@@ -25,9 +26,8 @@ RUN pyenv install ${PYTHON_VERSION} && \
 # Instal dependencies
 ARG CACHEBUST=1
 WORKDIR ${HOME}
-ADD pip_install.bash ${HOME}/pip_install.bash
-ADD requirements.txt ${HOME}/requirements.txt
-ADD requirements_dev.txt ${HOME}/requirements_dev.txt
-RUN bash pip_install.bash
+ADD scripts ${HOME}/scripts
+ADD requirements ${HOME}/requirements
+RUN bash scripts/pip_install.bash
 
 RUN echo 'eval "$(pyenv init -)"' >> ${HOME}/.bashrc
