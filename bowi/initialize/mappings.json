@@ -1,0 +1,20 @@
+{
+  "mappings": {
+    "properties": {
+      "docid": {
+        "type": "keyword"
+      },
+      "tags": {
+        "type": "keyword"
+      },
+      "text": {
+        "type": "text",
+        "analyzer": "english"
+      },
+      "title": {
+        "type": "text",
+        "analyzer": "english"
+      }
+    }
+  }
+}
