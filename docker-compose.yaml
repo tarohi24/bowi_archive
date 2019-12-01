@@ -8,8 +8,8 @@ services:
         homedir: /home/jovyan
     image: hirota/bowi
     volumes:
-      - "${HOME}/bowi:/home/jovyan/bowi"
-      - "${HOME}/bowi/bowi:/usr/local/lib/python3.8/site-packages/bowi:ro"
+      - "${PWD}:/home/jovyan/bowi"
+      - "${PWD}/bowi:/usr/local/lib/python3.8/site-packages/bowi:ro"
     networks:
       - bowi_default
     environment:
