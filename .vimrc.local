@@ -5,7 +5,7 @@ function Lsp()
 
     au User lsp_setup call lsp#register_server({
         \ 'name': 'pyls',
-        \ 'cmd': {server_info -> ['docker-compose', 'run', '--rm', 'lsp', 'bash', 'lsp_entrypoint.bash']},
+        \ 'cmd': {server_info -> ['docker-compose', 'run', '--rm', 'lsp', 'bash', 'scripts/lsp_entrypoint.bash']},
         \ 'whitelist': ['python'],
         \ 'workspace_config': {'pyls': {'configurationSources': ['flake8'], 'plugins': {'mypy': {'enabled': v:true, 'live_mode': v:false}, 'pylint': {'enabled': v:false}, 'pycodestyle': {'enabled': v:false}, 'flake8': {'enabled': v:true}}}},
         \ })
