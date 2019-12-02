@@ -8,10 +8,18 @@ import xml.etree.ElementTree as ET
 from bowi.initialize.converters.ntcir import NTCIRConverter
 from bowi.initialize.ntcir.query import loading, replace_tab, get_document
 from bowi.models import Document
-from bowi.settings import data_dir
+from bowi import settings
 
 
-converter: NTCIRConverter = NTCIRConverter()
+@pytest.fixture(autouse=True)
+def patch_data_dir(monkeypatch):
+    monkeypatch.setattr(settings, 'data_dir',
+                        settings.project_root.joinpath('bowi/tests/data'))
+
+
+@pytest.fixture
+def converter() -> NTCIRConverter:
+    return NTCIRConverter()
 
 
 def test_load_queries():
@@ -20,12 +28,12 @@ def test_load_queries():
 
 
 @pytest.fixture
-def root() -> ET.Element:
-    path: Path = data_dir.joinpath(f'ntcir/orig/query/1001')
+def root(patch_data_dir) -> ET.Element:
+    path: Path = settings.data_dir.joinpath(f'ntcir/orig/query/1001')
     return replace_tab(path)
 
 
-def test_attributes(root):
+def test_attributes(root, converter):
     assert converter._get_docid(root) == '200106296192'
     assert converter._get_tags(root) == ['G06K', ]
     assert converter._get_title(root) == 'Machine-readable record with a two-dimensional lattice of synchronization code interleaved with data code'  # noqa

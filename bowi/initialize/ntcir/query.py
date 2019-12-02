@@ -13,14 +13,15 @@ from typedflow.nodes import TaskNode, LoaderNode, DumpNode
 
 from bowi.initialize.converters.ntcir import NTCIRConverter
 from bowi.models import Document
-from bowi.settings import data_dir
+from bowi import settings
 
 converter: NTCIRConverter = NTCIRConverter()
 parser = etree.XMLParser(resolve_entities=False)
 
 
 def loading() -> Generator[Path, None, None]:
-    directory: Path = data_dir.joinpath(f'ntcir/orig/query')
+    directory: Path = settings.data_dir.joinpath(f'ntcir/orig/query')
+    print(directory)
     pathlist: List[Path] = list(directory.glob(r'*'))
     for path in tqdm(pathlist):
         yield path
@@ -44,10 +45,7 @@ def get_document(root: ET.Element) -> Document:
     tags: List[str] = converter._get_tags(root)
     title: str = converter._get_title(root)
     text: str = converter._get_text(root)
-    return Document(docid=docid,
-                       title=title,
-                       text=text,
-                       tags=tags)
+    return Document(docid=docid, title=title, text=text, tags=tags)
 
 
 if __name__ == '__main__':
