@@ -8,7 +8,6 @@ from typing import Dict, Type
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
 
-from bowi.elas.models import EsItem
 from bowi.settings import es as ses
 
 
@@ -22,13 +21,14 @@ class IndexCreateError(Exception):
 @dataclass
 class EsClient:
     es_index: str
-    item_cls: Type[EsItem]
     es: Elasticsearch = ses
 
-    def create_index(self) -> None:
+    def create_index(self,
+                     mappings: Dict) -> None:
         ack: Dict = self.es.indices.create(
             index=self.es_index,
-            body={'mappings': self.item_cls.mapping()})
+            body={'mappings': mappings}
+        )
         logger.info(ack)
 
     def delete_index(self) -> None:
