@@ -9,7 +9,7 @@ case $1 in
         docker-compose run --rm python bash -l
         ;;
     "python" )
-        docker-compose run --rm python python
+        docker-compose run --rm python bash scripts/run_scripts.bash ${@:2}
         ;;
     * )
         echo "Invalid option ${1}" ;;
