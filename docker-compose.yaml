@@ -9,7 +9,7 @@ services:
     image: hirota/bowi
     volumes:
       - "${PWD}:/home/jovyan/bowi"
-      - "${PWD}/bowi:/usr/local/lib/python3.8/site-packages/bowi:ro"
+      - "${PWD}/bowi:/home/jovyan/.pyenv/versions/3.8.0/lib/python3.8/site-packages/bowi:ro"
     networks:
       - bowi_default
     environment:
@@ -39,7 +39,7 @@ services:
     image: hirota/lsp-bowi
     volumes:
       - "/home/${USER}/bowi:/home/${USER}/bowi"
-      - "/home/${USER}/bowi/bowi:/usr/local/lib/python3.8/site-packages/bowi:ro"
+      - "/home/${USER}/bowi/bowi:/home/jovyan/.pyenv/versions/3.8.0/lib/python3.8/site-packages/bowi:ro"
     ports:
       - 11001:11001
     stdin_open: true

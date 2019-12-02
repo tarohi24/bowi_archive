@@ -1,2 +1,2 @@
 eval "$(pyenv init -)"
-pyls --port 11001
+python -m pyls --port 11001

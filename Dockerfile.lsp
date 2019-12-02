@@ -7,5 +7,6 @@ ENV HOME=/home/${NEW_USER}
 USER root
 RUN usermod -l ${NEW_USER} jovyan
 RUN mkdir ${HOME}
+RUN echo 'eval "$(pyenv init -)"' >> ${HOME}/.bashrc
 VOLUME ${HOME}
 USER ${NEW_USER}
