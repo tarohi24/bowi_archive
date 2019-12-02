@@ -1,0 +1,995 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE patent-document
+  PUBLIC "-//MXW//DTD patent-document XML//EN" "http://www.matrixware.com/dtds/patents/v1.4/patent-document.dtd"><patent-document ucid="EP-1010180-B1" country="EP" doc-number="1010180" kind="B1" lang="EN" family-id="19901057" status="new" date-produced="20100220" date="20020206"><bibliographic-data><publication-reference ucid="EP-1010180-B1" status="new" fvid="22864678"><document-id status="new" format="original"><country status="new">EP</country><doc-number>1010180</doc-number><kind>B1</kind><date>20020206</date><lang>EN</lang></document-id></publication-reference><application-reference load-source="docdb" ucid="EP-98939837-A" status="new" mxw-id="PAPP18328717" is-representative="NO"><document-id status="new" format="epo"><country status="new">EP</country><doc-number>98939837</doc-number><kind>A</kind><date>19980828</date><lang>NO</lang></document-id></application-reference><priority-claims status="new"><priority-claim ucid="NO-9800263-W" status="new" mxw-id="PPC22683838"><document-id status="new" format="epo"><country status="new">NO</country><doc-number>9800263</doc-number><kind>W</kind><date>19980828</date></document-id></priority-claim><priority-claim ucid="NO-973993-A" status="new" mxw-id="PPC22698371"><document-id status="new" format="epo"><country status="new">NO</country><doc-number>973993</doc-number><kind>A</kind><date>19970901</date></document-id></priority-claim></priority-claims><dates-of-public-availability status="new"><intention-to-grant-date><date>20010305</date></intention-to-grant-date></dates-of-public-availability><technical-data status="new"><classification-ipc status="new"><edition>7</edition><main-classification status="new">G11C  11/56</main-classification><further-classification status="new">H01L  27/102</further-classification><further-classification status="new">G11C  17/10</further-classification></classification-ipc><classifications-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161447258">H01L  27/112       20060101C I20051008RMEP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161460414">G11C  16/04        20060101CFI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161466222">G11C  11/56        20060101A I20051008RMEP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161476058">G11C  17/06        20060101CLI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161490522">G11C  17/10        20060101ALI20030920BMRU        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161501547">H01L  27/28        20060101CLI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161502549">G11C  17/06        20060101ALI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161514968">G11C  16/04        20060101AFI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161522813">H01L  51/05        20060101ALI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161534359">H01L  51/05        20060101CLI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161560105">G11C  11/56        20060101C I20051008RMEP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161569793">H01L  27/10        20060101CLI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161583974">H01L  27/112       20060101A I20051008RMEP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161593457">H01L  27/02        20060101CLI20030920BMRU        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161622607">H01L  27/28        20060101ALI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161624882">H01L  27/10        20060101ALI20051220RMJP        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161634682">G11C  17/08        20060101CLI20030920BMRU        </classification-ipcr><classification-ipcr load-source="docdb" status="new" mxw-id="PCL161644252">H01L  27/02        20060101ALI20030920BMRU        </classification-ipcr></classifications-ipcr><classification-ecla status="new"><classification-symbol scheme="EC" mxw-id="PCL161462075">G11C  11/56</classification-symbol><classification-symbol scheme="EC" mxw-id="PCL161508304">H01L  27/112</classification-symbol><classification-symbol scheme="ICO" mxw-id="PCL161547696">Y01N4:00</classification-symbol><classification-symbol scheme="EC" mxw-id="PCL161577910">G11C  11/56R</classification-symbol></classification-ecla><invention-title load-source="patent-office" status="new" mxw-id="PT21777337" lang="DE">FESTWERTSPEICHER UND FESTWERTSPEICHERANORDNUNG</invention-title><invention-title load-source="patent-office" status="new" mxw-id="PT21777338" lang="EN">A READ-ONLY MEMORY AND READ-ONLY MEMORY DEVICE</invention-title><invention-title load-source="patent-office" status="new" mxw-id="PT21777339" lang="FR">MEMOIRE MORTE ET DISPOSITIFS A MEMOIRE MORTE</invention-title></technical-data><parties><applicants><applicant status="new" sequence="1" mxw-id="PPAR90331758" format="epo"><addressbook><name>THIN FILM ELECTRONICS ASA</name><address><country status="new">NO</country></address></addressbook></applicant><applicant status="new" sequence="1" mxw-id="PPAR90358883" format="intermediate"><addressbook><name>THIN FILM ELECTRONICS ASA</name></addressbook></applicant></applicants><inventors><inventor status="new" sequence="1" mxw-id="PPAR90340701" format="epo"><addressbook><name>GUDESEN HANS GUDE</name><address><country status="new">BE</country></address></addressbook></inventor><inventor status="new" sequence="2" mxw-id="PPAR90352494" format="epo"><addressbook><name>LEISTAD GEIRR I</name><address><country status="new">NO</country></address></addressbook></inventor><inventor status="new" sequence="3" mxw-id="PPAR90380633" format="epo"><addressbook><name>NORDAL PER-ERIK</name><address><country status="new">NO</country></address></addressbook></inventor><inventor status="new" sequence="1" mxw-id="PPAR90332555" format="intermediate"><addressbook><name>GUDESEN, HANS, GUDE</name></addressbook></inventor><inventor status="new" sequence="2" mxw-id="PPAR90318511" format="intermediate"><addressbook><name>LEISTAD, GEIRR, I.</name></addressbook></inventor><inventor status="new"  sequence="3" mxw-id="PPAR90365461" format="intermediate"><addressbook><name>NORDAL, PER-ERIK</name></addressbook></inventor><inventor status="new" sequence="1" mxw-id="PPAR276154016"  format="original"><addressbook><last-name>GUDESEN, HANS, GUDE</last-name><address><street>Rue Fulton 17</street><city>B-1000 Brussels</city><country status="new">BE</country></address></addressbook></inventor><inventor status="new"  sequence="2"  mxw-id="PPAR276152830"  format="original"><addressbook><last-name>LEISTAD, GEIRR, I.</last-name><address><street>Jongsstubben 19</street><city>N-1337 Sandvika</city><country status="new">NO</country></address></addressbook></inventor><inventor status="new" sequence="3" mxw-id="PPAR276159342" format="original"><addressbook><last-name>NORDAL, PER-ERIK</last-name><address><street>Bastradryggen 19</street><city>N-1387 Asker</city><country status="new">NO</country></address></addressbook></inventor></inventors><assignees><assignee status="new" sequence="1" mxw-id="PPAR276159358" format="original"><addressbook><last-name>Thin Film Electronics ASA</last-name><address><street>P.O. Box 1872 Vika</street><city>0124 Oslo</city><country status="new">NO</country></address></addressbook></assignee></assignees><agents><agent status="new" sequence="1" mxw-id="PPAR319021621" format="original"><addressbook><last-name>Foster, Mark Charles</last-name><address><street>Edward Evans Barker Clifford's Inn, Fetter Lane</street><city>London EC4A 1BZ</city><country status="new">GB</country></address></addressbook></agent></agents></parties><international-convention-data><pct-or-regional-filing-data ucid="NO-9800263-W" status="new"><document-id status="new" format="original"><country status="new">NO</country><doc-number>9800263</doc-number><kind>W</kind><lang>EN</lang></document-id></pct-or-regional-filing-data><pct-or-regional-publishing-data ucid="WO-1999014762-A1" status="new"><document-id status="new" format="original"><country status="new">WO</country><doc-number>1999014762</doc-number><kind>A1</kind><date>19990325</date><lang>EN</lang></document-id></pct-or-regional-publishing-data><designated-states><ep-contracting-states><country status="new" mxw-id="DS16953747">AT</country><country status="new" mxw-id="DS16953748">BE</country><country status="new" mxw-id="DS16953749">CH</country><country status="new" mxw-id="DS16953750">DE</country><country status="new" mxw-id="DS16953751">DK</country><country status="new" mxw-id="DS16953752">ES</country><country status="new" mxw-id="DS16953753">FI</country><country status="new" mxw-id="DS16953754">FR</country><country status="new" mxw-id="DS16953755">GB</country><country status="new" mxw-id="DS16953756">IE</country><country status="new" mxw-id="DS16953757">IT</country><country status="new" mxw-id="DS16953758">LI</country><country status="new" mxw-id="DS16953759">NL</country><country status="new" mxw-id="DS16953760">PT</country><country status="new" mxw-id="DS16953761">SE</country></ep-contracting-states></designated-states></international-convention-data><office-specific-data><eptags><ep-no-a-document-published>*</ep-no-a-document-published></eptags></office-specific-data></bibliographic-data><description load-source="patent-office" status="new" mxw-id="PDES17632029" lang="EN"><p num="0001">The present invention concerns an electrically addressable, non-volatile
+read-only memory, comprising an electrically addressable non-volatile
+read-only memory, comprising a plurality of memory cells which in a write
+operation comprising a part of the manufacturing process of the read-only
+memory, permanently each are assigned one of two or more logic states
+according to a determined protocol which in the memory defines permanently
+written or stored data, and a passive matrix of electrical conductors for the
+addressing, wherein the passive electrical conductor matrix comprises a first
+and a second electrode structure in respective mutually spaced apart and
+parallel planes and with parallel electrodes in each plane and provided such
+that the electrodes form a substantially orthogonal x,y matrix wherein the
+electrodes in the first electrode structure comprise the columns of the matrix
+or x electrodes and the electrodes in the second electrode structure comprise
+the rows of the matrix or y electrodes, wherein at least a portion of the
+volume between the intersection of an x electrode and a y electrode defines a
+memory cell in the read-only memory, wherein the mutually overlapping
+portions of the x electrode and the y electrode in the memory cell, each
+defines a contact area in the memory cell, wherein at least one semiconductor
+material is provided between the electrode structures and with rectifying
+properties in relation to a selected electrical conducting electrode material,
+and an electrical isolating material, wherein the semiconductor material in
+electrical contact with an electrode in the memory cell forms a diode junction
+in the interface between semiconductor material and electrode material,
+wherein a first logic state of a memory cell in the read-only memory is
+formed by an active portion of the semiconductor material covering the
+whole contact area in the memory cell, the diode junction comprising the
+whole contact area of the memory cell, wherein a second logic state in a
+selected memory cell in the read-only memory is formed by at least one
+electrode structure in the memory cell being covered by the isolating
+material, and wherein a logic state in each case is given by the impedance
+value of the memory cell, said impedance value substantially being given by
+one or more of the following factors: the impedance characteristics of the
+semiconductor material, the impedance characteristics of the isolating
+material, and the impedance characteristic of the diode junction </p><p num="0002">The invention also concerns a read-only memory device which comprises one
+or more read-only memories according to the invention, and a read-only
+memory device which comprises two or more read-only memories according
+to the invention.</p><p num="0003">Matrix addressing of data storage locations or bit spots on a plane is a simple
+and efficient way of achieving a great number of accessible memory
+locations with a moderate number of electrical addressing lines. In a square
+x,y matrix with n lines respectively both in the x direction and the y direction
+the number of memory locations scales as n<sup>2</sup>. In one form or another this
+basic principle is at present implemented in a large number of different
+embodiments of solid state memory means. In these the memory location
+comprises a simple electronic circuits which communicates to the outside via
+the intersection in the matrix and a memory element, typically a charge
+storage device. Even if such means have been technically and commercially
+very successful, they have a number of disadvantages, and particularly each
+memory location has a complex architecture which leads to increased costs
+and reduced data storage density. In the large subclass of so-called volatile
+memory means the circuits must constantly sustain a current supply with
+accompanying heating and consumption of electric power in order to
+maintain the stored information. On the other hand non-volatile means avoid
+this problem, but with the trade-off of a reduced access and switching time as
+well as increased consumption and high complexity.</p><p num="0004">Prior art provides a number of examples of semiconductor-based read-only
+memories with electrical addressing in passive matrix. Thus US patent No.
+4 099 260 (Lynes &amp; al.) discloses a semiconductor-based read-only memory
+(ROM) made as a large scale integrated device wherein self-isolating bit line
+surface areas of one conduction type are formed in a semiconductor substrate
+and directly in a bulk area in the opposite conduction type. Channel stop
+areas of the same conduction type as the bulk area are formed in the intervals
+between the bit line areas. Metallic word lines which lie above and are
+orthogonal to the bit line areas, are formed separately from these by means of
+an isolating layer. The memory cell comprises a single Schottky diode. A
+diode of this kind will be formed or not at each intersection between a word
+line and a bit line depending on whether or not an opening is formed in the
+isolating layer during manufacturing in order to permit the word line to 
+contact a lightly doped portion of the bit line. A ROM of this kind is stated to
+have a small area, high speed, low power dissipation and low cost.</p><p num="0005">Further there are from US patent No. 4 400 713 (Bauge &amp; Mollier) known a
+device with semiconductor elements, such as Schottky diodes and transistors
+integrated in the form of a matrix on chips. The matrix may be custom
+designed in order to provide a desired function. For instance it may be used
+as AND or OR matrices in programmable logic arrays (PLA) or as read-only
+memories which are stated to have better properties with regard to storage
+density and power dissipation. A first electrode structure with parallel metal
+electrodes of somewhat different design is provided on a semiconductor
+substrate of for instance the p type. An oxide layer is provided on a
+semiconductor substrate and openings are formed in the oxide layer to
+provide anode contacts and cathode contacts via metallic lines which
+constitute a first metal level in the electrode matrix. Two n<sup>+</sup> areas are located
+under the cathode contacts. These areas extend to underlying collector layers
+such that a Schottky diode is formed. Above the first metal level or electrode
+level an isolating layer is provided and over this a second metal level which
+comprises for instance an orthogonal second electrode structure. Openings
+through the isolating layer ensure contact with a cathode contact in a group
+of such which are included in the separate element in the matrix.</p><p num="0006">Finally there are from US patent no. 5 272 370 (French), which represents the basis for the preamble of claim 1, known a thin-film
+ROM device based on a matrix of open and closed memory cells formed in a
+stack of thin films on glass or another substrate. Each closed memory cell
+comprises a thin-film diode and it may by using stacks of semiconductor
+films, for instance of hydrogenated amorphous silicon, wherein the separate
+films are of different conduction types, be obtained diodes with different
+conduction characteristics. Thereby the information content in the ROM
+matrix may be increased. Each memory element which is formed with diode
+structure, may then be set with different logic levels according to some
+manufacturing protocol. Where the memory element does not have a diode
+structure or where the semiconductors are covered by an isolating layer such
+that no electrode contact is formed, the memory element may be used to form
+a determined first logic level, for instance logical 0.</p> <p num="0007">Even though the above-mentioned prior-art devices all realize electrical
+addressing in passive matrix in an as per se known manner by providing 
+diode junctions in closed electrode contacts, they have partly due to using
+different types of semiconductors a relatively high degree of complexity. In
+the ROM device as disclosed in the last-mentioned publication (US patent
+5 272 370) it may, however, be possible to store more than two logical values
+in the matrix, but this presupposes use of different diode types and hence
+several layers of differently doped semiconductors in the bit spot with diode
+junction.</p><p num="0008">The object of the present invention is hence primarily to provide a read-only
+memory or ROM which permits electrical addressing in passive matrix to the
+separate memory cell in the read-only memory and which does not need
+refreshment in order to keep the data stored in the memory cell, while the
+read-only memory shall be simply and cheaply realized using as per se known
+technologies and methods as applied in the semiconductor and thin-film
+technology.</p><p num="0009">Particularly it is the object of the present invention to provide a non-volatile
+read-only memory based on the use of organic materials, for instance
+polymer materials, which realized in thin-film technology may be used both
+in conductors, isolators and semiconductor materials, something which
+supposedly shall provide more flexible technical solutions and especially a
+much reduced cost than would be the case when using crystalline inorganic
+semiconductors.</p><p num="0010">Further it is also an object to provide a read-only memory which allows a
+multilevel coding of predetermined memory cells or memory locations.</p><p num="0011">Finally it is the object of the present invention to provide a read-only memory
+which may be used to realize a volumetric read-only memory device.</p> <p num="0012">These objects and advantages are achieved by a memory as defined in claim 1. According to the
+invention, a read-only memory which is characterized in that one or more
+additional logic states in a memory cell in the read-only memory is formed by
+an active portion of the semiconductor material covering only a part of the
+contact area and/or that the diode junction only comprises a part of the
+contact area, such that the data which are stored in the memory may be
+represented by the logic states in a multi-valued code, and that said one or
+more additional logic states are given by impedance values determined by the 
+extension of the active portion of the semiconductor material, and/or the
+extension of the part of the contact area which forms the diode junction.</p> <p num="0013">A first read-only memory device according to the invention is characterized
+in that the read-only memory is provided on a substrate of semiconductor
+material or between substrates of semiconductor material and via the
+substrates connected with driver and control circuits for driving and
+addressing, said driving and control circuits being integrated in the substrate
+or the substrates and realized in a semiconductor technology compatible with
+the substrate material; and a second read-only memory device according to
+the invention is characterized in that the read-only memory is stacked in
+horizontal layers in order to provide a volumetric memory device, that the
+volumetric memory device is provided on a substrate of semiconductor
+material or between substrates of semiconductor material and via the
+substrate or the substrates connected with driver and control circuits for
+driving and addressing, said driving and control circuits being integrated
+with the substrate or the substrates and realized in a semiconductor
+technology compatible with the substrate material.</p> <p num="0014">Wherein the read-only memory according to the invention constitutes a
+binary logic memory, it is advantageous that the first logic state which either
+represents a logic 0 or a logic 1, is given by the effective forward bias
+resistance of a diode formed in a memory cell wherein the semiconductor
+material contacts both the x electrode and the y electrode, and that a second
+or additional logic states which correspondingly represents either a logical 1
+or a logical 0 is given by a selected resistance value for the isolating material
+provided in a memory cell wherein the semiconducting material at most
+contacts either the x electrode or the y electrode, said isolating material in a
+memory cell preferably having an infinite resistance value.</p> <p num="0015">Wherein the read-only memory according to the invention is realized as a
+multilevel logic memory with one or more additional logic states, it is
+advantageous that the first logic state is given by the effective forward bias
+resistance of a diode formed in a memory cell wherein the semiconductor
+material contacts both the x and y electrodes and that said one or more additional logic
+states are given by determined resistance values for the isolating material
+provided in a memory cell wherein the semiconductor material at most
+contacts either the x electrode or the y electrode and the selected determined 
+resistance value in each case lies between the effective forward bias
+resistance of a memory cell formed in the diode, and infinite.</p><p num="0016">In a first embodiment of the read-only memory according to the invention the
+isolating material in selected memory cells is provided between the electrode
+structures in the form of a separate layer-like isolator patch which wholly or
+partly covers at least one of the electrodes in the memory cell, a selected
+memory cell dependent on the active portion of the semiconductor material
+and/or the diode junction part of the contact area in the latter case acquiring a
+logic state which corresponds to a level of a multi-valued code.</p><p num="0017">If the isolator patch in said first embodiment wholly or partly covers only one
+of the electrodes, the semiconductor material may be provided between the
+electrode structures in a global layer and besides over the isolator patch in
+the selected memory cells. If the isolator patch wholly or partly covers both
+electrodes, the semiconductor material may preferably be provided between
+the electrode structures and adjacent to the isolator patches in the selected
+memory cells, such that semiconductor material and the isolator patches
+mutually flush in a common continuous layer.</p><p num="0018">In a second embodiment of the read-only memory according to the invention
+the isolating layer is provided between the electrode structures in the form of
+a substantially global layer which covers at least one of the electrode
+structures and with removed portions in selected memory cells, such that
+removed portion wholly or partly exposes the electrodes in a selected
+memory cell, said memory cell dependent on the active portion of the
+semiconductor material and/or the diode junction part of the contact area in
+the latter case acquiring a logic state which corresponds to a level in a multi-valued
+code.</p><p num="0019">If the isolating layer in said second embodiment covers only one of the
+electrode structures, the semiconductor material may preferably be provided
+between the electrode structures and over the isolating layer in a global layer
+and besides contact the electrode structures in the removed portions of the
+isolation layer. If the isolating layer covers both the electrode structures, the
+semiconductor material may preferably be provided only between the
+electrode structures and adjacent to the isolation layer in the selected memory
+cells, such that the semiconductor material and the isolating layer mutually
+flush in a common continuous layer. Finally, it is according to the invention 
+advantageous that the semiconductor material is amorphous silicon,
+polycrystalline silicon or an organic semiconductor, said organic
+semiconductor preferably being a conjugated polymer.</p><p num="0020">According to the invention the semiconductor material may be an anisotropic
+conductor. Preferably the semiconductor material may comprise more than
+one semiconductor or possibly also be added or combined with an electrical
+conducting material.</p><p num="0021">Preferably the semiconductor material, the isolating material and the
+electrode structures are realized as thin films.</p><p num="0022">The background of the invention and various examples of its embodiment
+shall now be discussed in more detail in the following with the reference to
+the accompanying drawing.
+<sl><li>Fig. 1 shows schematically a general embodiment of a memory device with a
+passive electrode matrix provided between backplanes or substrates,</li><li>fig. 2 schematic examples of sneak current loops which may arise in a matrix
+of this kind,</li><li>fig. 3a a first embodiment of a read-only memory according to the invention
+and seen in plan view,</li><li>fig. 3b a section through the read-only memory in fig. 3a taken along the line
+A-A in a first variant of this embodiment,</li><li>fig. 3c a section through the read-only memory in fig. 3a taken along the line
+A-A in a second variant of this embodiment,</li><li>fig. 4a a second embodiment of the read-only memory according to the
+invention seen in plan view,</li><li>fig. 4b a section through the read-only memory in fig. 4a taken along the line
+A-A in a first variant of this embodiment,</li><li>fig. 4c a section through the read-only memory in fig. 4a taken along the line
+A-A in a second variant of this embodiment</li><li>fig. 5a an example of multilevel coding of a memory cell in the embodiment
+in fig. 3a, </li><li>fig. 5b a section through the memory cell in fig. 5a taken along the line B-B,</li><li>fig. 6a an example of multilevel coding of a memory cell in the embodiment
+in fig. 4a,</li><li>fig. 6b a section through the memory cell in fig. 6a taken along the line B-B,</li><li>fig. 7 a sectional view through a first read-only memory device according to
+the invention, and</li><li>fig. 8 a sectional view through a second read-only memory device according
+to the invention.</li></sl></p><p num="0023">The general background of the invention shall now be discussed more
+closely. A generic matrix addressing system is shown in fig. 1, wherein for
+instance m electrical conducting lines 2 are mutually spaced apart and
+extend in a x direction and with for instance n overlying electrical lines 4
+which extend in a y direction and respectively form first and second electrode
+structures in an orthogonal x,y electrode matrix. The x electrodes 2 and the y
+electrodes 4 are provided sufficiently close to each other such that
+geometrically well-defined overlapping areas or intersections between the
+electrodes are provided. The volume near and between each intersection,
+coarsely defined by the overlapping area which is given by the width of the
+"intersecting x electrodes and the y electrodes in these intersections,
+comprises what in the following will be denoted as a memory cell 5, see fig.
+2. The mutually overlapping areas of respectively the x and the y electrodes
+2;4, in a memory cell 5 will be denoted as the contact area of the memory
+cell. According to the invention data is stored in each memory cell as
+impedance values, for instance resistance values between the x and the y
+electrode in each intersection. The logic state in each intersection or memory
+location is found by measuring electrical impedance between the x electrode
+and the y electrode which intersect each other in the memory cell.</p><p num="0024">Distinct from common known current-addressed and matrix-based memory
+systems the present invention allows the use of a purely passive electrical
+addressing, as there are no discrete active circuit elements in the memory
+cells. It is well-known that the use of electronic memories with memory cells
+in passive matrix is encumbered with alternative current paths or sneak
+current paths in the electrode matrix. This problem is indicated in fig. 2
+where alternative current paths generated by addressing the memory cell 5<sub>kl</sub> 
+given by the intersection between the electrodes m<sub>k</sub>, n<sub>1</sub> are indicated by
+thinner stitched lines to the neighbouring memory cells. When the size of the
+matrix, i.e. the product x·y increases, then the sneak current problem also
+amplifies. If the memory elements in each intersection has a purely resistive
+impedance this implicates that the resistance difference in a write operation
+will be masked by currents which leak through alternative current paths, such
+as indicated in fig. 2. If the electrical connection in each intersection is given
+a highly non-linear current-voltage characteristic, the sneak current problem
+may be reduced or wholly eliminated. Quite simply this is achieved in a
+manner which is already well-known and suggested in the art, namely by
+providing a rectifying diode in series with the impedance or resistance in
+each intersection.</p><p num="0025">An essential goal of the present invention is forming a network of diodes of
+this kind in a manner which simple, cheap, reliable and which simultaneously
+allows the use of suitable memory structures in the form of controllable
+impedances. According to the present invention the x and the y electrodes
+may preferably surround a layer of semiconducting material, for instance in
+thin-film configuration. Particularly this semiconducting material may
+advantageously be a conjugated polymer of the tiophene or PPV type. By
+choosing a suitable electrode material with regard to the semiconducting
+material, a diode junction is obtained at the electrode-semiconductor
+interface and the diode may be given very good rectifying properties. A
+simple linearized analysis shows that the number of electrode intersections,
+i.e. memory cells which may be addressed without distortion or noise due to
+sneak currents, is approximately equal to the diode rectification ratio in each
+intersection, i.e. the relation between forward and backwards flowing current
+at a given bias voltage.</p><p num="0026">Another basic problem with passive matrix memories as exemplified in fig. 1
+wherein the continuous material layer with finite resistance extends in the
+intervals between the intersections of the electrode matrix, is that currents
+even with perfect rectification in each intersection may flow between the
+electrode lines 2, 4 in these intervals. Even if the path length in these
+intervals will be much longer than which is the case in the intersections, i.e.
+in the memory cell, and the layer between the electrode structures are
+extremely thin with high surface resistance, the combined effect of many
+such current paths is detrimental to the measured impedance and hence 
+finally sets an upper limit to the number of intersections and so also of
+memory cells which may be realized in a passive matrix.</p><p num="0027">The last kind of crosstalk may be avoided by making the film conductance
+highly anisotropic, i.e. with high conductance in the desired current direction
+and else low conductance. In case of fig. 1 this will correspond to high
+conductance perpendicularly to the plane of the matrix and low conductance
+in the matrix plane. Polymer compositions with properties of this kind have
+been described in the literature, for instance in the paper "White light
+emission from a polymer blend light emitting diode" of M. Granström and O.
+Inganäs, Applied Physics Letters 68, 2:147-149 (1996), and electrode means
+and devices based thereon have been disclosed in
+which belongs to the present applicant.</p><p num="0028">Starting with an as per se known basic structure as shown in fig. 1 wherein
+the x and y electrodes 2;4 are provided on each side of an anisotropic thin
+film with high rectification ratio in the intersections of the electrodes, data
+may be coded by a controlled deposition of an electrical isolating material
+between diodes in selected intersections, such this will be discussed in more
+detail in connection with fig. 3a. If such selected intersections are given an
+infinite resistance, each intersection or each memory cell can be binary
+coded, for instance with a forward bias voltage which either gives logical 1
+as R = R<sub>F</sub>, where R<sub>F</sub> is the effective forwards bias resistance of the diode in
+this intersection, or logic 0 as R = ∞, where an infinite resistance on purpose
+have been inserted in the intersection. Higher data storage capacity will be
+obtained by using a larger range of resistance values, which is equivalent to
+several bits being stored in each memory cell, for instance with resistance
+values R<sub>1</sub>, R<sub>2</sub>, R<sub>3</sub>,..., R<sub>F</sub> &lt; R<sub>1</sub> &lt; R<sub>2</sub> &lt; R<sub>3</sub> &lt; ∞.</p><p num="0029">A first embodiment of the read-only memory according to the invention shall
+now be described with reference to fig. 3a-3c. In this case the as per se
+known the generic structure as shown in the figure is formed by depositing
+the x electrodes at the bottom substrate or backplane 1 which may be made of
+a semiconducting 2 material and comprises active circuits for signal
+processing, routing and logic manipulation integrated with the x electrodes 2
+which here form a first electrode structure in the electrode matrix.
+Correspondingly a top substrate 3 may integrate circuits with the y electrodes
+4 in the same manner and for corresponding purposes. It shall be understood 
+that the x electrodes 2 and the y electrodes 4 may be used for forming for
+instance bit lines and word lines in the read-only memory according to the
+invention. Both substrates 1;3 with circuits and electrodes 2;4 are processed
+by means of standard semiconductor technologies and these may for instance be
+used a crystalline semiconductor wafer, for instance of silicon, as substrate.
+Alternatively, the silicon may consist of amorphous silicon or
+semiconducting organic materials on rigid or flexible supports (backplanes).
+In a following step may now either one of the substrates 2;4 or both 2,4 be
+coded such that the resulting read-only memory receives the desired
+information content. Advantageously this is done by providing localized
+isolator or resistor films 6 in the form of patches 7 over the electrodes 2;4 on
+one of the substrates 1;3, such that they will be positioned in the intersection
+between an x electrode and a y electrode. Materials which are common in the
+solid state technology may be used and likewise well-known technologies for
+depositing and adjustment. Over the isolator patches on the resistor patches 7
+a global semiconductor layer 9 is now for instance deposited such as shown
+in fig. 3b (the semiconductor layer 9 is for the sake of clarity deleted from
+fig. 3a), which simultaneously forms a diode junction with the electrode
+material in one of the electrode structures, for instance the y electrodes 2.
+The chosen semiconductor material and the chosen material in the electrode
+structure may be such that where the exposed portions of the electrode
+structures physically contact the semiconductor material, rectifying junctions
+or diode junctions are spontaneously formed.</p><p num="0030">The semiconductor material used must have suitable rectifying and
+conducting properties, while it is desirable with low bulk cost, simple
+processing, a long lifetime etc. and must be such that optimal contact to the
+material of the electrode structures is obtained. As semiconductor material
+may for instance conjugated polymers of either the PPV or thiophene families
+be suitable. Alternatively amorphous silicon or polycrystalline silicon may be
+used together with an anisotropic conducting thin film of plastic material.</p><p num="0031">The basic procedure of the manufacture requires a precision adjustment when
+the isolator patches 7 is deposited on the electrodes 2;4. This step may,
+however, easily be implemented with a direct extension of manufacturing
+processes for active circuits with electrode matrices. Global deposition of
+semiconductor film 9 such as it is shown in fig. 3b, may be performed
+without any kind of precision adjustment. The y electrode 4 must, however 
+be provided in such manner that the isolator patches 7 are located in the
+intersections between the electrode structures. This requires a higher
+positioning accuracy the closer the intersections are provided. In that
+connection the use of a transparent top substrate 3 with semiconductor
+circuits based on organic semiconductors or amorphous silicon in
+combination with thin film of semiconductor polymer may offer possibilities
+for an adjustment which cannot be achieved by using non-transparent
+substrates of crystalline silicon. In the embodiment in fig. 3a the resistance
+values of the isolator patches 7 may be varied by using different isolating
+materials, possibly by varying the thickness or the form of the isolator
+patches. It is hence very well possible to obtain a multilevel coding such that
+for instance the memory cell 5 in an intersection wherein no isolator patch 7
+has been provided, may represent a logical 0 while further logical values may
+be stored in memory cells wherein isolator patches with varying geometry or
+made of materials with different resistance values are used. In a purely binary
+coding the impedance values of all isolator patches will of course be the
+same. They may then all be made with infinite resistance. A particularly
+preferred method to obtain binary coding in the embodiment shown in fig.
+3a-c shall also be discussed below in connection with figs. 5a and 5b. If the
+isolator patches 7 have the same thickness, the semiconductor layer 9 may as
+shown in fig. 3c be provided between the electrodes 2, 4 such that they are
+flush with the surface of the isolator patches 7. This may entail further
+advantages with regard to eliminate and reduce stray currents and stray
+capacitances. In the variant embodiment in fig. 3b stray capacitances may
+arise or stray currents may flow to the semiconductor bulk material 9. This
+may, however, be eliminated by using an anisotropic semiconductor as the
+semiconductor material, the conduction direction of which extends between
+the electrode structures. If, however, the semiconductor layer 9 is flush with
+the surface of the isolator patch 7 as shown in fig. 3c, which is expedient
+when the isolator patches have the same thickness, the distance between the
+electrode structures may be reduced and the semiconductor layer generally be
+made much thinner, such that the semiconductor material does not need to be
+anisotropic conducting, while possible bulk currents simultaneously are
+strongly reduced. The diode junction between the semiconductor material and
+one of the electrode structures will, of course, simultaneously be maintained
+and reduce or eliminate the danger for sneak currents via the electrode
+structures. </p><p num="0032">Fig. 4a and 4b show respectively in plan view and in section taken along the
+line A-A in fig. 4a another embodiment of the read-only memory according
+to the invention (the semiconductor layer 9 also here deleted from fig. 4a).
+The electrode structures are as before deposited on respective bottom and top
+substrates 1;3, but an isolating layer 6 is now deposited over the electrodes 2,
+4 and between the electrode structures and over one of them as a
+substantially global layer, but with removed portions 8 in predetermined
+intersections for the purpose of forming therein memory cells 5 which store
+other logic values. A semiconductor material 9 which now is deposited
+over the top of the isolating layer 6, see fig. 4b, will of course only contact
+both electrode structures in the removed portions 8 or "windows" in the
+isolating layer 6, such that the memory cells 5 at these removed portions for
+instance may store a binary logic value 0, while the memory cells 5 wherein
+one of the electrode structures is covered by the isolating layer 6, stores a
+binary logic value 1. Similarly to the embodiment shown in fig. 3a, also
+here the semiconductor material 9 may be provided such that it is flush with
+the isolating layer 6, i.e. it will only be located in the removed portions 8 or
+the windows with the above-mentioned advantages resulting therefrom, such
+this is disclosed in fig. 4c, where the semiconductor material is shown as a
+"patch" 10 over an electrode 2. The manufacturing step for the embodiment
+in fig. 4a-c may shortly be summed up as comprising depositing of x
+electrodes on the substrate 1, applying a substantial global isolating layer 6
+coded with removed portions 8 or windows and thereabove applying a global
+semiconductor layer 9, while the y electrodes 4 is deposited on the top
+substrate 3, whereafter the top substrates 1,3 with deposited electrodes 2, 4
+isolating layer 6 and semiconductor layer 9 are joined into a sandwich
+structure. An advantage of the embodiment shown in fig. 4a-4b, is that the
+semiconductor does not need to be an anisotropic semiconductor, while
+simultaneously stray currents and sneak currents outside the intersections
+between the electrodes substantially will be completely eliminated. In
+addition sneak currents through the diode junctions are reduced, as current
+only will flow where a window is located in the isolating layer. A restriction
+to the use of binary coding only makes it possible to increase the data storage
+density by reducing the horizontal distance between the electrodes in each
+electrode structure, such that area density of the memory cells increases.
+Typically the sneak current background will be halved in a binary coding
+scheme with one half zeros and one half ones, and this will allow that the 
+number of memory cells or intersections in the electrode matrix may be
+doubled with maintenance of the same basic signal-to-noise ratio in the
+addressing (reading). Also in the embodiment in fig. 4a-c logical values
+based on a multilevel code may be stored, such this will be explained more
+closely in the following with reference to figs. 6a and 6b .</p><p num="0033">Figs. 5a and 5b show in plan view and in section a memory cell in the
+embodiment of the read-only memory as shown in fig. 3a and 3c. The isolator
+patch 7 which codes the memory cell 5 is here realized such that it isolates
+only a part of the contact area in each memory cell, in contrast with the
+embodiment shown in fig. 3a, where for instance the isolator patch 7 isolates
+the whole contact area 11. As before the semiconductor material 9 is
+provided between the electrodes 2, 4 above the isolator patch 7 and as before
+a diode junction is formed between one of the electrodes 2, 4 in the memory
+cell 5 and the semiconductor material 9. The diode junction may for instance
+in the embodiment in fig. 3b be identical with the contact area 11, but if
+semiconductor layers 9 flush with the isolator patches 7 are used, as in fig.
+3c, the area of the diode junction will of course be reduced to that part which
+is not covered by the isolator patch 7. The effective conductor cross section
+and the bulk impedance in the semiconductor material will in thin
+semiconductor layers or anisotropic semiconductor layers depend on the
+effective contact area which in figs. 5a, 5b is limited to that part of the
+electrode 2, 4 which is not covered by the isolator patch 7. This effective
+contact area which may be different from the area of the diode junction,
+defines an active portion in the semiconductor between the electrodes 2, 4.
+By using isolator patches of different size for coding the memory cells, it
+may in this manner suitably be stored data in a multi value code.</p><p num="0034">A coding of the memory cells 5 in the embodiment in figs. 4a-4c takes place
+in inverse analogy with the method shown in figs. 5a and 5b, as now it is, as
+shown in figs. 6a, 6b, the extension of the removed portions or windows 8 in the
+isolating layer 6 which determines the effective contact area in the memory
+cell 5 and if the variant in fig. 4c is used, also the diode junction part of the
+contact area. The semiconductor material 10 which is provided over for
+instance the x electrode 2 in the memory cell 5, hence has its bulk impedance
+reduced substantially in correspondence with the reduction in the effective
+contact area and by varying the size of the window 8 in the isolating layer 6 
+in this manner and hence the effective contact area, data may be stored in the
+memory cells with the use of a multi-valued code.</p><p num="0035">It shall here be remarked that coding of data with use of multi-valued code
+places greater demand on discrimination when reading the impedance value
+in a memory cell and if there is a present danger of bulk and sneak currents
+masking the impedance value signal, either the mutual distance between the
+electrodes 2, 4 in each electrode structure and hence the memory cells 5 may
+be increased or else the multi-valued code may be employed with the
+embodiment variants shown in respectively fig. 3c and fig. 4c, which easily
+will allow the memory cells to be located with a great area density and with
+maintenance of the discrimination which will be necessary to obtain a
+readout of the data stored for instance in a two-bit code, i.e. with two levels
+between the code level given by respectively a complete masking of the
+contact area in the memory cell and a complete exposure of the contact area
+in the memory cell. It is, however, supposed that it will be possible to
+increase the number of levels in the code, for instance using three- or four-bit
+coding. The latter is represented by sixteen levels and hence the realization
+will be a question of dimensions and achievable pitch if the manufacture of
+the memory cells takes place with conventional micro-photolithographic
+methods.</p><p num="0036">It may be expedient to form the semiconductor material from several
+semiconductors, for instance provided in layers, such as known in the art, in
+order to obtain special types of diodes, such as also known in the art, or in
+order to vary the impedance characteristics. For the same purpose also the
+semiconductor material may be combined with or added an electrical
+conducting material.</p><p num="0037">One or more read-only memories ROM according to the invention may
+advantageously be provided on a semiconductor substrate 1 of for instance
+silicon. In this substrate or integrated therewith in a compatible
+semiconductor technology there may be provided driver and control circuits
+13 for the read-only memory. An embodiment with four read-only memories
+ROM provided for instance on a silicon substrate 1 with integrated driver and
+control circuits 13 is shown in fig. 7. Instead of providing the read-only
+memories in a planar configuration, they may also be stacked vertically in
+layers, such as is shown in fig. 8. Once again the semiconductor substrate 1 
+of for instance silicon integrated with driver and control circuits 13, is used.
+Along the side edges of a stacked memory device of this kind there may be
+provided addressing and driver buses 14 and in order to connect the
+electrodes in the respective electrode structure, i.e. the electrode matrix, to
+the driver and control circuits in silicon substrates as this is indicated in fig.
+7 which shows an embodiment with stacked read-only memories ROM
+15<sub>1</sub>...15<sub>n</sub> which mutually are isolated by isolating layers 16<sub>1</sub>...16<sub>n</sub>, for
+instance ceramic.</p><p num="0038">Read-only memories and read-only memory devices according to the
+invention could advantageously be realized in card format compatible with
+standard interfaces as commonly used with personal computers. In practice
+the read-only memory realized in a read-only memory device may be
+implemented in known thin-film technology and the read-only memory
+device will integrated with the silicon substrate appear as hybrid device. In
+practice it has turned out that read-only memories according to the invention
+may be made with a thickness of electrode structures and memory cells of at
+most a few micrometers and with realistically at least two memory cells per
+µm<sup>2</sup> with the use of present technology. A read-only memory with one
+storage layer and an area of 1 cm<sup>2</sup> will hence store 25 Mbyte with binary
+coding. By using two- or four-bit coding, something which seems realistic,
+the data storage density may, of course, be correspondingly increased. It is
+assumed that it also will be realistic to reduce the size of the memory cells
+further such that a quadrupling of the storage density in this way may be
+achieved. It will hence be possible to store some hundred Mbytes in each
+read-only memory and the data storage density will, of course, increase
+proportionally with the number of stacked layers in a read-only memory
+device configured volumetrically.</p><p num="0039">Implemented with standard card interfaces for use in personal computers or
+in decoder devices for play-back equipment for reproducing sound and
+picture material it will hence be possible to employ the read-only memory
+according to the invention as data carrier for source material which else
+usually is stored on media such as CD-ROM.</p><p num="0040">Writing to the read-only memory according to the invention, i.e. input and
+coding of data, is implemented in and integrated with manufacturing
+processes. Preferably the read-only memory is manufactured with the use of 
+well-known thin-film technologies and photolithographic methods. Basically
+all materials may be provided in global layers and electrode structures and
+patches and removed portions (windows) formed with the use of photomasks
+and etching. "Writing" of data then takes place by "coding" photomasks for
+patches or windows with positioning and dimensioning the patches or
+windows of the mask in accordance with a determined protocol, such that
+each memory cell is correctly coded. Processes of this kind may easily be
+implemented for manufacturing of large series of read-only memories with
+the same source information, for instance program material for music or
+films.</p></description><claims load-source="patent-office" status="new" mxw-id="PCLM11399463" lang="DE"><claim num="1"><claim-text>Elektrisch adressierbarer, nicht flüchtiger Nurlesespeicher,
+aufweisend mehrere Speicherzellen (5), denen bei
+einem Schreibvorgang, der einen Teil des Herstellungsprozesses
+des Nurlesespeichers umfasst, permanent jeweils
+einer von zwei oder mehr logischen Zuständen in
+Übereinstimmung mit einem bestimmten Protokoll zugeordnet
+sind, das in dem Speicher permanent geschrieben oder
+gespeicherte Daten definiert, und eine passive Matrix
+von elektrischen Leitern (2, 4) für den Adressiervorgang,
+wobei die passive elektrische Leitermatrix eine
+erste und eine zweite Elektrodenstruktur in jeweils gegenseitig
+beabstandeten und parallelen Ebenen und mit
+parallelen Elektroden (2, 4) in jeder Ebene sowie derart
+bereit gestellt umfasst, dass die Elektroden eine im Wesentlichen
+orthogonale X-Y-Matrix bilden, wobei die Elektroden
+in der ersten Elektrodenstruktur die Spalten
+der Matrix oder X-Elektroden umfassen, und wobei die Elektroden
+(4) in der zweiten Elektrodenstruktur die Zeilen
+der Matrix oder Y-Elektroden umfassen, wobei zumindest
+ein Teil des Volumens zwischen der Schnittstelle
+einer X-Elektrode (2) mit einer Y-Elektrode (4) eine
+Speicherzelle (5) in dem Nurlesespeicher festlegt, wobei
+die sich gegenseitig überlappenden Abschnitte der X-Elektrode
+(2) und der Y-Elektrode (4) in der Speicherzelle
+(5) jeweils einen Kontaktbereich (11) in der Speicherzelle
+(5) festlegen, wobei zumindest ein Halbleitermaterial
+(9) zwischen den Elektrodenstrukturen und mit
+gleichrichtenden Eigenschaften in Bezug auf ein gewähltes,
+elektrisch leitendes Elektrodenmaterial und einem
+elektrisch isolierendem Material (6) vorgesehen ist, wobei
+das Halbleitermaterial (9), das sich in elektrischem 
+Kontakt mit einer Elektrode (2, 4) in der Speicherzelle
+befindet, einen Diodenübergang in der Grenzfläche zwischen
+dem Halbleitermaterial und dem Elektrodenmaterial
+bildet, wobei ein erster logischer Zustand einer Speicherzelle
+(5) in dem Nurlesespeicher durch einen aktiven
+Abschnitt des Halbleitermaterials (9) gebildet ist, der
+den gesamten Kontaktbereich (11) in der Speicherzelle
+abdeckt, wobei der Diodenübergang den gesamten Kontaktbereich
+der Speicherzelle umfasst, wobei ein zweiter logischer
+Zustand in einer gewählten Speicherzelle (5) in
+dem Nurlesespeicher durch zumindest eine Elektrodenstruktur
+in der Speicherzelle gebildet ist, die durch
+das Isolationsmaterial (6) abgedeckt ist, und wobei ein
+Logikzustand in jedem Fall durch den Impedanzwert der
+Speicherzelle (5) festgelegt ist, wobei der Impedanzwert
+im Wesentlichen durch einen oder mehrere der folgenden
+Faktoren festgelegt ist: Die Impedanzeigenschaft des
+Halbleitermaterials, die Impedanzeigenschaft des Isolationsmaterials
+und die Impedanzeigenschaft des Diodenübergangs,
+<b>dadurch gekennzeichnet, dass</b> einer oder mehrere
+zusätzliche, logische Zustände in einer Speicherzelle
+(5) in dem Nurlesespeicher durch einen aktiven Abschnitt
+des Halbleitermaterials (9) gebildet ist bzw.
+sind, das ausschließlich einen Teil des Kontaktbereichs
+(11) abdeckt, und/oder dass der Diodenübergang ausschließlich
+einen Teil des Kontaktbereichs (11) derart
+umfasst, dass die Daten, die in dem Speicher gespeichert
+sind, durch die logischen Zustände in einem Mehrwertcode
+wiedergegeben werden können, und dass der eine oder die
+mehreren zusätzlichen logischen Zustände durch Impedanzwerte
+gegeben ist bzw. sind, die durch die Erweiterung
+des aktiven Abschnitts des Halbleitermaterials festgelegt 
+sind, und/oder die Erweiterung desjenigen Teils des
+Kontaktbereichs, der den Diodenübergang bildet.</claim-text></claim><claim num="2"><claim-text>Nurlesespeicher nach Anspruch 1, wobei der Nurlesespeicher
+einen Binärlogikspeicher bildet, <b>dadurch gekennzeichnet,
+dass</b> der erste logische Zustand, der entweder
+eine logische 0 oder eine logische 1 darstellt, durch
+den effektiven Vorspannungsdurchlasswiderstand der Diode
+festgelegt ist, die in der Speicherzelle (5) gebildet
+ist, wobei das Halbleitermaterial (9) sowohl die X-Elektrode
+(2) wie die Y-Elektrode (4) kontaktiert, und
+dass ein zweiter oder zusätzliche logische Zustände, die
+entsprechend entweder eine logische 1 oder eine logische
+0 darstellt bzw. darstellen, durch einen gewählten Widerstandswert
+für das Isolationsmaterial (6) gegeben ist
+bzw. sind, das in der Speicherzelle (5) vorgesehen ist,
+wobei das Halbleitermaterial (9) höchstens die X-Elektrode
+(2) oder die Y-Elektrode (4) kontaktiert.</claim-text></claim><claim num="3"><claim-text>Nurlesespeicher nach Anspruch 2, <b>dadurch gekennzeichnet,
+dass</b> das Isolationsmaterial (6) in der Speicherzelle einen
+unendlichen Widerstandswert aufweist.</claim-text></claim><claim num="4"><claim-text>Nurlesespeicher nach Anspruch 1, wobei der Nurlesespeicher
+als Mehrniveaulogikspeicher mit einem oder mehreren
+zusätzlichen Logikzuständen realisiert ist, <b>dadurch gekennzeichnet,
+dass</b> der erste Logikzustand durch den effektiven
+Vorwärtsdurchlasswiderstand einer Diode festgelegt
+ist, die in einer Speicherzelle (5) gebildet ist,
+wobei das Halbleitermaterial (9) sowohl die X- wie die
+Y-Elektroden (2, 4) kontaktiert, und dass der eine oder
+die mehreren zusätzlichen Logikzustände durch ermittelte
+Widerstandswerte für das Isolationsmaterial (6) festgelegt 
+ist bzw. sind, das in einer Speicherzelle (5) vorgesehen
+ist, wobei das Halbleitermaterial (9) höchstens
+entweder die X-Elektrode (2) oder die Y-Elektrode (4)
+kontaktiert, und wobei der gewählte, festgelegte Widerstandswert
+in jedem Fall zwischen dem effektiven Vorwärtsdurchlasswiderstand
+einer Speicherzelle (5), gebildet
+durch eine Diode, und Unendlich liegt.</claim-text></claim><claim num="5"><claim-text>Nurlesespeicher nach Anspruch 1, <b>dadurch gekennzeichnet,
+dass</b> das Isolationsmaterial (6) in gewählten Speicherzellen
+(5) zwischen der Elektrodenstruktur in Form eines
+getrennten, schichtartigen Isolatorfelds (7) vorgesehen
+ist, das zumindest die Elektroden (2, 4) in der Speicherzelle
+(5) vollständig oder teilweise abdeckt, wobei
+eine gewählte Speicherzelle abhängig von dem aktiven Abschnitt
+des Halbleitermaterials und/oder des Diodenübergangsteils
+des Kontaktbereichs in dem letztgenannten
+Fall einen logischen Zustand erzeugt, der einem Niveau
+in einem Mehrwertecode entspricht.</claim-text></claim><claim num="6"><claim-text>Nurlesespeicher nach Anspruch 5, wobei das Isolatorfeld
+(7) ausschließlich eine der Elektroden (2, 4) vollständig
+oder teilweise abdeckt, <b>dadurch gekennzeichnet, dass</b>
+das Halbleitermaterial (9) zwischen den Elektrodenstrukturen
+in einer globalen Schicht und außerdem über den
+Isolatorfeldern (7) in den gewählten Speicherzellen (5)
+vorgesehen ist.</claim-text></claim><claim num="7"><claim-text>Nurlesespeicher nach Anspruch 5, wobei das Isolatorfeld
+(7) beide Elektroden (2, 4) vollständig oder teilweise
+abdeckt, <b>dadurch gekennzeichnet, dass</b> das Halbleitermaterial
+(9) ausschließlich zwischen den Elektrodenstrukturen
+und benachbart zu den Isolatorfeldern (7) in den 
+gewählten Speicherzellen (5) derart vorgesehen ist, dass
+das Halbleitermaterial (9) und die Isolatorfelder (7)
+gegenseitig in einer gemeinsamen, durchgehenden Schicht
+fluchten.</claim-text></claim><claim num="8"><claim-text>Nurlesespeicher nach Anspruch 1, <b>dadurch gekennzeichnet,
+dass</b> das Isolationsmaterial (6) zwischen den Elektrodenstrukturen
+in Form einer im Wesentlichen globalen
+Schicht vorgesehen ist, die zumindest eine der Elektrodenstrukturen
+abdeckt, und mit entfernten Abschnitten
+(8) in gewählten Speicherzellen (5) derart, dass der
+entfernte Abschnitt die Elektroden (2, 4) in einer gewählten
+Speicherzelle (5) teilweise oder vollständig
+freigibt, wobei die Speicherzelle abhängig von dem aktiven
+Abschnitt des Halbleitermaterials (9) und für den
+Diodenübergangsteil des Kontaktbereichs (11) in dem zuletzt
+genannten Fall einen logischen Zustand erzeugt,
+der einem Niveau in einem Mehrwertecode entspricht.</claim-text></claim><claim num="9"><claim-text>Nurlesespeicher nach Anspruch 8, wobei die Isolationsschicht
+(6) ausschließlich eine der Elektrodenstrukturen
+abdeckt, <b>dadurch gekennzeichnet, dass</b> das Halbleitermaterial
+(9) zwischen den Elektrodenstrukturen und über
+der Isolationsschicht (6) in einer globalen Schicht vorgesehen
+ist und außerdem die Elektrodenstrukturen in den
+entfernten Abschnitten der Isolationsschicht (6) kontaktiert.</claim-text></claim><claim num="10"><claim-text>Nurlesespeicher nach Anspruch 8, wobei die Isolationsschicht
+(6) beide Elektrodenstrukturen abdeckt, <b>dadurch
+gekennzeichnet, dass</b> das Halbleitermaterial (9, 10) ausschließlich
+zwischen den Elektrodenstrukturen und benachbart
+zu der Isolationsschicht (6) in den gewählten 
+Speicherzellen (5) derart vorgesehen ist, dass das Halbleitermaterial
+(9, 10) und die Isolationsschicht (6) in
+einer gemeinsamen, durchgehenden Schicht gegenseitig
+fluchten.</claim-text></claim><claim num="11"><claim-text>Nurlesespeicher nach Anspruch 1, <b>dadurch gekennzeichnet,
+dass</b> es sich bei dem Halbleitermaterial (9) um amorphes
+Silizium handelt.</claim-text></claim><claim num="12"><claim-text>Nurlesespeicher nach Anspruch 1, <b>dadurch gekennzeichnet,
+dass</b> es sich bei dem Halbleitermaterial (9) um polykristallines
+Silizium handelt.</claim-text></claim><claim num="13"><claim-text>Nurlesespeicher nach Anspruch 1, <b>dadurch gekennzeichnet,
+dass</b> es sich bei dem Halbleitermaterial (9) um einen organischen
+Halbleiter handelt.</claim-text></claim><claim num="14"><claim-text>Nurlesespeicher nach Anspruch 13, <b>dadurch gekennzeichnet,
+dass</b> es sich bei dem organischen Halbleiter (9) um
+ein konjugiertes Polymer handelt.</claim-text></claim><claim num="15"><claim-text>Nurlesespeicher nach Anspruch 1, <b>dadurch gekennzeichnet,
+dass</b> es sich bei dem Halbleitermaterial (9) um einen anisotropen
+Leiter handelt.</claim-text></claim><claim num="16"><claim-text>Nurlesespeicher nach Anspruch 1, <b>dadurch gekennzeichnet,
+dass</b> das Halbleitermaterial (9) mehr als einen Halbleiter
+umfasst.</claim-text></claim><claim num="17"><claim-text>Nurlesespeicher nach Anspruch 1, <b>dadurch gekennzeichnet,
+dass</b> dem Halbleitermaterial (9) ein elektrisch leitendes
+Material zugesetzt oder dass es mit diesem kombiniert
+ist. </claim-text></claim><claim num="18"><claim-text>Nurlesespeicher nach Anspruch 1, <b>dadurch gekennzeichnet,
+dass</b> das Halbleitermaterial (9), das Isolationsmaterial
+(6) und die Elektrodenstrukturen als Dünnschichten verwirklicht
+sind.</claim-text></claim><claim num="19"><claim-text>Nurlesespeicher, aufweisend einen oder mehrere Nurlesespeicher
+(ROM) nach den Ansprüchen 1 - 18, <b>dadurch gekennzeichnet,
+dass</b> der Nurlesespeicher (ROM) auf einem
+Substrat (1) aus einem Halbleitermaterial oder zwischen
+Substraten (1;3) aus Halbleitermaterial und über den
+Substraten vorgesehen ist, die mit Treiber- und Steuerschaltungen
+(13) zum Treiben und Adressieren verbunden
+sind, wobei die Treiber- und Steuerschaltungen (13) in
+dem Substrat (1) oder den Substraten (1;3) integriert
+und in einer Halbleitertechnik verwirklicht sind, die
+mit dem Substratmaterial kompatibel ist.</claim-text></claim><claim num="20"><claim-text>Nurlesespeicher, aufweisend zwei oder mehr Nurlesespeicher
+nach den Ansprüchen 1 - 18, <b>dadurch gekennzeichnet,
+dass</b> der Nurlesespeicher in horizontalen Schichten (15)
+übereinander angeordnet ist, um eine Volumenspeichereinrichtung
+bereit zu stellen, dass die Volumenspeichereinrichtung
+auf einem Substrat (1) aus Halbleitermaterial
+oder zwischen Substraten (1;3) aus Halbleitermaterial
+und über dem Substrat oder über den Substraten vorgesehen
+ist, die mit Treiber- und Steuerschaltungen (13) zum
+Treiben und Adressieren verbunden sind, wobei die Treiber-
+und Steuerschaltungen (13) mit dem Substrat (1) oder
+den Substraten (1;3) integriert und in einer Halbleitertechnik
+verwirklicht sind, die mit dem Substratmaterial
+kompatibel ist.</claim-text></claim></claims><claims load-source="patent-office" status="new" mxw-id="PCLM11399464" lang="EN"><claim num="1"><claim-text>An electrically addressable non-volatile read-only memory, comprising
+a plurality of memory cells (5) which in a write operation comprising a part
+of the manufacturing process of the read-only memory, permanently each are
+assigned one of two or more logic states according to a determined protocol
+which in the memory defines permanently written or stored data, and a
+passive matrix of electrical conductors (2, 4) for the addressing, wherein the
+passive electrical conductor matrix comprises a first and a second electrode
+structure in respective mutually spaced apart and parallel planes and with
+parallel electrodes (2, 4) in each plane and provided such that the electrodes
+form a substantially orthogonal x,y matrix wherein the electrodes in the first
+electrode structure comprise the columns of the matrix or x electrodes and
+the electrodes (4) in the second electrode structure comprise the rows of the
+matrix or y electrodes, wherein at least a portion of the volume between the
+intersection of an x electrode (2) and a y electrode (4) defines a memory cell
+(5) in the read-only memory, wherein the mutually overlapping portions of
+the x electrode (2) and the y electrode (4) in the memory cell (5), each
+defines a contact area (11) in the memory cell (5), wherein at least one
+semiconductor material (9) is provided between the electrode structures and
+with rectifying properties in relation to a selected electrical conducting
+electrode material, and an electrical isolating material (6), wherein the
+semiconductor material (9) in electrical contact with an electrode (2, 4) in the
+memory cell forms a diode junction in the interface between semiconductor
+material and electrode material, wherein a first logic state of-a memory cell
+(5) in the read-only memory is formed by an active portion of the
+semiconductor material (9) covering the whole contact area (11) in the
+memory cell, the diode junction comprising the whole contact area of the
+memory cell, wherein a second logic state in a selected memory cell (5) in
+the read-only memory is formed by at least one electrode structure in the
+memory cell being covered by the isolating material (6), and wherein a logic
+state in each case is given by the impedance value of the memory cell (5),
+said impedance value substantially being given by one or more of the
+following factors: the impedance characteristics of the semiconductor
+material, the impedance characteristics of the isolating material, and the
+impedance characteristic of the diode junction, <b>characterized in that</b> one or
+more additional logic states in a memory cell (5) in the read-only memory is 
+formed by an active portion of the semiconductor material (9) covering only
+a part of the contact area (11) and/or that the diode junction only comprises a
+part of the contact area (11), such that the data which are stored in the
+memory may be represented by the logic states in a multi-valued code, and
+that said one or more additional logic states are given by impedance values
+determined by the extension of the active portion of the semiconductor
+material, and/or the extension of the part of the contact area which forms the
+diode junction.</claim-text></claim><claim num="2"><claim-text>A read-only memory according to claim 1, wherein the read-only
+memory constitutes a binary logic memory, <b>characterized in that</b> the first
+logic state which either represents a logical 0 or a logical 1, is given by the
+effective forward bias resistance of a diode formed in a memory cell (5)<br/>
+wherein the semiconductor material (9) contacts both the x electrode (2) and
+the y electrode (4), and that a second or additional logic states which
+correspondingly represent either a logical 1 or a logical 0 are given by a
+selected resistance value for the isolating material (6) provided in a memory
+cell (5) wherein the semiconductor material (9) at most contacts either the x
+electrode (2) or the y electrode (4).</claim-text></claim><claim num="3"><claim-text>A read-only memory according to claim 2,<br/><b>characterised in that</b> the isolating material (6) in a memory cell has an
+infinite resistance value.</claim-text></claim><claim num="4"><claim-text>A read-only memory according to claim 1,<br/>
+wherein the read-only memory is realized as a multilevel logic memory with.
+one or more additional logic states, <b>characterized in that</b> the first logic state
+is given by the effective forward bias resistance of a diode formed in a
+memory cell (5) wherein the semiconductor material (9) contacts both the x
+and the y electrodes (2,4) and that said one or more additional logic states are given by
+determined resistance values for the isolating material (6) provided in a
+memory cell (5) wherein the semiconductor material (9) at most contacts
+either the x electrode (2) or the y electrode (4) and the selected determined
+resistance value in each case lies between the effective forward bias
+resistance of a memory cell (5) formed with a diode, and infinite.</claim-text></claim><claim num="5"><claim-text>A read-only memory according to claim 1,<br/><b>characterized in that</b> the isolating material (6) in selected memory cells (5) is
+provided between the electrode structure in the form of a separate layer-like 
+isolator patch (7) which wholly or partly covers at least one of the electrodes
+(2,4) in the memory cell (5), a selected memory cell dependent on the active
+portion of the semiconductor material and/or the diode junction part of the
+contact area in the latter case acquiring a logic state which corresponds to a
+level in a multi-valued code.</claim-text></claim><claim num="6"><claim-text>A read-only memory according to claim 5, wherein the isolator patch
+(7) wholly or partly covers only one of the electrodes (2, 4),<br/><b>characterized in that</b> the semiconductor material (9) is provided between the
+electrode structures in a global layer and besides over the isolator patches (7)
+in the selected memory cells (5).</claim-text></claim><claim num="7"><claim-text>A read-only memory according to claim 5, wherein the isolator patch
+(7) wholly or partly covers both electrodes (2, 4),<br/><b>characterized in that</b> the semiconductor material (9) is provided only between
+the. electrode structures and adjacent to the isolator patches (7) in the selected
+memory cells (5), such that the semiconductor material (9) and isolator
+patches (7) mutually flush in a common continuous layer.</claim-text></claim><claim num="8"><claim-text>A read-only memory according to claim 1,<br/><b>characterized in that</b> the isolating material (6) is provided between the
+electrode structures in the form of a substantially global layer which covers
+at least one of the electrode structures and with removed portions (8) in
+selected memory cells (5), such that the removed portion wholly or partly
+exposes the electrodes (2, 4) in a selected memory cell (5), said memory cell
+dependent on the active portion of the semiconductor material (9) and for the
+diode junction part of the contact area (11) in the latter case acquiring a logic
+state which corresponds to a level in a multi-valued code.</claim-text></claim><claim num="9"><claim-text>A read-only memory according to claim 8, wherein the isolating layer
+(6) covers only one of the electrode structures,<br/><b>characterized in that</b> the. semiconductor material (9) is provided between the
+electrode structures and over the isolating layer (6) in a global layer and
+besides contacts the electrode structures in the removed portions of the
+isolating layer (6).</claim-text></claim><claim num="10"><claim-text>A read-only memory according to claim 8, wherein the isolating layer
+(6) covers both electrode structures,<br/><b>characterized in that</b> the semiconductor material (9, 10) is provided only 
+between the electrode structures and adjacent to the isolating layer (6) in the
+selected memory cells (5), such that the semiconductor material (9, 10) and
+the isolating layer (6) mutually flush in a common continuous layer.</claim-text></claim><claim num="11"><claim-text>A read-only memory according to claim 1, <b>characterized in that</b> the
+semiconductor material (9) is amorphous silicon.</claim-text></claim><claim num="12"><claim-text>A read-only memory according to claim 1, <b>characterized in that</b> the
+semiconductor material (9) is polycrystalline silicon.</claim-text></claim><claim num="13"><claim-text>A read-only memory according to claim 1, <b>characterized in that</b> the
+semiconductor material (9) is an organic semiconductor.</claim-text></claim><claim num="14"><claim-text>A read-only memory according to claim 13, <b>characterized in that</b> the
+organic semiconductor (9) is a conjugated polymer.</claim-text></claim><claim num="15"><claim-text>A read-only memory according to claim 1, <b>characterized in that</b> the
+semiconductor material (9) is an anisotropic conductor.</claim-text></claim><claim num="16"><claim-text>A read-only memory according to claim 1, <b>characterized in that</b> the
+semiconductor material (9) comprises more than one semiconductor.</claim-text></claim><claim num="17"><claim-text>A read-only memory according to claim 1, <b>characterized in that</b> the
+semiconductor material (9) has been added or combined with an electrical
+conducting material.</claim-text></claim><claim num="18"><claim-text>A read-only memory according to claim 1, <b>characterized in that</b> the
+semiconductor material (9), the isolating material (6) and the electrode
+structures are realized as thin films.</claim-text></claim><claim num="19"><claim-text>A read-only memory comprising one or more read-only memories
+(ROM) according to claims 1-18, <b>characterized in that</b> the read-only memory
+(ROM) is provided on a substrate (1) of semiconductor material or between
+substrates (1;3) of semiconductor material and via the substrates connected
+with driver and control circuits (13) for driving and addressing, said driving
+and control circuits (13) being integrated in the substrate (1) or the substrates
+(1;3) and realized in a semiconductor technology compatible with the
+substrate material.</claim-text></claim><claim num="20"><claim-text>A read-only memory comprising two or more read-only memories
+according to claims 1-18, <b>characterized in that</b> the read-only memory is
+stacked in horizontal layers (15) in order to provide a volumetric memory 
+device, that the volumetric memory device is provided on a substrate (1) of
+semiconductor material or between substrates (1;3) of semiconductor
+material and via the substrate or the substrates connected with driver and
+control circuits (13) for driving and addressing, said driving and control
+circuits (13) being integrated with the substrate (1) or the substrates (1;3) and
+realized in a semiconductor technology compatible with the substrate
+material.</claim-text></claim></claims><claims load-source="patent-office" status="new" mxw-id="PCLM11399465" lang="FR"><claim num="1"><claim-text>Mémoire morte non volatile adressable électriquement,
+comprenant une pluralité de cellules mémoires (5) à chacune
+desquelles est attribué de manière permanente, lors d'une
+opération d'écriture constituant une partie du procédé de
+fabrication de la mémoire morte, l'un des deux états logiques
+ou plus, selon un protocole déterminé, ce qui définit dans la
+mémoire des données écrites ou stockées de manière
+permanente, et une matrice passive de conducteurs
+électriques (2, 4) servant à l'adressage, la matrice passive de
+conducteurs électriques comprenant une première et une
+deuxième structures d'électrodes disposées dans des plans
+respectifs, espacés l'un de l'autre et parallèles, avec des
+électrodes parallèles (2, 4) dans chaque plan, disposées de
+telle sorte que les électrodes forment une matrice x, y
+essentiellement orthogonale dans laquelle les électrodes de la
+première structure d'électrodes constituent les colonnes de la
+matrice ou électrodes x et les électrodes (4) de la deuxième
+structure d'électrodes constituent les rangées de la matrice ou
+électrodes y, où au moins une partie du volume situé entre une
+électrode x (2) et une électrode y (4) au niveau de leur
+intersection définit une cellule mémoire (5) de la mémoire
+morte, et les parties de l'électrode x (2) et de l'électrode y (4)
+qui se chevauchent dans la cellule mémoire (5) définissent
+chacune une aire de contact (11) dans la cellule mémoire (5),
+au moins un matériau semi-conducteur (9) étant placé entre
+les structures d'électrodes et ayant des propriétés de
+redressement vis-à-vis d'un matériau d'électrode choisi
+conducteur de l'électricité, ainsi qu'un matériau d'isolation
+électrique (6), le matériau semi-conducteur (9) en contact
+électrique avec une électrode (2, 4) dans la cellule mémoire
+formant une diode à jonction au niveau de l'interface entre le 
+matériau semi-conducteur et le matériau d'électrode, un
+premier état logique d'une cellule mémoire (5) de la mémoire
+morte étant formé par une partie active du matériau semi-conducteur
+(9) qui recouvre l'aire de contact totale (11) dans
+la cellule mémoire, la diode à jonction étant constituée de
+l'aire de contact totale de la cellule mémoire, un deuxième état
+logique d'une cellule mémoire (5) choisie de la mémoire morte
+étant formée par au moins une structure d'électrode de la
+cellule mémoire qui est recouverte par le matériau isolant (6),
+et un état logique étant donné, dans chaque cas, par la valeur
+de l'impédance de la cellule mémoire (5), ladite valeur
+d'impédance étant essentiellement donnée par un ou plusieurs
+des facteurs suivants : les caractéristiques d'impédance du
+matériau semi-conducteur, les caractéristiques d'impédance du
+matériau isolant et les caractéristiques d'impédance de la
+diode à jonction, <b>caractérisée en ce qu'</b>un ou plusieurs états
+logiques supplémentaires sont formés dans une cellule
+mémoire (5) de la mémoire morte par une partie active du
+matériau semi-conducteur (9) qui recouvre uniquement une
+partie de l'aire de contact (11) et/ou <b>en ce que</b> la diode à
+jonction comprend uniquement une partie de l'aire de contact
+(11), de sorte que les données qui sont stockées dans la
+mémoire peuvent être représentées par les états logiques en
+un code multivalent, et <b>en ce que</b> lesdits un ou plusieurs états
+logiques sont donnés par des valeurs d'impédances
+déterminées par l'extension de la partie active du matériau
+semi-conducteur, et/ou l'extension de la partie de la zone de
+contact qui forme la diode à jonction.</claim-text></claim><claim num="2"><claim-text>Mémoire morte selon la revendication 1, dans laquelle
+la mémoire morte constitue une mémoire logique binaire,
+<b>caractérisée en ce que</b> le premier état logique, qui représente
+un 0 logique ou bien un 1 logique, est donné par la résistance
+de polarisation directe effective d'une diode formée dans une 
+cellule mémoire (5), avec le matériau semi-conducteur (9)
+entrant en contact avec l'électrode x (2) et avec l'électrode y
+(4), et <b>en ce qu'</b>un deuxième état logique ou des états logiques
+supplémentaires, représentant d'une manière correspondante
+un 1 logique ou bien un 0 logique, sont donnés par une valeur
+de résistance choisie pour le matériau isolant (6) placé dans
+une cellule mémoire (5), avec le matériau semi-conducteur (9)
+entrant en contact au maximum avec l'électrode x (2) ou bien
+avec l'électrode y (4).</claim-text></claim><claim num="3"><claim-text>Mémoire morte selon la revendication 2, <b>caractérisée
+en ce que</b> le matériau isolant (6) dans la cellule mémoire a
+une valeur de résistance infinie.</claim-text></claim><claim num="4"><claim-text>Mémoire morte selon la revendication 1, dans laquelle
+la mémoire morte est réalisée sous la forme d'une mémoire
+logique à plusieurs niveaux avec un ou plusieurs états
+logiques supplémentaires, <b>caractérisée en ce que</b> le premier
+état logique est donné par la résistance de polarisation directe
+effective d'une diode formée dans une cellule mémoire (5),
+avec le matériau semi-conducteur (9) entrant en contact avec
+l'électrode x (2) et avec l'électrode y (4), et <b>en ce que</b> lesdits
+un ou plusieurs états logiques sont donnés par des valeurs de
+résistance déterminées pour le matériau isolant (6) placé dans
+une cellule mémoire (5), avec le matériau semi-conducteur (9)
+entrant en contact au maximum avec l'électrode x (2) ou bien
+avec l'électrode y (4), et la valeur de résistance déterminée
+choisie est comprise, dans chaque cas, entre la résistance de
+polarisation directe effective d'une cellule mémoire (5)
+constituée d'une diode, et l'infini.</claim-text></claim><claim num="5"><claim-text>Mémoire morte selon la revendication 1, <b>caractérisée
+en ce que</b> le matériau isolant (6) des cellules mémoires (5)
+choisies est placé entre les structures d'électrodes, sous la
+forme d'une pastille isolante séparée (7) de type couche, qui
+recouvre totalement ou partiellement au moins l'une des 
+électrodes (2, 4) dans la cellule mémoire (5), une cellule
+mémoire choisie dépendant de la partie active du matériau
+semi-conducteur et/ou la partie diode à jonction de l'aire de
+contact, dans le dernier cas, acquerrant un état logique qui
+correspond à un niveau d'un code multivalent.</claim-text></claim><claim num="6"><claim-text>Mémoire morte selon la revendication 5, dans laquelle
+la pastille isolante (7) recouvre totalement ou partiellement
+une seule des électrodes (2, 4), <b>caractérisée en ce que</b> le
+matériau semi-conducteur (9) est placé entre les structures
+électrodes, sous la forme d'une couche globale, et, en outre,
+par dessus les pastilles isolantes (7) dans les cellules
+mémoires (5) choisies.</claim-text></claim><claim num="7"><claim-text>Mémoire morte selon la revendication 5, dans laquelle
+la pastille isolante (7) recouvre totalement ou partiellement les
+deux électrodes (2, 4), <b>caractérisée en ce que</b> le matériau
+semi-conducteur (9) est placé uniquement entre les structures
+d'électrodes et en contiguïté des pastilles isolantes (7) dans
+les cellules mémoire (5) choisies, de telle sorte que le
+matériau semi-conducteur (9) et les pastilles isolantes (7)
+soient en affleurement mutuel sous la forme d'une couche
+continue commune.</claim-text></claim><claim num="8"><claim-text>Mémoire morte selon la revendication 1, <b>caractérisée
+en ce que</b> le matériau isolant (6) est placé entre les structures
+isolantes, sous la forme d'une couche essentiellement globale
+qui recouvre au moins l'une des structures d'électrodes, et des
+parties (8) étant retirées dans les cellules mémoires (5)
+choisies, de telle sorte que la partie retirée expose totalement
+ou partiellement les électrodes (2, 4) dans une cellule
+mémoire (5) choisie, ladite cellule mémoire dépendant de la
+partie active du matériau semi-conducteur (9) et/ou la partie
+diode à jonction de l'aire de contact (11), dans le dernier cas,
+acquerrant un état logique qui correspond à un niveau d'un
+code multivalent. </claim-text></claim><claim num="9"><claim-text>Mémoire morte selon la revendication 8, dans laquelle
+la couche isolante (6) recouvre une seule des structures
+d'électrodes, <b>caractérisée en ce que</b> le matériau semi-conducteur
+(9) est placé entre les structures d'électrodes et
+par dessus la couche isolante (6), sous la forme d'une couche
+globale, et entre, en outre, en contact avec les structures
+d'électrodes dans les parties retirées de la couche isolante
+(6).</claim-text></claim><claim num="10"><claim-text>Mémoire morte selon la revendication 8, dans laquelle
+la couche isolante (6) recouvre les deux structures
+d'électrodes, <b>caractérisée en ce que</b> le matériau semi-conducteur
+(9, 10) est placé seulement entre les structures
+d'électrodes et en contiguïté de la couche isolante (6) dans les
+cellules mémoires (5) choisies, de telle sorte que le matériau
+semi-conducteur (9, 10) et la couche isolante (6) soient en
+affleurement mutuel sous la forme d'une couche continue
+commune.</claim-text></claim><claim num="11"><claim-text>Mémoire morte selon la revendication 1, <b>caractérisée
+en ce que</b> le matériau semi-conducteur (9) est un silicium
+amorphe.</claim-text></claim><claim num="12"><claim-text>Mémoire morte selon la revendication 1, <b>caractérisée
+en ce que</b> le matériau semi-conducteur (9) est un silicium
+polycristallin.</claim-text></claim><claim num="13"><claim-text>Mémoire morte selon la revendication 1, <b>caractérisée
+en ce que</b> le matériau semi-conducteur (9) est un semi-conducteur
+organique.</claim-text></claim><claim num="14"><claim-text>Mémoire morte selon la revendication 13,
+<b>caractérisée en ce que</b> le matériau semi-conducteur (9) est un
+polymère conjugué.</claim-text></claim><claim num="15"><claim-text>Mémoire morte selon la revendication 1, <b>caractérisée
+en ce que</b> le matériau semi-conducteur (9) est un conducteur
+anisotrope.</claim-text></claim><claim num="16"><claim-text>Mémoire morte selon la revendication 1, <b>caractérisée 
+en ce que</b> le matériau semi-conducteur (9) comprend plus d'un
+semi-conducteur.</claim-text></claim><claim num="17"><claim-text>Mémoire morte selon la revendication 1, <b>caractérisée
+en ce que</b> le matériau semi-conducteur (9) a été ajouté ou
+combiné à un matériau conducteur de l'électricité.</claim-text></claim><claim num="18"><claim-text>Mémoire morte selon la revendication 1, <b>caractérisée
+en ce que</b> le matériau semi-conducteur (9), le matériau isolant
+(6) et les structures d'électrodes sont réalisés sous la forme
+de films minces.</claim-text></claim><claim num="19"><claim-text>Mémoire morte comprenant une ou plusieurs
+mémoires mortes (ROM) selon les revendications 1 à 18,
+<b>caractérisée en ce que</b> la mémoire morte (ROM) est placée sur
+un substrat (1) en matériau semi-conducteur ou entre des
+substrats (1, 3) en matériau semi-conducteur et est connectée,
+par l'intermédiaire des substrats, à des circuits de pilotage et
+de commande (13) servant aux opérations de commande et
+d'adressage, lesdits circuits de pilotage et de commande (13)
+étant intégrés dans le substrat (1) ou les substrats (1, 3) et
+réalisés au moyen d'une technologie de semi-conducteurs
+compatible avec le matériau du substrat.</claim-text></claim><claim num="20"><claim-text>Mémoire morte comprenant deux mémoires mortes ou
+plus selon les revendications 1 à 18, <b>caractérisée en ce que</b> la
+mémoire morte est empilée en couches horizontales (15) afin
+de réaliser un dispositif de mémoire volumique, <b>en ce que</b> le
+dispositif de mémoire volumique est placé sur un substrat (1)
+en matériau semi-conducteur ou entre des substrats (1, 3) en
+matériau semi-conducteur et est connectée, par l'intermédiaire
+des substrats, à des circuits de pilotage et de commande (13)
+servant aux opérations de commande et d'adressage, lesdits
+circuits de pilotage et de commande (13) étant intégrés dans
+le substrat (1) ou les substrats (1, 3) et réalisés au moyen
+d'une technologie de semi-conducteurs compatible avec le
+matériau du substrat.</claim-text></claim></claims><drawings load-source="patent-office" status="new" mxw-id="PDW2891832"><figure num="1"><img id="img-00360001" orientation="unknown" wi="113" img-format="tif" img-content="dr" file="00360001.tif" inline="no" he="149"/></figure><figure num="2"><img id="img-00370001" orientation="unknown" wi="163" img-format="tif" img-content="dr" file="00370001.tif" inline="no" he="171"/></figure><figure num="3"><img id="img-00380001" orientation="unknown" wi="159" img-format="tif" img-content="dr" file="00380001.tif" inline="no" he="226"/></figure><figure num="4"><img id="img-00390001" orientation="unknown" wi="142" img-format="tif" img-content="dr" file="00390001.tif" inline="no" he="212"/></figure><figure num="5"><img id="img-00400001" orientation="unknown" wi="149" img-format="tif" img-content="dr" file="00400001.tif" inline="no" he="230"/></figure><figure num="6"><img id="img-00410001" orientation="unknown" wi="163" img-format="tif" img-content="dr" file="00410001.tif" inline="no" he="213"/></figure><figure num="7"><img id="img-00420001" orientation="unknown" wi="101" img-format="tif" img-content="dr" file="00420001.tif" inline="no" he="213"/></figure></drawings><copyright>User acknowledges that Matrixware and its third party providers retain all right, title and interest in and to this xml under applicable copyright laws.  User acquires no ownership rights to this xml including but not limited to its format.  User hereby accepts the terms and conditions of the Licence Agreement set forth at http://www.matrixware.com/legal/marec/data_licence.html</copyright></patent-document>
