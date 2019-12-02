@@ -6,7 +6,7 @@ from typing import Dict, List
 
 import numpy as np
 
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.settings import cache_dir
 
 
@@ -27,9 +27,9 @@ def load_emb(docid: str,
 
 
 def load_cols(docid: str,
-              dataset: str) -> List[ColDocument]:
+              dataset: str) -> List[Document]:
     path: Path = cache_dir.joinpath(f'{dataset}/text/{docid}.bulk')
     with open(path) as fin:
-        lst: List[ColDocument] = [ColDocument.from_json(line)  # type: ignore
+        lst: List[Document] = [Document.from_json(line)  # type: ignore
                                   for line in fin.read().splitlines()]
     return lst

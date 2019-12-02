@@ -13,7 +13,7 @@ from typedflow.flow import Flow
 from typedflow.nodes import TaskNode, DumpNode, LoaderNode
 
 from bowi.elas.search import EsResult, EsSearcher
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.methods.common.methods import Method
 from bowi.methods.common.dumper import dump_keywords
 from bowi.methods.common.types import Param, TRECResult, Context
@@ -52,12 +52,12 @@ def extract_keywords_from_text(text: str,
 class KeywordBaseline(Method[KeywordParam]):
     param_type: ClassVar[Type] = KeywordParam
 
-    def extract_keywords(self, doc: ColDocument) -> List[str]:
+    def extract_keywords(self, doc: Document) -> List[str]:
         return extract_keywords_from_text(text=doc.text,
                                           n_words=self.param.n_words)
 
     def search(self,
-               doc: ColDocument,
+               doc: Document,
                keywords: List[str]) -> EsResult:
         searcher: EsSearcher = EsSearcher(es_index=self.context.es_index)
         candidates: EsResult = searcher\
@@ -70,7 +70,7 @@ class KeywordBaseline(Method[KeywordParam]):
         return candidates
 
     def to_trec_result(self,
-                       doc: ColDocument,
+                       doc: Document,
                        es_result: EsResult) -> TRECResult:
         res: TRECResult = TRECResult(
             query_docid=doc.docid,

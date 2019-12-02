@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List
 
 from bowi.methods.common.types import Context, TRECResult
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.settings import results_dir
 
 
@@ -25,7 +25,7 @@ def dump_prel(res: TRECResult,
 
 
 def dump_keywords(keywords: List[str],
-                  doc: ColDocument,
+                  doc: Document,
                   context: Context) -> None:
     path: Path = get_dump_dir(context=context).joinpath('keywords.txt')
     with open(path, 'a') as fout:

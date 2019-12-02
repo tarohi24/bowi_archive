@@ -22,7 +22,7 @@ from bowi.embedding.bert import Bert
 from bowi.embedding.elmo import Elmo
 from bowi.methods.common.methods import Method
 from bowi.methods.methods.keywords import KeywordBaseline, KeywordParam
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.settings import cache_dir
 
 
@@ -56,15 +56,15 @@ class Cacher(Method[CacheParam]):
             raise KeyError()
 
     def get_docid(self,
-                  doc: ColDocument) -> str:
+                  doc: Document) -> str:
         return doc.docid
 
     def get_filtered_docs(self,
-                          doc: ColDocument) -> List[ColDocument]:
+                          doc: Document) -> List[Document]:
         docids: List[str] = [item.docid for item
                              in self.kb.search(doc=doc).hits]
         searcher: EsSearcher = EsSearcher(es_index=self.mprop.context['es_index'])
-        docs: List[ColDocument] = searcher\
+        docs: List[Document] = searcher\
             .initialize_query()\
             .add_query(terms=docids, field='docid')\
             .add_size(len(docids))\
@@ -75,7 +75,7 @@ class Cacher(Method[CacheParam]):
 
     class IDandDocs(TypedDict):
         docid: str
-        rel_docs: List[ColDocument]
+        rel_docs: List[Document]
 
     def dump_doc(self,
                  batch: Batch[IDandDocs]) -> None:
@@ -115,11 +115,11 @@ class Cacher(Method[CacheParam]):
                 np.save(str(path.resolve()), embeddings)
 
     def create_flow(self):
-        loader: LoaderNode[ColDocument] = self.load_node
-        node_getid: TaskNode[ColDocument, str] = TaskNode(func=self.get_docid)
+        loader: LoaderNode[Document] = self.load_node
+        node_getid: TaskNode[Document, str] = TaskNode(func=self.get_docid)
         (node_getid < loader)('doc')
 
-        node_get_docs: TaskNode[ColDocument, List[ColDocument]] = TaskNode(
+        node_get_docs: TaskNode[Document, List[Document]] = TaskNode(
             func=self.get_filtered_docs)
         node_dump_text: DumpNode[self.IDandDocs] = DumpNode(func=self.dump_doc)
         (node_dump_text < node_getid)('docid')

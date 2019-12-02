@@ -15,7 +15,7 @@ from bowi.embedding.base import mat_normalize
 from bowi.embedding.fasttext import FastText
 from bowi.methods.common.methods import Method
 from bowi.methods.common.types import TRECResult, Context
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.methods.common.dumper import dump_keywords
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
@@ -57,7 +57,7 @@ class FuzzyNaive(Method[FuzzyParam]):
         return keywords
 
     def to_trec_result(self,
-                       doc: ColDocument,
+                       doc: Document,
                        es_result: EsResult) -> TRECResult:
         res: TRECResult = TRECResult(
             query_docid=doc.docid,
@@ -66,7 +66,7 @@ class FuzzyNaive(Method[FuzzyParam]):
         return res
 
     def match(self,
-              query_doc: ColDocument,
+              query_doc: Document,
               keywords: List[str]) -> TRECResult:
         searcher: EsSearcher = EsSearcher(es_index=self.context.es_index)
         candidates: EsResult = searcher\

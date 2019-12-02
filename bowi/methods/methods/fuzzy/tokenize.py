@@ -4,7 +4,7 @@ from typing import List, Pattern, Set
 from nltk.corpus import stopwords as nltk_sw
 from nltk.tokenize import RegexpTokenizer
 
-from bowi.models import ColDocument
+from bowi.models import Document
 
 
 stopwords: Set[str] = set(nltk_sw.words('english'))
@@ -12,7 +12,7 @@ not_a_word_pat: Pattern = re.compile(r'^[^a-z0-9]*$')
 tokenizer: RegexpTokenizer = RegexpTokenizer(r'\w+|\$[\d\.]+|\S+')
 
 
-def get_all_tokens(doc: ColDocument) -> List[str]:
+def get_all_tokens(doc: Document) -> List[str]:
     tokens: List[str] = tokenizer.tokenize(doc.text.lower())
     # remove stopwords
     tokens: List[str] = [w for w in tokens if w not in stopwords]  # type: ignore

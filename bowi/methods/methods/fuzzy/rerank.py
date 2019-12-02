@@ -14,7 +14,7 @@ from bowi.embedding.fasttext import FastText
 from bowi.methods.common.methods import Method
 from bowi.methods.common.pre_filtering import load_cols
 from bowi.methods.common.types import TRECResult
-from bowi.models import ColDocument
+from bowi.models import Document
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
 from bowi.methods.methods.fuzzy.fuzzy import get_keyword_embs
@@ -34,11 +34,11 @@ class FuzzyRerank(Method[FuzzyParam]):
         self.fasttext: FastText = FastText()
 
     def get_cols(self,
-                 query: ColDocument) -> List[ColDocument]:
+                 query: Document) -> List[Document]:
         """
         Get documents cached by keywrod search
         """
-        cols: List[ColDocument] = load_cols(
+        cols: List[Document] = load_cols(
             docid=query.docid,
             dataset=self.context.es_index)
         return cols
@@ -93,7 +93,7 @@ class FuzzyRerank(Method[FuzzyParam]):
         return np.array(counts) / np.sum(counts)
 
     def get_collection_fuzzy_bows(self,
-                                  cols: List[ColDocument],
+                                  cols: List[Document],
                                   keyword_embs: np.ndarray) -> Dict[str, np.ndarray]:
         bow_dict: Dict[str, np.ndarray] = dict()
         for doc in tqdm(cols, desc='computing bow...', leave=True):
@@ -105,7 +105,7 @@ class FuzzyRerank(Method[FuzzyParam]):
         return bow_dict
 
     def match(self,
-              query_doc: ColDocument,
+              query_doc: Document,
               query_bow: np.ndarray,
               col_bows: Dict[str, np.ndarray]) -> TRECResult:
         """
@@ -136,7 +136,7 @@ class FuzzyRerank(Method[FuzzyParam]):
         (node_bow < node_keyword_embs)('keyword_embs')
 
         # col
-        node_cols: TaskNode[List[ColDocument]] = TaskNode(
+        node_cols: TaskNode[List[Document]] = TaskNode(
             func=self.get_cols)
         (node_cols < self.load_node)('query')
 
