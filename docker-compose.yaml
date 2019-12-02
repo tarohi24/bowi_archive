@@ -14,8 +14,9 @@ services:
       - bowi_default
     environment:
       - HOME=/home/jovyan
-      - ES_URL=elas:9200
       - PROJECT_ROOT=/home/jovyan/bowi
+    env_file:
+      - .env
     working_dir: /home/jovyan/bowi
 
   actions:
