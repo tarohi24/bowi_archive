@@ -1,31 +1,40 @@
 from pathlib import Path
-import unittest
 from typing import List
+
+import pytest
 
 from bowi.initialize.converters.ntcir import NTCIRConverter
 from bowi.models import Document
-from bowi.settings import data_dir
+from bowi import settings
 
 
-class NTCIRConverterTest(unittest.TestCase):
-    source_dir: Path = data_dir.joinpath('ntcir')
+@pytest.fixture(autouse=True)
+def patch_data_dir(monkeypatch):
+    monkeypatch.setattr(settings, 'data_dir',
+                        settings.project_root.joinpath('bowi/tests/data'))
 
-    def __init__(self, *args, **kwargs):
-        super(NTCIRConverterTest, self).__init__(*args, **kwargs)
-        self.converter: NTCIRConverter = NTCIRConverter()
-        self.test_file: Path = NTCIRConverterTest.source_dir.joinpath('orig/collection/sample.txt')
-        self.docs: List[Document] = list(self.converter.to_document(self.test_file))
 
-    def test_get_title(self):
-        assert self.docs[0].title.value == 'Process for making improved corrosion preventive zinc cyanamide'
+@pytest.fixture
+def converter() -> NTCIRConverter:
+    return NTCIRConverter()
 
-    def test_get_docid(self):
-        assert self.docs[0].docid.value == '199305176894'
 
-    def test_get_tags(self):
-        self.assertListEqual(
-            self.docs[0].tags.value,
-            ['C01C'])
+@pytest.fixture
+def test_file() -> Path:
+    test_file: Path = settings.data_dir.joinpath(
+        'ntcir/orig/collection/sample.txt')
+    return test_file
 
-    def test_get_text(self):
-        assert self.docs[0].text.value.split()[:3] == 'The invention will'.split()
+
+@pytest.fixture
+def docs(converter, test_file) -> List[Document]:
+    docs: List[Document] = list(converter.to_document(test_file))
+    return docs
+
+
+def test_docs_properties(docs):
+    assert docs[0].title\
+        == 'Process for making improved corrosion preventive zinc cyanamide'
+    assert docs[0].docid == '199305176894'
+    assert docs[0].tags == ['C01C']
+    assert docs[0].text.split()[:3] == 'The invention will'.split()

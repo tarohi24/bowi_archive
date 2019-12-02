@@ -1,5 +1,4 @@
 from pathlib import Path
-import unittest
 from typing import List
 import xml.etree.ElementTree as ET
 
