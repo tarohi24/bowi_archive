@@ -2,9 +2,9 @@ from pathlib import Path
 import unittest
 from typing import List
 
-from ntcir.initialize.converters.ntcir import NTCIRConverter
-from ntcir.models import Document
-from ntcir.settings import data_dir
+from bowi.initialize.converters.ntcir import NTCIRConverter
+from bowi.models import Document
+from bowi.settings import data_dir
 
 
 class NTCIRConverterTest(unittest.TestCase):

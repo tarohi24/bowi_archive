@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Generator, List
 import xml.etree.ElementTree as ET
 
-from bowi.elas import models
 from bowi.initialize.converters import base
 from bowi.models import Document
 
@@ -64,7 +63,4 @@ class NTCIRConverter(base.Converter):
             tags: List[str] = self._get_tags(root)
             title: str = self._get_title(root)
             text: str = self._get_text(root)
-            yield Document(docid=models.KeywordField(docid),
-                              title=models.TextField(title),
-                              text=models.TextField(text),
-                              tags=models.KeywordListField(tags))
+            yield Document(docid=docid, title=title, text=text, tags=tags)

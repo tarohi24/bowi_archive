@@ -6,7 +6,6 @@ import sys
 from typing import List, Optional
 import xml.etree.ElementTree as ET
 
-from bowi.elas import models
 from bowi.initialize.converters.base import (
     Converter,
     CannotSplitText,
@@ -75,10 +74,7 @@ class CLEFConverter(Converter):
         tags: List[str] = self._get_tags(root)
         title: str = self._get_title(root)
         text: str = self._get_text(root)
-        return [Document(docid=models.KeywordField(docid),
-                            title=models.TextField(title),
-                            text=models.TextField(text),
-                            tags=models.KeywordListField(tags))]
+        return [Document(docid=docid, title=title, text=text, tags=tags)]
 
 
 if __name__ == '__main__':

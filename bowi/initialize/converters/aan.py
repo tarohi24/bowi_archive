@@ -5,7 +5,6 @@ import sys
 from typing import Dict, List, Tuple
 import xml.etree.ElementTree as ET
 
-from bowi.elas import models
 from bowi.initialize.converters.base import Converter
 from bowi.models import Document
 from bowi.settings import data_dir
@@ -42,10 +41,7 @@ class AANConverter(Converter):
     def to_document(self,
                     fpath: Path) -> List[Document]:
         docid, tags, title, text = self._get_info(fpath)
-        return [Document(docid=models.KeywordField(docid),
-                            title=models.TextField(title),
-                            text=models.TextField(text),
-                            tags=models.KeywordListField(tags))]
+        return [Document(docid=docid, title=title, text=text, tags=tags)]
 
 
 if __name__ == '__main__':

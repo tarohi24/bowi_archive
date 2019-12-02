@@ -5,7 +5,7 @@ from typing import Dict, List, Tuple
 
 from dataclasses_json import dataclass_json
 
-from models.utils.utils import uniq
+from bowi.utils.utils import uniq
 
 
 @dataclass
