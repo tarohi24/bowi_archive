@@ -7,17 +7,17 @@ from typing import Generator
 from tqdm import tqdm
 from typedflow.nodes import LoaderNode
 
+from bowi import settings
 from bowi.methods.common.types import Context
 from bowi.methods.common.pre_filtering import load_cols
 from bowi.models import Document
-from bowi.settings import data_dir
 
 
 __all__ = ['load_query_files', ]
 
 
 def load_query_files(dataset: str) -> Generator[Document, None, None]:
-    qpath: Path = data_dir.joinpath(f'{dataset}/query/dump.bulk')
+    qpath: Path = settings.data_dir.joinpath(f'{dataset}/query/dump.bulk')
     pbar = tqdm()
     with open(qpath) as fin:
         while (line := fin.readline()):

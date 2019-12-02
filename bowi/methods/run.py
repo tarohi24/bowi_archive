@@ -11,7 +11,7 @@ from bowi.methods.common.methods import Method
 from bowi.methods.common.dumper import get_dump_dir
 
 # methods
-from bowi.methods.methods import keywords, per, cacher
+from bowi.methods.methods import keywords
 from bowi.methods.methods.fuzzy import naive, rerank
 
 
@@ -24,10 +24,6 @@ M = TypeVar('M', bound=Method)
 def get_method(method_name: str) -> Type[M]:
     if method_name == 'keywords':
         return keywords.KeywordBaseline
-    elif method_name == 'per':
-        return per.Per
-    elif method_name == 'cacher':
-        return cacher.Cacher
     elif method_name == 'fuzzy.naive':
         return naive.FuzzyNaive
     elif method_name == 'fuzzy.rerank':

@@ -31,5 +31,5 @@ def load_cols(docid: str,
     path: Path = cache_dir.joinpath(f'{dataset}/text/{docid}.bulk')
     with open(path) as fin:
         lst: List[Document] = [Document.from_json(line)  # type: ignore
-                                  for line in fin.read().splitlines()]
+                               for line in fin.read().splitlines()]
     return lst

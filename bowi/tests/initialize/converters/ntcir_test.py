@@ -7,11 +7,7 @@ from bowi.initialize.converters.ntcir import NTCIRConverter
 from bowi.models import Document
 from bowi import settings
 
-
-@pytest.fixture(autouse=True)
-def patch_data_dir(monkeypatch):
-    monkeypatch.setattr(settings, 'data_dir',
-                        settings.project_root.joinpath('bowi/tests/data'))
+from bowi.testing.patches import patch_data_dir
 
 
 @pytest.fixture
