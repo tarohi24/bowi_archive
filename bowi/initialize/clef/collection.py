@@ -6,14 +6,14 @@ from pathlib import Path
 from typing import Generator, List
 import xml.etree.ElementTree as ET
 
+import numpy as np
 from tqdm import tqdm
-from typedflow.typedflow import Task, DataLoader, Dumper, Pipeline
-from typedflow.utils import dump_to_each_file
+from typedflow.nodes import LoaderNode, TaskNode, DumpNode
+from typedflow.flow import Flow
 
-from bowi.elas import models
 from bowi.initialize.converters.clef import CLEFConverter
 from bowi.models import Document
-from bowi.settings import data_dir
+from bowi import settings
 
 
 converter: CLEFConverter = CLEFConverter()
@@ -21,7 +21,7 @@ logger = logging.getLogger(__file__)
 
 
 def loading() -> Generator[Path, None, None]:
-    directory: Path = data_dir.joinpath(f'clef/orig/collection/EP')
+    directory: Path = settings.data_dir.joinpath(f'clef/orig/collection/EP')
     for path in tqdm(directory.glob(f'**/*.xml')):
         yield path
 
@@ -32,27 +32,23 @@ def get_document(path: Path) -> Document:
     tags: List[str] = converter._get_tags(root)
     title: str = converter._get_title(root)
     text: str = converter._get_text(root)
-    doc: Document = Document(docid=models.KeywordField(docid),
-                                   title=models.TextField(title),
-                                   text=models.TextField(text),
-                                   tags=models.KeywordListField(tags))
+    doc: Document = Document(docid=docid, title=title, text=text, tags=tags)
     return doc
 
 
-def get_dump_path(batch_id: int) -> Path:
-    path: Path = data_dir.joinpath(f'clef/dump/{str(batch_id)}.bulk')
-    return path
+def dump(doc: Document) -> None:
+    basedir: Path = settings.data_dir.joinpath(f'clef/dump')
+    with open(basedir.joinpath(f'{str(np.random.randint(200))}'), 'a') as fout:
+        fout.write(doc.to_json())  # type: ignore
+        fout.write('\n')
 
 
 if __name__ == '__main__':
-    gen: Generator[Path, None, None] = loading()
-    loader: DataLoader = DataLoader[Path](gen=gen, batch_size=300)
-    get_doc_task: Task = Task[Path, Document](func=get_document)
-
-    dumper: Dumper = Dumper[Document](
-        func=lambda batch: dump_to_each_file(batch, get_dump_path))
-    pipeline: Pipeline = Pipeline(
-        loader=loader,
-        pipeline=[get_doc_task],
-        dumper=dumper)
-    pipeline.run()
+    loader: LoaderNode = LoaderNode(func=loading, batch_size=300)
+    task_get_doc: TaskNode = TaskNode(func=get_document)
+    (task_get_doc < loader)('path')
+    dumper: DumpNode = DumpNode(func=dump)
+    (dumper < task_get_doc)('doc')
+    flow: Flow = Flow(dump_nodes=[dumper, ])
+    flow.typecheck()
+    flow.run()
