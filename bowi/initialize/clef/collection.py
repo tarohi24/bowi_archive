@@ -12,7 +12,7 @@ from typedflow.utils import dump_to_each_file
 
 from bowi.elas import models
 from bowi.initialize.converters.clef import CLEFConverter
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.settings import data_dir
 
 
@@ -26,13 +26,13 @@ def loading() -> Generator[Path, None, None]:
         yield path
 
 
-def get_document(path: Path) -> ColDocument:
+def get_document(path: Path) -> Document:
     root: ET.Element = ET.parse(str(path.resolve())).getroot()
     docid: str = converter._get_docid(root)
     tags: List[str] = converter._get_tags(root)
     title: str = converter._get_title(root)
     text: str = converter._get_text(root)
-    doc: ColDocument = ColDocument(docid=models.KeywordField(docid),
+    doc: Document = Document(docid=models.KeywordField(docid),
                                    title=models.TextField(title),
                                    text=models.TextField(text),
                                    tags=models.KeywordListField(tags))
@@ -47,9 +47,9 @@ def get_dump_path(batch_id: int) -> Path:
 if __name__ == '__main__':
     gen: Generator[Path, None, None] = loading()
     loader: DataLoader = DataLoader[Path](gen=gen, batch_size=300)
-    get_doc_task: Task = Task[Path, ColDocument](func=get_document)
+    get_doc_task: Task = Task[Path, Document](func=get_document)
 
-    dumper: Dumper = Dumper[ColDocument](
+    dumper: Dumper = Dumper[Document](
         func=lambda batch: dump_to_each_file(batch, get_dump_path))
     pipeline: Pipeline = Pipeline(
         loader=loader,

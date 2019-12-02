@@ -9,7 +9,7 @@ from typing import Dict, Generator, Iterable, List, Tuple
 from elasticsearch.helpers import scan
 
 from bowi.elas.client import EsClient
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.settings import es
 from bowi.models import RankItem
 
@@ -37,11 +37,11 @@ class EsResultItem:
         assert 'tags' in self.source
         return (self.docid, str(self.source['tags'][0]))
 
-    def to_document(self) -> ColDocument:
+    def to_document(self) -> Document:
         assert 'text' in self.source, 'text not found in source'
         assert 'tags' in self.source, 'tags not found in source'
         assert 'title' in self.source, 'title not found in source'
-        return ColDocument(
+        return Document(
             docid=self.docid,
             text=self.source['text'],
             title=self.source['title'],
@@ -72,7 +72,7 @@ class EsResult:
         }
         return dic
 
-    def to_docs(self) -> List[ColDocument]:
+    def to_docs(self) -> List[Document]:
         return [hit.to_document() for hit in self.hits]
 
 

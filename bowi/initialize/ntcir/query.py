@@ -12,7 +12,7 @@ from typedflow.flow import Flow
 from typedflow.nodes import TaskNode, LoaderNode, DumpNode
 
 from bowi.initialize.converters.ntcir import NTCIRConverter
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.settings import data_dir
 
 converter: NTCIRConverter = NTCIRConverter()
@@ -39,12 +39,12 @@ def replace_tab(path: Path) -> ET.Element:
     return doc_elem
 
 
-def get_document(root: ET.Element) -> ColDocument:
+def get_document(root: ET.Element) -> Document:
     docid: str = converter._get_docid(root)
     tags: List[str] = converter._get_tags(root)
     title: str = converter._get_title(root)
     text: str = converter._get_text(root)
-    return ColDocument(docid=docid,
+    return Document(docid=docid,
                        title=title,
                        text=text,
                        tags=tags)
@@ -53,13 +53,13 @@ def get_document(root: ET.Element) -> ColDocument:
 if __name__ == '__main__':
     loader_node: LoaderNode[Path] = LoaderNode(func=loading)
     pre_task_node: TaskNode[Path, ET.Element] = TaskNode(func=replace_tab)
-    task_node: TaskNode[ET.Element, ColDocument] = TaskNode(func=get_document)
+    task_node: TaskNode[ET.Element, Document] = TaskNode(func=get_document)
     (task_node < pre_task_node)('pre')
 
-    def dump_to_one_file(doc: ColDocument) -> None:
+    def dump_to_one_file(doc: Document) -> None:
         with open(data_dir.joinpath('ntcir/query/dump.bulk'), 'a') as fout:
             fout.write(doc.to_json() + '\n')  # noqa
 
-    dump_node: DumpNode[ColDocument] = DumpNode(func=dump_to_one_file)
+    dump_node: DumpNode[Document] = DumpNode(func=dump_to_one_file)
     flow: Flow = Flow(dump_nodes=[dump_node, ])
     flow.run()

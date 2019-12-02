@@ -38,7 +38,7 @@ class RankItem:
 
 @dataclass_json
 @dataclass
-class ColDocument:
+class Document:
     docid: str
     title: str
     text: str

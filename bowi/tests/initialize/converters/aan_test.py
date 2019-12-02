@@ -4,7 +4,7 @@ import unittest
 from typing import List
 
 from bowi.initialize.converters.aan import AANConverter
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.settings import data_dir
 
 
@@ -14,7 +14,7 @@ class AANConverterTest(unittest.TestCase):
         super(AANConverterTest, self).__init__(*args, **kwargs)
         self.converter: AANConverter = AANConverter()
         self.source_dir: Path = data_dir.joinpath('aan/orig/collection')
-        self.docs: List[ColDocument] = list(flatten(
+        self.docs: List[Document] = list(flatten(
             [self.converter.to_document(
                 self.source_dir.joinpath(f'{docid}.txt'))
              for docid in ['D07-1026', 'D07-1016', ]]))

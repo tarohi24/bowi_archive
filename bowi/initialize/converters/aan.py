@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 
 from bowi.elas import models
 from bowi.initialize.converters.base import Converter
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.settings import data_dir
 
 logger = logging.getLogger(__file__)
@@ -40,9 +40,9 @@ class AANConverter(Converter):
         return docid, tags, title, text
 
     def to_document(self,
-                    fpath: Path) -> List[ColDocument]:
+                    fpath: Path) -> List[Document]:
         docid, tags, title, text = self._get_info(fpath)
-        return [ColDocument(docid=models.KeywordField(docid),
+        return [Document(docid=models.KeywordField(docid),
                             title=models.TextField(title),
                             text=models.TextField(text),
                             tags=models.KeywordListField(tags))]

@@ -14,7 +14,7 @@ from bowi.initialize.converters.base import (
     get_or_raise_exception,
     find_text_or_default
 )
-from bowi.models import ColDocument
+from bowi.models import Document
 
 logger = logging.getLogger(__file__)
 
@@ -68,14 +68,14 @@ class CLEFConverter(Converter):
         raise CannotSplitText('No condition is matched')
 
     def to_document(self,
-                    fpath: Path) -> List[ColDocument]:
+                    fpath: Path) -> List[Document]:
         root: ET.Element = ET.parse(str(fpath.resolve())).getroot()
 
         docid: str = self._get_docid(root)
         tags: List[str] = self._get_tags(root)
         title: str = self._get_title(root)
         text: str = self._get_text(root)
-        return [ColDocument(docid=models.KeywordField(docid),
+        return [Document(docid=models.KeywordField(docid),
                             title=models.TextField(title),
                             text=models.TextField(text),
                             tags=models.KeywordListField(tags))]

@@ -13,7 +13,7 @@ from typedflow.utils import dump_to_each_file
 
 from bowi.elas import models
 from bowi.initialize.converters.ntcir import NTCIRConverter
-from bowi.models import ColDocument
+from bowi.models import Document
 from bowi.settings import data_dir
 
 
@@ -41,12 +41,12 @@ def loading() -> Generator[ET.Element, None, None]:
                     print(repr(e))
 
 
-def get_document(root: ET.Element) -> ColDocument:
+def get_document(root: ET.Element) -> Document:
     docid: str = converter._get_docid(root)
     tags: List[str] = converter._get_tags(root)
     title: str = converter._get_title(root)
     text: str = converter._get_text(root)
-    doc: ColDocument = ColDocument(docid=models.KeywordField(docid),
+    doc: Document = Document(docid=models.KeywordField(docid),
                                    title=models.TextField(title),
                                    text=models.TextField(text),
                                    tags=models.KeywordListField(tags))
@@ -61,9 +61,9 @@ def get_dump_path(batch_id: int) -> Path:
 if __name__ == '__main__':
     gen: Generator[ET.Element, None, None] = loading()
     loader: DataLoader = DataLoader[ET.Element](gen=gen, batch_size=300)
-    task: Task = Task[ET.Element, ColDocument](func=get_document)
+    task: Task = Task[ET.Element, Document](func=get_document)
 
-    dumper: Dumper = Dumper[ColDocument](
+    dumper: Dumper = Dumper[Document](
         func=lambda batch: dump_to_each_file(batch, get_dump_path))
     pipeline: Pipeline = Pipeline(
         loader=loader,

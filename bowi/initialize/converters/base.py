@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Iterable, Optional, TypeVar
 import xml.etree.ElementTree as ET
 
-from bowi.models import ColDocument
+from bowi.models import Document
 
 logger = logging.getLogger(__file__)
 T = TypeVar('T')
@@ -43,7 +43,7 @@ class Converter:
     convert something into IRBase
     """
     def to_document(self,
-                    fpath: Path) -> Iterable[ColDocument]:
+                    fpath: Path) -> Iterable[Document]:
         raise NotImplementedError('This is an abstract method.')
 
 

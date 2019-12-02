@@ -5,10 +5,10 @@ from typing import Dict, Set
 import pytest
 import xml.etree.ElementTree as ET
 
-from docsim.initialize.converters.ntcir import NTCIRConverter
-from docsim.initialize.ntcir.query import loading, replace_tab, get_document
-from docsim.models import ColDocument
-from docsim.settings import data_dir
+from bowi.initialize.converters.ntcir import NTCIRConverter
+from bowi.initialize.ntcir.query import loading, replace_tab, get_document
+from bowi.models import Document
+from bowi.settings import data_dir
 
 
 converter: NTCIRConverter = NTCIRConverter()
@@ -32,11 +32,11 @@ def test_attributes(root):
 
 
 def test_get_document(root):
-    doc: ColDocument = get_document(root)
+    doc: Document = get_document(root)
     assert doc.docid == '200106296192'
 
 
 def test_to_json(root):
-    doc: ColDocument = get_document(root)
+    doc: Document = get_document(root)
     dic: Dict = json.loads(doc.to_json())
     assert dic['docid'] == '200106296192'

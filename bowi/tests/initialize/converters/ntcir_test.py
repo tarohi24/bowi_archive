@@ -3,7 +3,7 @@ import unittest
 from typing import List
 
 from ntcir.initialize.converters.ntcir import NTCIRConverter
-from ntcir.models import ColDocument
+from ntcir.models import Document
 from ntcir.settings import data_dir
 
 
@@ -14,7 +14,7 @@ class NTCIRConverterTest(unittest.TestCase):
         super(NTCIRConverterTest, self).__init__(*args, **kwargs)
         self.converter: NTCIRConverter = NTCIRConverter()
         self.test_file: Path = NTCIRConverterTest.source_dir.joinpath('orig/collection/sample.txt')
-        self.docs: List[ColDocument] = list(self.converter.to_document(self.test_file))
+        self.docs: List[Document] = list(self.converter.to_document(self.test_file))
 
     def test_get_title(self):
         assert self.docs[0].title.value == 'Process for making improved corrosion preventive zinc cyanamide'

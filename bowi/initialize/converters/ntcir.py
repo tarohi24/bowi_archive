@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 
 from bowi.elas import models
 from bowi.initialize.converters import base
-from bowi.models import ColDocument
+from bowi.models import Document
 
 
 @dataclass
@@ -53,7 +53,7 @@ class NTCIRConverter(base.Converter):
             .replace("\"", "&quot;")
 
     def to_document(self,
-                    fpath: Path) -> Generator[ColDocument, None, None]:
+                    fpath: Path) -> Generator[Document, None, None]:
         with open(fpath, 'r') as fin:
             lines: List[str] = [self.escape(line)
                                 for line in fin.read().splitlines()]
@@ -64,7 +64,7 @@ class NTCIRConverter(base.Converter):
             tags: List[str] = self._get_tags(root)
             title: str = self._get_title(root)
             text: str = self._get_text(root)
-            yield ColDocument(docid=models.KeywordField(docid),
+            yield Document(docid=models.KeywordField(docid),
                               title=models.TextField(title),
                               text=models.TextField(text),
                               tags=models.KeywordListField(tags))
