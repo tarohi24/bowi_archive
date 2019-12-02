@@ -1,2 +1,2 @@
 eval "$(pyenv init -)"
-pytest ${@:2}
+python -m pytest ${@}
