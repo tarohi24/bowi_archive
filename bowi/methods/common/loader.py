@@ -9,7 +9,6 @@ from typedflow.nodes import LoaderNode
 
 from bowi import settings
 from bowi.methods.common.types import Context
-from bowi.methods.common.pre_filtering import load_cols
 from bowi.models import Document
 
 
@@ -22,10 +21,5 @@ def load_query_files(dataset: str) -> Generator[Document, None, None]:
     with open(qpath) as fin:
         while (line := fin.readline()):
             doc: Document = Document.from_json(line)  # type: ignore
-            try:
-                # filter documents
-                load_cols(docid=doc.docid, dataset=dataset)
-            except FileNotFoundError:
-                continue
             yield doc
             pbar.update(1)

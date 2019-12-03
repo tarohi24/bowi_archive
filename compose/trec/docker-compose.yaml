@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  trec:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    volumes:
+      - ../..:/workplace
+    working_dir: /workplace
