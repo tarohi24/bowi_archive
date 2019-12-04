@@ -36,15 +36,14 @@ services:
       dockerfile: Dockerfile.lsp
       context: ./
       args:
-        NEW_USER: ${USER}
+        mount_dir: ${PWD}
     image: hirota/lsp-bowi
     volumes:
       - "/home/${USER}/bowi:/home/${USER}/bowi"
-      - "/home/${USER}/bowi/bowi:/home/jovyan/.pyenv/versions/3.8.0/lib/python3.8/site-packages/bowi:ro"
     ports:
       - 11001:11001
     stdin_open: true
-    working_dir: "/home/${USER}/bowi"
+    working_dir: "${PWD}"
 
 
 networks:

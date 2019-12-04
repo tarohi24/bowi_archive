@@ -1,12 +1,17 @@
-FROM hirota/bowi
+FROM python:3.8.0-buster
 
-ARG NEW_USER
-ENV HOME=/home/${NEW_USER}
+ARG mount_dir
+WORKDIR /tmp
+ADD requirements /tmp/requirements
+WORKDIR /tmp/requirements
+RUN pip install -r requirements.txt
+RUN pip install -r requirements_dev.txt
 
-# Modify user name. Don't create a new user so that UID wouldn't conflict
-USER root
-RUN usermod -l ${NEW_USER} jovyan
-RUN mkdir ${HOME}
-RUN echo 'eval "$(pyenv init -)"' >> ${HOME}/.bashrc
-VOLUME ${HOME}
-USER ${NEW_USER}
+RUN mkdir -p ${mount_dir}
+WORKDIR ${mount_dir}
+ADD setup.py ${mount_dir}/
+ADD bowi ${mount_dir}/bowi
+RUN pip install --editable .
+
+ENV MYPYPATH=${mount_dir}:${MYPYPATH}
+VOLUME ${mount_dir}
