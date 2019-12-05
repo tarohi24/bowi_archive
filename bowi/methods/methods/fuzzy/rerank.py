@@ -1,8 +1,14 @@
+"""
+Note: This module assserts keywords are generated
+in advance. Run fuzzy.naive in the same params
+before running this script
+"""
 from collections import Counter
 from dataclasses import dataclass, field
+import json
 import logging
+from pathlib import Path
 from typing import ClassVar, Dict, List, Type
-
 
 import numpy as np
 from typedflow.flow import Flow
@@ -15,51 +21,70 @@ from bowi.methods.common.methods import Method
 from bowi.methods.common.pre_filtering import load_cols
 from bowi.methods.common.types import TRECResult
 from bowi.models import Document
+from bowi.utils.text import get_all_tokens
+from bowi import settings
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
-from bowi.methods.methods.fuzzy.fuzzy import get_keyword_embs
-from bowi.methods.methods.fuzzy.tokenize import get_all_tokens
 
 
 logger = logging.getLogger(__file__)
 
 
 @dataclass
+class QueryKeywords:
+    docid: str
+    keywords: List[str]
+
+
+@dataclass
 class FuzzyRerank(Method[FuzzyParam]):
     param_type: ClassVar[Type] = FuzzyParam
     fasttext: FastText = field(init=False)
+    query_tokens: Dict[str, List[str]] = field(init=False)
 
     def __post_init__(self):
         super(FuzzyRerank, self).__post_init__()
         self.fasttext: FastText = FastText()
+        # load query tokens
+        dump_path: Path = settings.data_dir.joinpath('{self.context.dataset}/query/dump.bulk')
+        with open(dump_path) as fin:
+            lines: List[Dict] = [json.loads(line) for line in fin.read.splitlines()]
+        self.query_tokens: Dict[str, List[str]] = {
+            dic['docid']: get_all_tokens(dic['text'])
+            for dic in lines
+        }
+
+    def load_keywords(self) -> List[QueryKeywords]:
+        path: Path = settings.cache_dir.joinpath(
+            f'{self.context.es_index}/fuzzy.naive/{self.context.runname}.json')
+        with open(path) as fin:
+            data: Dict[str, List[str]] = json.load(fin)
+        return [QueryKeywords(docid=key, keywords=val)
+                for key, val in data.items()]
 
     def get_cols(self,
-                 query: Document) -> List[Document]:
+                 qk: QueryKeywords) -> List[Document]:
         """
         Get documents cached by keywrod search
         """
         cols: List[Document] = load_cols(
-            docid=query.docid,
+            docid=qk.docid,
             dataset=self.context.es_index)
         return cols
 
-    def embed_words(self,
-                    tokens: List[str]) -> np.ndarray:
-        orig_emb: np.ndarray = self.fasttext.embed_words(tokens)
-        orig_emb = orig_emb[[any(vec != 0) for vec in orig_emb], :]  # type: ignore
-        matrix: np.ndarray = mat_normalize(orig_emb)  # (n_tokens, n_dim)
-        return matrix
-
     def get_kembs(self,
-                  mat: np.ndarray) -> np.ndarray:
+                  qk: QueryKeywords) -> np.ndarray:
         """
-        Given embeddint matrix mat (n_tokens * n_dim) and tokens (list (n_tokens)),
-        calculate keyword tokens
+        Find pre-generated keywords and embed them.
+
+        Parameter
+        -----
+        doc_num
+            Document number (starts with 0)
         """
-        embs: np.ndarray = get_keyword_embs(embs=mat,
-                                            keyword_embs=None,
-                                            n_remains=self.param.n_words,
-                                            coef=self.param.coef)
+        embs: np.ndarray = np.array([
+            vec for vec in self.fasttext.embed_words(qk.keywords)
+            if vec is not None])
         return embs
 
     def _get_nns(self,
@@ -105,7 +130,7 @@ class FuzzyRerank(Method[FuzzyParam]):
         return bow_dict
 
     def match(self,
-              query_doc: Document,
+              qk: QueryKeywords,
               query_bow: np.ndarray,
               col_bows: Dict[str, np.ndarray]) -> TRECResult:
         """
@@ -119,35 +144,21 @@ class FuzzyRerank(Method[FuzzyParam]):
                           scores=scores)
 
     def create_flow(self):
-        # query
-        node_tokens: TaskNode[List[str]] = TaskNode(func=get_all_tokens)
-        (node_tokens < self.load_node)('doc')
+        # loading query
+        node_loader: TaskNode = TaskNode(func=self.load_keywords)
+        node_get_cols: TaskNode = TaskNode(func=self.get_cols)
+        node_get_kembs: TaskNode = TaskNode(func=self.get_kembs)
+        (node_get_cols < node_loader)('qk')
+        (node_get_kembs < node_loader)('qk')
 
-        node_emb: TaskNode[np.ndarray] = TaskNode(func=self.embed_words)
-        (node_emb < node_tokens)('tokens')
-
-        node_keyword_embs: TaskNode[np.ndarray] = TaskNode(
-            func=self.get_kembs)
-        (node_keyword_embs < node_emb)('mat')
-
-        node_bow: TaskNode[np.ndarray] = TaskNode(
-            func=self.to_fuzzy_bows)
-        (node_bow < node_emb)('mat')
-        (node_bow < node_keyword_embs)('keyword_embs')
-
-        # col
-        node_cols: TaskNode[List[Document]] = TaskNode(
-            func=self.get_cols)
-        (node_cols < self.load_node)('query')
-
-        node_col_bows: TaskNode[Dict[str, np.ndarray]] = TaskNode(
-            func=self.get_collection_fuzzy_bows)
-        (node_col_bows < node_cols)('cols')
-        (node_col_bows < node_keyword_embs)('keyword_embs')
+        # generate fBoW of queries
+        node_bow: TaskNode = TaskNode(func=self.get_collection_fuzzy_bows)
+        (node_bow < node_get_cols)('cols')
+        (node_bow < node_get_kembs)('keyword_embs')
 
         # integration
-        node_match: TaskNode[TRECResult] = TaskNode(func=self.match)
-        (node_match < self.load_node)('query_doc')
+        node_match: TaskNode = TaskNode(func=self.match)
+        (node_match < node_loader)('qk')
         (node_match < node_bow)('query_bow')
         (node_match < node_col_bows)('col_bows')
 

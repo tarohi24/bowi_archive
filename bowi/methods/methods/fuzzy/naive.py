@@ -17,10 +17,10 @@ from bowi.methods.common.methods import Method
 from bowi.methods.common.types import TRECResult, Context
 from bowi.models import Document
 from bowi.methods.common.dumper import dump_keywords
+from bowi.utils.text import get_all_tokens
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
 from bowi.methods.methods.fuzzy.fuzzy import get_keyword_embs
-from bowi.methods.methods.fuzzy.tokenize import get_all_tokens
 
 
 logger = logging.getLogger(__file__)
