@@ -1,39 +1,25 @@
-from collections import Counter
 import re
 from typing import List, Pattern, Set
 
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords as nltk_sw
+from nltk.tokenize import RegexpTokenizer
 
 
-pat_token_non_alphabet: Pattern = re.compile('^[^a-z]+$')
-stop_words: Set[str] = set(stopwords.words('english'))
+stopwords: Set[str] = set(nltk_sw.words('english'))
+tokenizer: RegexpTokenizer = RegexpTokenizer(r'\w+|\$[\d\.]+|\S+')
+not_a_word_pat: Pattern = re.compile(r'^[^a-z0-9]*$')
 
 
-def tokenize(text: str) -> List[str]:
+def get_all_tokens(text: str) -> List[str]:
     """
-    Tokenize an English sentence into tokens
+    Preprocessing + tokenize
     """
-    return word_tokenize(text)
-
-
-def remove_stopwords(tokens: List[str]) -> List[str]:
-    """
-    Remove ordinary stopwords of English in tokens
-    """
-    return [w for w in tokens if w not in stop_words]
-
-
-def remove_nonalphabet_tokens(tokens: List[str]) -> List[str]:
-    """
-    This requires `lower` in advance
-    """
-    return [w for w in tokens if pat_token_non_alphabet.match(w) is None]
-
-
-def extract_toptf_tokens(tokens: List[str],
-                         n_words: int) -> List[str]:
-    """
-    Extract top-n TF tokens
-    """
-    return [token for token, _ in Counter(tokens).most_common(n_words)]
+    tokens: List[str] = tokenizer.tokenize(text.lower())
+    # remove stopwords
+    tokens: List[str] = [w for w in tokens if w not in stopwords]  # type: ignore
+    tokens: List[str] = [w for w in tokens  # type: ignore
+                         if not_a_word_pat.match(w) is None
+                         and not w.isdigit()]
+    tokens: List[str] = [w.replace('(', '').replace(')', '').replace('-', '')  # type: ignore
+                         for w in tokens]
+    return tokens
