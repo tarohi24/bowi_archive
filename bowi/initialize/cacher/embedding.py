@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List
 
 import numpy as np
+from tqdm import tqdm
 
 from bowi import settings
 from bowi.embedding.fasttext import FastText
@@ -44,7 +45,7 @@ def main() -> int:
                         nargs=1)
     args = parser.parse_args()
     dataset: str = args.dataset[0]
-    for doc in load_bulk(dataset=dataset):
+    for doc in tqdm(load_bulk(dataset=dataset)):
         dump(doc, dataset=dataset)
     return 0
 
