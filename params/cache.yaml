@@ -1,4 +1,4 @@
-n_docs: 100
+n_docs: 300
 es_index: clef
 method: cache.pre_filtering
 params:
