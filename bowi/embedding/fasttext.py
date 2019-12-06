@@ -34,4 +34,6 @@ class FastText(Model):
                     emb_caches[w] = embedding
                 else:
                     unknown_words.add(w)
-        return [emb_caches[w] if w not in unknown_words else None for w in words]
+        lst: List[Optional[np.ndarray]] = [
+            emb_caches[w] if w not in unknown_words else None for w in words]
+        return lst

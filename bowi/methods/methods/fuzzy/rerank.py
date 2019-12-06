@@ -59,7 +59,7 @@ class FuzzyRerank(Method[FuzzyParam]):
             f'{self.context.es_index}/keywords/fuzzy.naive/{self.context.runname}.json')
         with open(path) as fin:
             data: Dict[str, List[str]] = json.load(fin)
-        return [QueryKeywords(docid=key, keywords=val)
+        return [QueryKeywords(docid=key, keywords=val[0].split(','))
                 for key, val in data.items()]
 
     def load_query_mat(self,
@@ -77,7 +77,6 @@ class FuzzyRerank(Method[FuzzyParam]):
             docid=qk.docid,
             runname=self.param.prefilter_name,
             dataset=self.context.es_index)
-        print(len(cols))
         return cols
 
     def get_kembs(self,
@@ -90,10 +89,11 @@ class FuzzyRerank(Method[FuzzyParam]):
         doc_num
             Document number (starts with 0)
         """
-        embs: np.ndarray = np.array([
+        emb_list: List[np.ndarray] = [
             vec for vec in self.fasttext.embed_words(qk.keywords)
-            if vec is not None])
-        return embs
+            if vec is not None]
+        embs: np.ndarray = np.array(emb_list)
+        return mat_normalize(embs)
 
     def _get_nns(self,
                  mat: np.ndarray,
@@ -163,9 +163,14 @@ class FuzzyRerank(Method[FuzzyParam]):
         (node_get_cols < node_loader)('qk')
         (node_get_kembs < node_loader)('qk')
 
+        # get query embeddin
+
         # generate fBoW of the query
-        node_query_bow: TaskNode = TaskNode(func=self.load_query_mat)
-        (node_query_bow < node_loader)('qk')
+        node_query_emb: TaskNode = TaskNode(func=self.load_query_mat)
+        (node_query_emb < node_loader)('qk')
+        node_query_bow: TaskNode = TaskNode(func=self.to_fuzzy_bows)
+        (node_query_bow < node_query_emb)('mat')
+        (node_query_bow < node_get_kembs)('keyword_embs')
 
         # generate fBoW of collection
         node_bow: TaskNode = TaskNode(func=self.get_collection_fuzzy_bows)
