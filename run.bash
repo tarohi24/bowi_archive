@@ -7,6 +7,9 @@ case $1 in
         options=${@:2}
         ${PREFIX} scripts/run_tests.bash ${options}
         ;;
+    "lint" )
+        ${PREFIX} scripts/lint.bash
+        ;;
     "bash" )
         ${PREFIX}
         ;;
