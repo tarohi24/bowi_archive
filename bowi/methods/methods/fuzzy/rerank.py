@@ -130,8 +130,11 @@ class FuzzyRerank(Method[FuzzyParam]):
                                   keyword_embs: np.ndarray) -> Dict[str, np.ndarray]:
         bow_dict: Dict[str, np.ndarray] = dict()
         for doc in tqdm(cols, desc='computing bow...', leave=True):
-            tokens: List[str] = get_all_tokens(doc)
-            embs: np.ndarray = mat_normalize(self.embed_words(tokens))
+            tokens: List[str] = get_all_tokens(doc.text)
+            embs: np.ndarray = np.array([
+                vec for vec in self.fasttext.embed_words(tokens)
+                if vec is not None])
+            embs = mat_normalize(embs)
             bow: np.ndarray = self.to_fuzzy_bows(mat=embs,
                                                  keyword_embs=keyword_embs)
             bow_dict[doc.docid] = bow
