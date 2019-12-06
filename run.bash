@@ -1,15 +1,20 @@
 #!/bin/bash
 
+PREFIX="docker-compose run --rm app bash -l"
+
 case $1 in
     "test" )
         options=${@:2}
-        docker-compose run --rm python bash scripts/run_tests.bash ${options}
+        ${PREFIX} scripts/run_tests.bash ${options}
         ;;
     "bash" )
-        docker-compose run --rm python bash -l
+        ${PREFIX}
         ;;
     "python" )
-        docker-compose run --rm python bash scripts/run_scripts.bash ${@:2}
+        ${PREFIX} scripts/run_scripts.bash ${@:2}
+        ;;
+    "stub" )
+        ${PREFIX} scripts/make_stub.bash
         ;;
     "trec" )
         PREC_FILE=$2
