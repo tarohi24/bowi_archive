@@ -27,8 +27,9 @@ def load_emb(docid: str,
 
 
 def load_cols(docid: str,
+              runname: str,
               dataset: str) -> List[Document]:
-    path: Path = cache_dir.joinpath(f'{dataset}/text/{docid}.bulk')
+    path: Path = cache_dir.joinpath(f'{dataset}/text/{runname}/{docid}.bulk')
     with open(path) as fin:
         lst: List[Document] = [Document.from_json(line)  # type: ignore
                                for line in fin.read().splitlines()]
