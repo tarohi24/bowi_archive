@@ -1,0 +1,9 @@
+n_docs: 100
+es_index: clef
+method: fuzzy.rerank
+params:
+  - name: "40_coef0"
+    coef: 0
+    n_words: 40
+    model: fasttext
+    prefilter_name: 40

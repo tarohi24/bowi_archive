@@ -13,6 +13,7 @@ from bowi.methods.common.dumper import get_dump_dir
 # methods
 from bowi.methods.methods import keywords
 from bowi.methods.methods.fuzzy import naive, rerank
+from bowi.initialize.cacher import pre_filtering
 
 
 logging.basicConfig(level=logging.INFO)
@@ -28,6 +29,8 @@ def get_method(method_name: str) -> Type[M]:
         return naive.FuzzyNaive
     elif method_name == 'fuzzy.rerank':
         return rerank.FuzzyRerank
+    elif method_name == 'cache.pre_filtering':
+        return pre_filtering.PreSearcher
     else:
         raise KeyError(f'{method_name} is not found')
 
