@@ -1,11 +1,13 @@
 #!/bin/bash
 
 PREFIX="docker-compose run --rm app bash -l"
+OPTIONS=${@:2}
 
 case $1 in
+    "run" )
+        ${PREFIX} python bowi/methods/run.py ${OPTIONS}
     "test" )
-        options=${@:2}
-        ${PREFIX} scripts/run_tests.bash ${options}
+        ${PREFIX} scripts/run_tests.bash ${OPTIONS}
         ;;
     "lint" )
         ${PREFIX} scripts/lint.bash
@@ -14,7 +16,7 @@ case $1 in
         ${PREFIX}
         ;;
     "python" )
-        ${PREFIX} scripts/run_scripts.bash ${@:2}
+        ${PREFIX} scripts/run_scripts.bash ${OPTIONS}
         ;;
     "stub" )
         ${PREFIX} scripts/make_stub.bash
