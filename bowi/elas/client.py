@@ -3,7 +3,7 @@ Client module
 """
 from dataclasses import dataclass
 import logging
-from typing import Dict, Type
+from typing import Dict
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
