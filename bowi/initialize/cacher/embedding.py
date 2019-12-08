@@ -4,7 +4,7 @@ Save Embeddings of queries with the word
 from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional, ClassVar, Type, Iterable, Generator
+from typing import List, Optional, ClassVar, Type, Generator
 
 import numpy as np
 from typedflow.flow import Flow
@@ -39,19 +39,20 @@ class EmbeddingCacher(Method[EmbeddingCacheParam]):
     fasttext: FastText = field(init=False)  # TODO: models should not be fixed
 
     def __post_init__(self):
+        super(EmbeddingCacher, self).__post_init__()
         self.fasttext: FastText = FastText()
 
     def embed(self,
               doc: Document) -> Generator[EmbededWord, None, None]:
         tokens: List[str] = get_all_tokens(doc.text)
-        emb_list: List[Optional[np.ndarray]] = self.ft_model.embed(tokens)
+        emb_list: List[Optional[np.ndarray]] = self.fasttext.embed_words(tokens)
         for tok, vec in zip(tokens, emb_list):
             if vec is not None:
                 yield EmbededWord(word=tok, vec=vec)
         return
 
     def dump(self,
-             ews: Iterable[EmbededWord],
+             ews: Generator[EmbededWord, None, None],
              doc: Document) -> None:
         """
         Dump both keywords and their embeddings
@@ -61,7 +62,8 @@ class EmbeddingCacher(Method[EmbeddingCacheParam]):
         |- embeddings.npy
         """
         dump_dir: Path = settings.cache_dir.joinpath(
-            f'{self.context.dataset}/embedding/{doc.docid}')
+            f'{self.context.es_index}/embedding/{doc.docid}')
+        dump_dir.mkdir(parents=True, exist_ok=True)
         emb_list: List[np.ndarray] = []
         with open(dump_dir.joinpath('words.txt'), 'w') as fout:
             for ew in ews:
