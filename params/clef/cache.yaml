@@ -1,0 +1,6 @@
+n_docs: 300
+es_index: clef
+method: cache.embedding
+params:
+  - name: 'fasttext'
+    embed_model: 'fasttext'
