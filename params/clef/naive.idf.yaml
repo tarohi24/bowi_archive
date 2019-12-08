@@ -6,3 +6,4 @@ params:
     coef: 0
     n_words: 100
     model: fasttext
+    prefilter_name: 40
