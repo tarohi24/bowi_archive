@@ -35,6 +35,9 @@ class FuzzyNaive(Method[FuzzyParam]):
         super(FuzzyNaive, self).__post_init__()
         self.fasttext: FastText = FastText()
 
+    def get_tokens(self, doc: Document) -> List[str]:
+        return get_all_tokens(doc.text)
+
     def extract_keywords(self,
                          tokens: List[str]) -> List[str]:
         optional_embs: List[Optional[np.ndarray]] = self.fasttext.embed_words(tokens)
@@ -85,7 +88,7 @@ class FuzzyNaive(Method[FuzzyParam]):
             while True:
                 yield self.context
 
-        node_get_tokens: TaskNode[List[str]] = TaskNode(func=get_all_tokens)
+        node_get_tokens: TaskNode[List[str]] = TaskNode(func=self.get_tokens)
         (node_get_tokens < self.load_node)('doc')
 
         node_get_keywords: TaskNode[List[str]] = TaskNode(func=self.extract_keywords)
