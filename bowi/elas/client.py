@@ -36,3 +36,15 @@ class EsClient:
             self.es.indices.delete(index=self.es_index)
         except NotFoundError:
             logger.info(f'{self.es_index} does not exist')
+
+    def get_idfs(self,
+                 docid: str) -> Dict[str, float]:
+        res: Dict = self.es.termvectors(index=self.es_index,
+                                        id=docid,
+                                        fields=['text', ])
+        idfs: Dict[str, float] = {
+            word: float(val['doc_freq'])
+            for word, val
+            in res['term_vectors']['text']['terms'].items()
+        }
+        return idfs
