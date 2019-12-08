@@ -5,7 +5,8 @@ OPTIONS=${@:2}
 
 case $1 in
     "run" )
-        ${PREFIX} python bowi/methods/run.py ${OPTIONS}
+        ${PREFIX} scripts/run_scripts.bash bowi/methods/run.py ${OPTIONS}
+        ;;
     "test" )
         ${PREFIX} scripts/run_tests.bash ${OPTIONS}
         ;;
