@@ -13,7 +13,7 @@ from bowi.methods.common.dumper import get_dump_dir
 # methods
 from bowi.methods.methods import keywords
 from bowi.methods.methods.fuzzy import naive, rerank
-from bowi.initialize.cacher import embedding, pre_filtering
+from bowi.initialize.cacher import embedding, pre_filtering, col_embs
 
 
 logging.basicConfig(level=logging.INFO)
@@ -33,6 +33,8 @@ def get_method(method_name: str) -> Type[M]:
         return pre_filtering.PreSearcher
     elif method_name == 'cache.embedding':
         return embedding.EmbeddingCacher
+    elif method_name == 'cache.colembs':
+        return col_embs.ColEmbs
     else:
         raise KeyError(f'{method_name} is not found')
 
