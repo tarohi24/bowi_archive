@@ -3,7 +3,7 @@ Pre-filtering by keywords
 """
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import ClassVar, List, Type
+from typing import ClassVar, List, Type, Counter
 
 from typedflow.nodes import TaskNode, DumpNode
 from typedflow.flow import Flow
@@ -12,18 +12,13 @@ from bowi.elas.search import EsResult, EsSearcher
 from bowi.methods.common.methods import Method
 from bowi.methods.methods.keywords import KeywordParam, KeywordBaseline
 from bowi.models import Document
+from bowi.utils.text import get_all_tokens
 from bowi import settings
 
 
 @dataclass
 class PreSearcher(Method[KeywordParam]):
     param_type: ClassVar[Type] = KeywordParam
-    method: KeywordBaseline = field(init=False)
-
-    def __post_init__(self):
-        super(PreSearcher, self).__post_init__()
-        self.method = KeywordBaseline(param=self.param,
-                                      context=self.context)
 
     def dump(self,
              query_doc: Document,
@@ -36,8 +31,10 @@ class PreSearcher(Method[KeywordParam]):
                 fout.write('\n')
 
     def search(self,
-               doc: Document,
-               keywords: List[str]) -> EsResult:
+               doc: Document) -> EsResult:
+        tokens: List[str] = get_all_tokens(doc.text)
+        counter: Counter[str] = Counter(tokens)
+        keywords: List[str] = [word for word, _ in counter.most_common(self.param.n_words)]
         searcher: EsSearcher = EsSearcher(es_index=self.context.es_index)
         candidates: EsResult = searcher\
             .initialize_query()\
@@ -49,11 +46,8 @@ class PreSearcher(Method[KeywordParam]):
         return candidates
 
     def create_flow(self) -> Flow:
-        node_keywords: TaskNode = TaskNode(self.method.extract_keywords)
-        (node_keywords < self.load_node)('doc')
         node_search: TaskNode = TaskNode(self.search)
         (node_search < self.load_node)('doc')
-        (node_search < node_keywords)('keywords')
         node_dump: DumpNode = DumpNode(func=self.dump)
         (node_dump < self.load_node)('query_doc')
         (node_dump < node_search)('res')
