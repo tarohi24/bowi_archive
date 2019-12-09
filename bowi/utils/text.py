@@ -25,7 +25,10 @@ def get_all_tokens(text: str) -> List[str]:
 
 
 def stem_words(text: str) -> List[str]:
-    body: Dict = {"analyzer": "english", "text": text}
+    if len(text) == 0:
+        return []
+    head, tail = text[:9000], text[9000:]
+    body: Dict = {"analyzer": "english", "text": head}
     res: Dict = es.indices.analyze(body=body)
     tokens: List[str] = [tok['token'] for tok in res['tokens']]
-    return tokens
+    return tokens + stem_words(tail)
