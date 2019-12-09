@@ -69,7 +69,7 @@ class ColEmbs(Method[ColEmbsParam]):
     def create_flow(self) -> Flow:
         node_load_cols = TaskNode(func=self.load_col_texts)
         (node_load_cols < self.load_node)('doc')
-        node_tokenize = TaskNode(func=self.tokenizes)
+        node_tokenize = TaskNode(func=self.tokenize)
         (node_tokenize < node_load_cols)('cols')
         node_embed = TaskNode(func=self.embed)
         (node_embed < node_tokenize)('col_dict')
