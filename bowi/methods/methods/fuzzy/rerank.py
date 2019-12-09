@@ -12,7 +12,7 @@ from typing import ClassVar, Dict, List, Type
 
 import numpy as np
 from typedflow.flow import Flow
-from typedflow.nodes import TaskNode, LoaderNode
+from typedflow.nodes import task, dumper, loader
 from tqdm import tqdm
 
 from bowi.embedding.base import mat_normalize
@@ -54,6 +54,7 @@ class FuzzyRerank(Method[FuzzyParam]):
             for dic in lines
         }
 
+    @loader(batch_size=1)
     def load_keywords(self) -> List[QueryKeywords]:
         path: Path = settings.cache_dir.joinpath(
             f'{self.context.es_index}/keywords/fuzzy.naive/{self.context.runname}.json')
@@ -62,12 +63,14 @@ class FuzzyRerank(Method[FuzzyParam]):
         return [QueryKeywords(docid=key, keywords=val)
                 for key, val in data.items()]
 
+    @task
     def load_query_mat(self,
                        qk: QueryKeywords) -> np.ndarray:
         docid: str = qk.docid
         return np.load(settings.cache_dir.joinpath(
             f'{self.context.es_index}/embeddings/{docid}.bulk.npy'))
 
+    @task
     def get_cols(self,
                  qk: QueryKeywords) -> List[Document]:
         """
@@ -79,6 +82,7 @@ class FuzzyRerank(Method[FuzzyParam]):
             dataset=self.context.es_index)
         return cols
 
+    @task
     def get_kembs(self,
                   qk: QueryKeywords) -> np.ndarray:
         """
@@ -95,6 +99,7 @@ class FuzzyRerank(Method[FuzzyParam]):
         embs: np.ndarray = np.array(emb_list)
         return mat_normalize(embs)
 
+    @task
     def _get_nns(self,
                  mat: np.ndarray,
                  keyword_embs: np.ndarray) -> List[int]:
@@ -109,6 +114,7 @@ class FuzzyRerank(Method[FuzzyParam]):
             np.dot(mat, keyword_embs.T), axis=1).tolist()
         return nns
 
+    @task
     def to_fuzzy_bows(self,
                       mat: np.ndarray,
                       keyword_embs: np.ndarray) -> np.ndarray:
@@ -125,6 +131,7 @@ class FuzzyRerank(Method[FuzzyParam]):
                              for i in range(keyword_embs.shape[0])]
         return np.array(counts) / np.sum(counts)
 
+    @task
     def get_collection_fuzzy_bows(self,
                                   cols: List[Document],
                                   keyword_embs: np.ndarray) -> Dict[str, np.ndarray]:
@@ -140,6 +147,7 @@ class FuzzyRerank(Method[FuzzyParam]):
             bow_dict[doc.docid] = bow
         return bow_dict
 
+    @task
     def match(self,
               qk: QueryKeywords,
               query_bow: np.ndarray,
@@ -156,34 +164,24 @@ class FuzzyRerank(Method[FuzzyParam]):
 
     def create_flow(self):
         # loading query
-        node_loader: LoaderNode = LoaderNode(func=self.load_keywords,
-                                             batch_size=1)
-        node_get_cols: TaskNode = TaskNode(func=self.get_cols)
-        node_get_kembs: TaskNode = TaskNode(func=self.get_kembs)
-        (node_get_cols < node_loader)('qk')
-        (node_get_kembs < node_loader)('qk')
-
-        # get query embeddin
+        (self.get_cols < self.load_keywords)('qk')
+        (self.get_kembs < self.load_keywords)('qk')
 
         # generate fBoW of the query
-        node_query_emb: TaskNode = TaskNode(func=self.load_query_mat)
-        (node_query_emb < node_loader)('qk')
-        node_query_bow: TaskNode = TaskNode(func=self.to_fuzzy_bows)
-        (node_query_bow < node_query_emb)('mat')
-        (node_query_bow < node_get_kembs)('keyword_embs')
+        (self.load_query_mat < self.load_keywords)('qk')
+        (self.to_fuzzy_bow < self.load_query_mat)('mat')
+        (self.to_fuzzy_bow < self.get_kembs)('keyword_embs')
 
         # generate fBoW of collection
-        node_bow: TaskNode = TaskNode(func=self.get_collection_fuzzy_bows)
-        (node_bow < node_get_cols)('cols')
-        (node_bow < node_get_kembs)('keyword_embs')
+        (self.get_collection_fuzzy_bows < self.get_cols)('cols')
+        (self.get_collection_fuzzy_bows < self.get_kembs)('keyword_embs')
 
         # integration
-        node_match: TaskNode = TaskNode(func=self.match)
-        (node_match < node_loader)('qk')
-        (node_match < node_query_bow)('query_bow')
-        (node_match < node_bow)('col_bows')
+        (self.match < self.load_keywords)('qk')
+        (self.match < self.to_fuzzy_bow)('query_bow')
+        (self.match < self.get_collection_fuzzy_bows)('col_bows')
 
-        (self.dump_node < node_match)('res')
+        (self.dump_node < self.match)('res')
         flow: Flow = Flow(dump_nodes=[self.dump_node, ])
         flow.typecheck()
         return flow
