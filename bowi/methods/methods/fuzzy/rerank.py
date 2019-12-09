@@ -59,7 +59,7 @@ class FuzzyRerank(Method[FuzzyParam]):
             f'{self.context.es_index}/keywords/fuzzy.naive/{self.context.runname}.json')
         with open(path) as fin:
             data: Dict[str, List[str]] = json.load(fin)
-        return [QueryKeywords(docid=key, keywords=val[0].split(','))
+        return [QueryKeywords(docid=key, keywords=val)
                 for key, val in data.items()]
 
     def load_query_mat(self,
