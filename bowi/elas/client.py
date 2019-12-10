@@ -3,7 +3,7 @@ Client module
 """
 from dataclasses import dataclass
 import logging
-from typing import Dict
+from typing import Dict, List
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
@@ -48,3 +48,11 @@ class EsClient:
             in res['term_vectors']['text']['terms'].items()
         }
         return idfs
+
+    def get_tokens_from_doc(self, docid: str) -> List[str]:
+        res: Dict = self.es.termvectors(index=self.es_index,
+                                        id=docid,
+                                        fields=['text', ])
+        tokens: List[str] = list(
+            res['term_vectors']['text']['terms'].keys())
+        return tokens
