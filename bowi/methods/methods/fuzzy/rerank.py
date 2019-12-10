@@ -8,11 +8,11 @@ from dataclasses import dataclass, field
 import json
 import logging
 from pathlib import Path
-from typing import ClassVar, Dict, List, Type
+from typing import ClassVar, Dict, List, Type, Optional
 
 import numpy as np
 from typedflow.flow import Flow
-from typedflow.nodes import task, dumper, loader
+from typedflow.nodes import TaskNode, LoaderNode
 from tqdm import tqdm
 
 from bowi.embedding.base import mat_normalize
@@ -22,6 +22,7 @@ from bowi.methods.common.pre_filtering import load_cols
 from bowi.methods.common.types import TRECResult
 from bowi.models import Document
 from bowi.utils.text import get_all_tokens
+from bowi.elas.client import EsClient
 from bowi import settings
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
@@ -39,50 +40,45 @@ class QueryKeywords:
 @dataclass
 class FuzzyRerank(Method[FuzzyParam]):
     param_type: ClassVar[Type] = FuzzyParam
-    fasttext: FastText = field(init=False)
-    query_tokens: Dict[str, List[str]] = field(init=False)
+    fasttext: FastText = field(default_factory=FastText)
+    es_client: EsClient = field(init=False)
 
     def __post_init__(self):
         super(FuzzyRerank, self).__post_init__()
-        self.fasttext: FastText = FastText()
-        # load query tokens
-        dump_path: Path = settings.data_dir.joinpath(f'{self.context.es_index}/query/dump.bulk')
-        with open(dump_path) as fin:
-            lines: List[Dict] = [json.loads(line) for line in fin.read().splitlines()]
-        self.query_tokens: Dict[str, List[str]] = {
-            dic['docid']: get_all_tokens(dic['text'])
-            for dic in lines
-        }
+        self.es_client: EsClient = EsClient(es_index=self.context.es_index)
 
-    @loader(batch_size=1)
     def load_keywords(self) -> List[QueryKeywords]:
         path: Path = settings.cache_dir.joinpath(
-            f'{self.context.es_index}/keywords/fuzzy.naive/{self.context.runname}.json')
+            f'{self.context.es_index}/keywords/fuzzy.naive/100.json')
         with open(path) as fin:
             data: Dict[str, List[str]] = json.load(fin)
-        return [QueryKeywords(docid=key, keywords=val)
-                for key, val in data.items()]
+        lst: List[QueryKeywords] = [QueryKeywords(docid=key, keywords=val)
+                                    for key, val in data.items()]
+        return lst
 
-    @task
     def load_query_mat(self,
                        qk: QueryKeywords) -> np.ndarray:
         docid: str = qk.docid
-        return np.load(settings.cache_dir.joinpath(
-            f'{self.context.es_index}/embeddings/{docid}.bulk.npy'))
+        mat: np.ndarray = np.load(settings.cache_dir.joinpath(
+            f'{self.context.es_index}/embeddings/{docid}/embeddings.npy'))
+        return mat
 
-    @task
-    def get_cols(self,
-                 qk: QueryKeywords) -> List[Document]:
+    def get_col_embs(self,
+                     qk: QueryKeywords) -> Dict[str, np.ndarray]:
         """
         Get documents cached by keywrod search
         """
-        cols: List[Document] = load_cols(
-            docid=qk.docid,
-            runname=self.param.prefilter_name,
-            dataset=self.context.es_index)
-        return cols
+        embs: Dict[str, np.ndarray] = {}
+        for doc in load_cols(docid=qk.docid,
+                             runname='100',
+                             dataset=self.context.es_index):
+            tokens: List[str] = self.es_client.get_tokens_from_doc(
+                docid=doc.docid)
+            vecs: List[Optional[np.ndarray]] = self.fasttext.embed_words(tokens)
+            embs[doc.docid] = np.array(
+                [vec for vec in vecs if vec is not None])
+        return embs
 
-    @task
     def get_kembs(self,
                   qk: QueryKeywords) -> np.ndarray:
         """
@@ -97,9 +93,9 @@ class FuzzyRerank(Method[FuzzyParam]):
             vec for vec in self.fasttext.embed_words(qk.keywords)
             if vec is not None]
         embs: np.ndarray = np.array(emb_list)
+        print(embs.shape)
         return mat_normalize(embs)
 
-    @task
     def _get_nns(self,
                  mat: np.ndarray,
                  keyword_embs: np.ndarray) -> List[int]:
@@ -114,7 +110,6 @@ class FuzzyRerank(Method[FuzzyParam]):
             np.dot(mat, keyword_embs.T), axis=1).tolist()
         return nns
 
-    @task
     def to_fuzzy_bows(self,
                       mat: np.ndarray,
                       keyword_embs: np.ndarray) -> np.ndarray:
@@ -131,23 +126,15 @@ class FuzzyRerank(Method[FuzzyParam]):
                              for i in range(keyword_embs.shape[0])]
         return np.array(counts) / np.sum(counts)
 
-    @task
     def get_collection_fuzzy_bows(self,
-                                  cols: List[Document],
+                                  col_embs: Dict[str, np.ndarray],
                                   keyword_embs: np.ndarray) -> Dict[str, np.ndarray]:
-        bow_dict: Dict[str, np.ndarray] = dict()
-        for doc in tqdm(cols, desc='computing bow...', leave=True):
-            tokens: List[str] = get_all_tokens(doc.text)
-            embs: np.ndarray = np.array([
-                vec for vec in self.fasttext.embed_words(tokens)
-                if vec is not None])
-            embs = mat_normalize(embs)
-            bow: np.ndarray = self.to_fuzzy_bows(mat=embs,
-                                                 keyword_embs=keyword_embs)
-            bow_dict[doc.docid] = bow
+        bow_dict: Dict[str, np.ndarray] = {
+            docid: self.to_fuzzy_bows(mat=emb, keyword_embs=keyword_embs)
+            for docid, emb in col_embs.items()
+        }
         return bow_dict
 
-    @task
     def match(self,
               qk: QueryKeywords,
               query_bow: np.ndarray,
@@ -157,31 +144,38 @@ class FuzzyRerank(Method[FuzzyParam]):
         There's room for adding other ways.
         """
         # dot is inadequate
-        scores: Dict[str, float] = {docid: 1 / (np.linalg.norm(query_bow - bow) + 0.1)
+        scores: Dict[str, float] = {docid: np.dot(query_bow, bow)
                                     for docid, bow in col_bows.items()}
         return TRECResult(query_docid=qk.docid,
                           scores=scores)
 
     def create_flow(self):
         # loading query
-        (self.get_cols < self.load_keywords)('qk')
-        (self.get_kembs < self.load_keywords)('qk')
+        loader: LoaderNode = LoaderNode(func=self.load_keywords)
+        n_get_col_embs = TaskNode(self.get_col_embs)
+        (n_get_col_embs < loader)('qk')
+        n_get_kembs = TaskNode(self.get_kembs)
+        (n_get_kembs < loader)('qk')
 
         # generate fBoW of the query
-        (self.load_query_mat < self.load_keywords)('qk')
-        (self.to_fuzzy_bow < self.load_query_mat)('mat')
-        (self.to_fuzzy_bow < self.get_kembs)('keyword_embs')
+        n_load_query_mat = TaskNode(self.load_query_mat)
+        (n_load_query_mat < loader)('qk')
+        n_fbow = TaskNode(self.to_fuzzy_bows)
+        (n_fbow < n_load_query_mat)('mat')
+        (n_fbow < n_get_kembs)('keyword_embs')
 
         # generate fBoW of collection
-        (self.get_collection_fuzzy_bows < self.get_cols)('cols')
-        (self.get_collection_fuzzy_bows < self.get_kembs)('keyword_embs')
+        n_cfbow = TaskNode(self.get_collection_fuzzy_bows)
+        (n_cfbow < n_get_col_embs)('col_embs')
+        (n_cfbow < n_get_kembs)('keyword_embs')
 
         # integration
-        (self.match < self.load_keywords)('qk')
-        (self.match < self.to_fuzzy_bow)('query_bow')
-        (self.match < self.get_collection_fuzzy_bows)('col_bows')
+        n_match = TaskNode(self.match)
+        (n_match < loader)('qk')
+        (n_match < n_fbow)('query_bow')
+        (n_match < n_cfbow)('col_bows')
 
-        (self.dump_node < self.match)('res')
+        (self.dump_node < n_match)('res')
         flow: Flow = Flow(dump_nodes=[self.dump_node, ])
         flow.typecheck()
         return flow
