@@ -3,7 +3,7 @@ Client module
 """
 from dataclasses import dataclass
 import logging
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
@@ -38,14 +38,17 @@ class EsClient:
         except NotFoundError:
             logger.info(f'{self.es_index} does not exist')
 
-    def get_idfs(self,
-                 docid: str) -> np.ndarray:
+    def get_tokens_and_idfs(self,
+                            docid: str) -> Tuple[List[str], np.ndarray]:
         res: Dict = self.es.termvectors(index=self.es_index,
                                         id=docid,
+                                        term_statistics=True,
                                         fields=['text', ])
-        idfs: List[float] = [val['doc_freq']
-                             for val in res['term_vectors']['text']['terms'].values()]
-        return np.array(idfs)
+        tuples: List[Tuple[str, float]] = [(word, val['doc_freq'])
+                                           for word, val
+                                           in res['term_vectors']['text']['terms'].items()]
+        tokens, idfs = list(zip(*tuples))
+        return tokens, np.array(idfs)
 
     def get_tokens_from_doc(self, docid: str) -> List[str]:
         res: Dict = self.es.termvectors(index=self.es_index,

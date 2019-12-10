@@ -36,21 +36,19 @@ class FuzzyNaive(Method[FuzzyParam]):
     def __post_init__(self):
         super(FuzzyNaive, self).__post_init__()
         self.fasttext: FastText = FastText()
-        self.es_client: EsClient = EsClient(es_index=self.context.es_index)
-
-    def get_tokens(self, doc: Document) -> List[str]:
-        return get_all_tokens(doc.text)
+        # note that this client is used for processing queries
+        self.es_client: EsClient = EsClient(
+            es_index=f'{self.context.es_index}_query')
 
     def extract_keywords(self,
-                         doc: Document,
-                         tokens: List[str]) -> List[str]:
-        optional_embs: List[Optional[np.ndarray]] = self.fasttext.embed_words(tokens)
-        idfs: np.ndarray = self.es_client.get_idfs(docid=doc.docid)
+                         doc: Document) -> List[str]:
+        _tokens, idfs = self.es_client.get_tokens_and_idfs(docid=doc.docid)
+        optional_embs: List[Optional[np.ndarray]] = self.fasttext.embed_words(_tokens)
         assert len(optional_embs) == len(idfs)
 
         indices: List[bool] = [vec is not None for vec in optional_embs]
         idfs = idfs[indices]  # type: ignore
-        tokens: List[str] = [w for w, is_valid in zip(tokens, indices) if is_valid]  # type: ignore
+        tokens: List[str] = [w for w, is_valid in zip(_tokens, indices) if is_valid]
         matrix = mat_normalize(np.array([vec for vec in optional_embs if vec is not None]))
         assert len(tokens) == matrix.shape[0] == len(idfs)
 
@@ -58,6 +56,7 @@ class FuzzyNaive(Method[FuzzyParam]):
             embs=matrix,
             keyword_embs=None,
             n_remains=self.param.n_words,
+            idfs=idfs,
             coef=self.param.coef)
         logger.info(k_embs.sum(axis=1))
         indices: List[int] = [np.argmin(np.linalg.norm(matrix - vec, axis=1))
@@ -96,9 +95,8 @@ class FuzzyNaive(Method[FuzzyParam]):
                          doc: Document) -> None:
             return dump_keywords(keywords=keywords, doc=doc, context=self.context)
 
-        node_get_tokens = TaskNode(self.get_tokens)({'doc': self.load_node})
         node_get_keywords = TaskNode(self.extract_keywords)(
-            {'tokens': node_get_tokens, 'doc': self.load_node})
+            {'doc': self.load_node})
         keywords_dumper = DumpNode(_dump_kwards)({
             'keywords': node_get_keywords,
             'doc': self.load_node
@@ -109,4 +107,5 @@ class FuzzyNaive(Method[FuzzyParam]):
         })
         (self.dump_node < node_match)('res')
         flow: Flow = Flow(dump_nodes=[self.dump_node, keywords_dumper])
+        flow.typecheck()
         return flow
