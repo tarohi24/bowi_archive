@@ -40,11 +40,12 @@ class QueryKeywords:
 @dataclass
 class FuzzyRerank(Method[FuzzyParam]):
     param_type: ClassVar[Type] = FuzzyParam
-    fasttext: FastText = field(default_factory=FastText)
+    fasttext: FastText = field(init=False)
     es_client: EsClient = field(init=False)
 
     def __post_init__(self):
         super(FuzzyRerank, self).__post_init__()
+        self.fasttext: FastText = FastText()
         self.es_client: EsClient = EsClient(es_index=self.context.es_index)
 
     def load_keywords(self) -> List[QueryKeywords]:
