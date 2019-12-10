@@ -7,6 +7,7 @@ from typing import Dict, List
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
+import numpy as np
 
 from bowi.settings import es as ses
 
@@ -38,16 +39,13 @@ class EsClient:
             logger.info(f'{self.es_index} does not exist')
 
     def get_idfs(self,
-                 docid: str) -> Dict[str, float]:
+                 docid: str) -> np.ndarray:
         res: Dict = self.es.termvectors(index=self.es_index,
                                         id=docid,
                                         fields=['text', ])
-        idfs: Dict[str, float] = {
-            word: float(val['doc_freq'])
-            for word, val
-            in res['term_vectors']['text']['terms'].items()
-        }
-        return idfs
+        idfs: List[float] = [val['doc_freq']
+                             for val in res['term_vectors']['text']['terms'].values()]
+        return np.array(idfs)
 
     def get_tokens_from_doc(self, docid: str) -> List[str]:
         res: Dict = self.es.termvectors(index=self.es_index,

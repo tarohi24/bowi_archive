@@ -28,17 +28,26 @@ def sample_embeddings() -> Dict[str, np.ndarray]:
 
 def test_rec_loss(sample_embeddings):
     tokens = ['software', 'license', 'program', 'terms', 'code']
+    idfs: np.ndarray = np.random.rand(len(tokens))
     embs = mat_normalize(np.array([sample_embeddings[w] for w in tokens]))
-    assert 0 < rec_loss(embs=embs, keyword_embs=None, cand_emb=embs[1]) < 4
-    assert 0 < rec_loss(embs=embs, keyword_embs=embs[:1], cand_emb=embs[2]) < 3
+    assert 0 < rec_loss(embs=embs,
+                        keyword_embs=None,
+                        cand_emb=embs[1],
+                        idfs=idfs) < 4
+    assert 0 < rec_loss(embs=embs,
+                        keyword_embs=embs[:1],
+                        cand_emb=embs[2],
+                        idfs=idfs) < 3
 
 
 def test_get_keywords(sample_embeddings):
     tokens = ['software', 'license', 'program', 'terms', 'code']
+    idfs: np.ndarray = np.random.rand(len(tokens))
     embs = mat_normalize(np.array([sample_embeddings[w] for w in tokens]))
     keyword_embs: np.ndarray = get_keyword_embs(
         embs=embs,
         keyword_embs=None,
+        idfs=idfs,
         n_remains=2,
         coef=1)
     gt_embs: np.ndarray = embs[[0, 1]]

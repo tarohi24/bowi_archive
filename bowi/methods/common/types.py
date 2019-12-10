@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from operator import itemgetter
-from typing import Dict, Iterable, Tuple, TypedDict, TypeVar  # type: ignore
+from typing import Dict, Iterable, Tuple
 
 
 @dataclass

@@ -13,15 +13,12 @@ from typing import ClassVar, Dict, List, Type, Optional
 import numpy as np
 from typedflow.flow import Flow
 from typedflow.nodes import TaskNode, LoaderNode
-from tqdm import tqdm
 
 from bowi.embedding.base import mat_normalize
 from bowi.embedding.fasttext import FastText
 from bowi.methods.common.methods import Method
 from bowi.methods.common.pre_filtering import load_cols
 from bowi.methods.common.types import TRECResult
-from bowi.models import Document
-from bowi.utils.text import get_all_tokens
 from bowi.elas.client import EsClient
 from bowi import settings
 

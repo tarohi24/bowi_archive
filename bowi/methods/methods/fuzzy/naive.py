@@ -4,17 +4,18 @@ Available only for fasttext
 from __future__ import annotations
 from dataclasses import dataclass, field
 import logging
-from typing import ClassVar, List, Type, Generator, Optional
+from typing import ClassVar, List, Type, Optional
 
 import numpy as np
 from typedflow.flow import Flow
-from typedflow.nodes import TaskNode, DumpNode, LoaderNode
+from typedflow.nodes import TaskNode, DumpNode
 
+from bowi.elas.client import EsClient
 from bowi.elas.search import EsResult, EsSearcher
 from bowi.embedding.base import mat_normalize
 from bowi.embedding.fasttext import FastText
 from bowi.methods.common.methods import Method
-from bowi.methods.common.types import TRECResult, Context
+from bowi.methods.common.types import TRECResult
 from bowi.models import Document
 from bowi.methods.common.dumper import dump_keywords
 from bowi.utils.text import get_all_tokens
@@ -30,21 +31,28 @@ logger = logging.getLogger(__file__)
 class FuzzyNaive(Method[FuzzyParam]):
     param_type: ClassVar[Type] = FuzzyParam
     fasttext: FastText = field(init=False)
+    es_client: EsClient = field(init=False)
 
     def __post_init__(self):
         super(FuzzyNaive, self).__post_init__()
         self.fasttext: FastText = FastText()
+        self.es_client: EsClient = EsClient(es_index=self.context.es_index)
 
     def get_tokens(self, doc: Document) -> List[str]:
         return get_all_tokens(doc.text)
 
     def extract_keywords(self,
+                         doc: Document,
                          tokens: List[str]) -> List[str]:
         optional_embs: List[Optional[np.ndarray]] = self.fasttext.embed_words(tokens)
-        tokens: List[str] = [w for w, vec in zip(tokens, optional_embs)  # type: ignore
-                             if vec is not None]
+        idfs: np.ndarray = self.es_client.get_idfs(docid=doc.docid)
+        assert len(optional_embs) == len(idfs)
+
+        indices: List[bool] = [vec is not None for vec in optional_embs]
+        idfs = idfs[indices]  # type: ignore
+        tokens: List[str] = [w for w, is_valid in zip(tokens, indices) if is_valid]  # type: ignore
         matrix = mat_normalize(np.array([vec for vec in optional_embs if vec is not None]))
-        assert len(tokens) == matrix.shape[0]
+        assert len(tokens) == matrix.shape[0] == len(idfs)
 
         k_embs: np.ndarray = get_keyword_embs(
             embs=matrix,
@@ -84,25 +92,21 @@ class FuzzyNaive(Method[FuzzyParam]):
 
     def create_flow(self):
 
-        def provide_context() -> Generator[Context, None, None]:
-            while True:
-                yield self.context
+        def _dump_kwards(keywords: List[str],
+                         doc: Document) -> None:
+            return dump_keywords(keywords=keywords, doc=doc, context=self.context)
 
-        node_get_tokens: TaskNode[List[str]] = TaskNode(func=self.get_tokens)
-        (node_get_tokens < self.load_node)('doc')
-
-        node_get_keywords: TaskNode[List[str]] = TaskNode(func=self.extract_keywords)
-        (node_get_tokens > node_get_keywords)('tokens')
-        keywords_dumper: DumpNode = DumpNode(dump_keywords)
-        (keywords_dumper < node_get_keywords)('keywords')
-        (keywords_dumper < self.load_node)('doc')
-        (keywords_dumper < LoaderNode(provide_context,
-                                      batch_size=1))('context')
-        node_match: TaskNode[TRECResult] = TaskNode(func=self.match)
-        (node_match < self.load_node)('query_doc')
-        (node_match < node_get_keywords)('keywords')
-
+        node_get_tokens = TaskNode(self.get_tokens)({'doc': self.load_node})
+        node_get_keywords = TaskNode(self.extract_keywords)(
+            {'tokens': node_get_tokens, 'doc': self.load_node})
+        keywords_dumper = DumpNode(_dump_kwards)({
+            'keywords': node_get_keywords,
+            'doc': self.load_node
+        })
+        node_match = TaskNode(self.match)({
+            'query_doc': self.load_node,
+            'keywords': node_get_keywords
+        })
         (self.dump_node < node_match)('res')
-
         flow: Flow = Flow(dump_nodes=[self.dump_node, keywords_dumper])
         return flow

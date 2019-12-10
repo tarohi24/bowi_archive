@@ -24,7 +24,8 @@ def _get_new_kemb_cand(cand_emb: np.ndarray,
 
 def rec_loss(embs: np.ndarray,
              keyword_embs: Optional[np.ndarray],
-             cand_emb: np.ndarray) -> float:
+             cand_emb: np.ndarray,
+             idfs: np.ndarray) -> float:
     """
     Reconstruct error. In order to enable unittests, two errors are
     implemented individually.
@@ -32,7 +33,10 @@ def rec_loss(embs: np.ndarray,
     dims: np.ndarray = _get_new_kemb_cand(cand_emb=cand_emb,
                                           keyword_embs=keyword_embs)
     assert dims.ndim == 2
+    assert idfs.ndim == 1
     assert embs.shape[1] == dims.shape[1]
+    assert embs.shape[0] == len(idfs)
+
     maxes: np.ndarray = np.amax(np.dot(embs, dims.T), axis=1)
     val: float = (1 - maxes).mean()
     return val
@@ -50,8 +54,9 @@ def cent_sim_loss(keyword_embs: np.ndarray,
 def calc_error(embs: np.ndarray,
                keyword_embs: Optional[np.ndarray],
                cand_emb: np.ndarray,
+               idfs: np.ndarray,
                coef: float) -> float:
-    rec_error: float = rec_loss(embs, keyword_embs, cand_emb)
+    rec_error: float = rec_loss(embs, keyword_embs, cand_emb, idfs)
     if keyword_embs is not None and coef != 0:
         assert keyword_embs.ndim == 2
         cent_sim_error: float = cent_sim_loss(keyword_embs, cand_emb)
@@ -65,6 +70,7 @@ def calc_error(embs: np.ndarray,
 @return_matrix
 def get_keyword_embs(embs: np.ndarray,
                      keyword_embs: Optional[np.ndarray],
+                     idfs: np.ndarray,
                      n_remains: int,
                      coef: float,
                      pbar=None) -> np.ndarray:
@@ -74,6 +80,7 @@ def get_keyword_embs(embs: np.ndarray,
     errors: List[float] = [calc_error(embs=embs,
                                       keyword_embs=keyword_embs,
                                       cand_emb=cand,
+                                      idfs=idfs,
                                       coef=coef)
                            for cand in uniq_vecs]
     argmin: int = np.argmin(errors)
@@ -89,5 +96,6 @@ def get_keyword_embs(embs: np.ndarray,
         return get_keyword_embs(embs=res_dims,
                                 keyword_embs=new_dims,
                                 n_remains=(n_remains - 1),
+                                idfs=idfs[residual_inds],
                                 coef=coef,
                                 pbar=pbar)
