@@ -7,8 +7,9 @@ from typedflow.nodes import LoaderNode
 from typedflow.exceptions import EndOfBatch
 
 from bowi.models import Document
+from bowi.embedding import fasttext
 from bowi.methods.methods.fuzzy.param import FuzzyParam
-from bowi.methods.methods.fuzzy.rerank import FuzzyRerank
+from bowi.methods.methods.fuzzy import rerank
 from bowi.tests.methods.methods.base import context  # noqa
 
 from bowi.tests.embedding.fasttext import FTMock
@@ -20,23 +21,20 @@ def param() -> FuzzyParam:
         n_words=3,
         model='fasttext',
         coef=1,
+        prefilter_name='100'
     )
 
 
 @pytest.fixture
-def model(param, context) -> FuzzyRerank:  # noqa
-    return FuzzyRerank(param=param, context=context)
+def model(param, context, mocker) -> rerank.FuzzyRerank:  # noqa
+    mocker.patch.object(rerank, 'FastText', FTMock)
+    return rerank.FuzzyRerank(param=param, context=context)
 
 
 def get_tokens() -> List[str]:
     tokens: List[str] = 'hello world everyone'.split()
     return tokens
     
-
-@pytest.fixture(autouse=True)
-def mock_ft(mocker):
-    mocker.patch('bowi.methods.methods.fuzzy.rerank.FastText', new=FTMock)
-
 
 def test_embed_words(model):
     mat = model.embed_words(get_tokens())
