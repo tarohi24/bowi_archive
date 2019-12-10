@@ -37,7 +37,7 @@ class ColEmbs(Method[ColEmbsParam]):
     def load_col_texts(self,
                        doc: Document) -> List[Document]:
         cols: List[Document] = load_cols(docid=doc.docid,
-                                         runname=self.context.runname,
+                                         runname='100',
                                          dataset=self.context.es_index)
         return cols
 
@@ -61,7 +61,7 @@ class ColEmbs(Method[ColEmbsParam]):
              doc: Document,
              mat_dict: Dict[str, np.ndarray]) -> None:
         dirpath: Path = settings.cache_dir.joinpath(
-            f'col_embs/{doc.docid}')
+            f'{self.context.es_index}/col_embs/{doc.docid}')
         dirpath.mkdir(exist_ok=True)
         for col_id, mat in mat_dict.items():
             np.save(dirpath / f'{col_id}.npy', mat)
