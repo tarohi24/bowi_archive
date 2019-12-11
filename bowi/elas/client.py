@@ -44,7 +44,7 @@ class EsClient:
                                         id=docid,
                                         term_statistics=True,
                                         fields=['text', ])
-        tuples: List[Tuple[str, float]] = [(word, val['doc_freq'])
+        tuples: List[Tuple[str, float]] = [(word, np.log(1 / val['doc_freq']))
                                            for word, val
                                            in res['term_vectors']['text']['terms'].items()]
         tokens, idfs = list(zip(*tuples))
