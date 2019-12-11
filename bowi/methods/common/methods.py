@@ -35,5 +35,6 @@ class Method(Generic[T]):
             batch_size=1)
         self.dump_node: DumpNode[TRECResult] = DumpNode(func=dump_result)
 
-    def create_flow(self) -> Flow:
+    def create_flow(self,
+                    debug: bool = False) -> Flow:
         ...

@@ -1,4 +1,5 @@
 import logging
+import warnings
 from typing import List, Optional
 
 import numpy as np
@@ -37,7 +38,11 @@ def rec_loss(embs: np.ndarray,
     assert embs.shape[1] == dims.shape[1]
     assert embs.shape[0] == len(idfs)
 
-    maxes: np.ndarray = np.amax(np.dot(embs, dims.T), axis=1) * idfs
+    with warnings.catch_warnings():
+        try:
+            maxes: np.ndarray = np.amax(np.dot(embs, dims.T), axis=1) * idfs
+        except Warning as w:
+            raise RuntimeError(str(w))
     val: float = (1 - maxes).mean()
     return val
 

@@ -93,7 +93,7 @@ def main() -> int:
                 path.unlink()
         except FileNotFoundError:
             pass
-        flow: Flow = met.create_flow()
+        flow: Flow = met.create_flow(debug=args.debug)
         flow.typecheck()
         flow.run()
     return 0

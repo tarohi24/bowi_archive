@@ -89,7 +89,7 @@ class FuzzyNaive(Method[FuzzyParam]):
         trec_result: TRECResult = self.to_trec_result(doc=query_doc, es_result=candidates)
         return trec_result
 
-    def create_flow(self):
+    def create_flow(self, debug: bool = False):
 
         def _dump_kwards(keywords: List[str],
                          doc: Document) -> None:
