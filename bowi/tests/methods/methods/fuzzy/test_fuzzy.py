@@ -50,6 +50,8 @@ def test_get_keywords(sample_embeddings):
         idfs=idfs,
         n_remains=2,
         coef=1)
-    gt_embs: np.ndarray = embs[[0, 1]]
     assert np.linalg.matrix_rank(keyword_embs) == 2
-    assert np.linalg.matrix_rank(keyword_embs - gt_embs) == 1
+    # Assert if keyword embs are chosen from the original matrix
+    assert embs.shape == (len(tokens), 300)
+    assert keyword_embs.shape == (2, 300)
+    assert all([np.any(np.sum(embs - vec, axis=1) == 0) for vec in keyword_embs])
