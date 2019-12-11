@@ -1,7 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Dict, List, Type, TypeVar
+from typing import Dict, List, NamedTuple, Type, TypeVar
 
 import yaml
 from typedflow.flow import Flow
@@ -14,9 +14,6 @@ from bowi.methods.common.dumper import get_dump_dir
 from bowi.methods.methods import keywords
 from bowi.methods.methods.fuzzy import naive, rerank
 from bowi.initialize.cacher import embedding, pre_filtering, col_embs
-
-
-logging.basicConfig(level=logging.INFO)
 
 
 M = TypeVar('M', bound=Method)
@@ -39,7 +36,28 @@ def get_method(method_name: str) -> Type[M]:
         raise KeyError(f'{method_name} is not found')
 
 
-def parse(path: Path) -> List[M]:
+def create_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('paramfile',
+                        metavar='F',
+                        type=Path,
+                        nargs=1,
+                        help='A yaml file')
+    parser.add_argument('-d',
+                        '--debug',
+                        dest='debug',
+                        default=False,
+                        action='store_true')
+    return parser
+
+
+def parse(args: NamedTuple) -> List[M]:
+    if args.debug:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.WARN)
+
+    path: Path = args.paramfile[0]
     with open(path) as fin:
         data: Dict = yaml.load(fin, Loader=yaml.Loader)
     n_docs: int = data['n_docs']
@@ -65,14 +83,9 @@ def parse(path: Path) -> List[M]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument('paramfile',
-                        metavar='F',
-                        type=Path,
-                        nargs=1,
-                        help='A yaml file')
+    parser = create_parser()
     args = parser.parse_args()
-    methods: List[Method] = parse(args.paramfile[0])
+    methods: List[Method] = parse(args)
     for met in methods:
         dump_dir: Path = get_dump_dir(met.context)
         try:
