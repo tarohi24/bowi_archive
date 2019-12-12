@@ -21,7 +21,7 @@ from bowi.methods.common.dumper import dump_keywords
 from bowi.utils.text import get_all_tokens
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
-from bowi.methods.methods.fuzzy.fuzzy import get_keyword_embs
+from bowi.methods.methods.fuzzy.fuzzy import get_keyword_inds
 
 
 logger = logging.getLogger(__file__)
@@ -50,9 +50,9 @@ class FuzzyNaive(Method[FuzzyParam]):
         words, tfidfs = list(zip(*tfidf_dict.items()))
         tfs, idfs = [np.array(lst) for lst in list(zip(*tfidfs))]
         embs: np.ndarray = self.fasttext.embed_words(words)
-        key_inds: List[int] = get_keyword_embs(embs=embs,
+        key_inds: List[int] = get_keyword_inds(embs=embs,
                                                keyword_embs=None,
-                                               n_remains=self.param.n_words,
+                                               n_keywords=self.param.n_words,
                                                tfs=tfs,
                                                idfs=idfs)
         keywords: List[str] = [words[i] for i in key_inds]

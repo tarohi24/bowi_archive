@@ -20,7 +20,6 @@ def param() -> FuzzyParam:
     return FuzzyParam(
         n_words=3,
         model='fasttext',
-        coef=1,
         prefilter_name='100'
     )
 

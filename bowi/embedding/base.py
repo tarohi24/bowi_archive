@@ -41,11 +41,9 @@ class Model:
     """
     dim: int = field(init=False)
 
-    @return_vector
     def embed(self, word: str) -> np.ndarray:
         raise NotImplementedError('Model is an abstract class')
 
-    @return_matrix
     def embed_words(self,
                     words: List[str]) -> List[Optional[np.ndarray]]:
         """
