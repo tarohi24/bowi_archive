@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from collections import defaultdict
-from typing import Dict, List, Set
+from functools import lru_cache
+from typing import List
 
 import fasttext
 import numpy as np
@@ -28,13 +28,19 @@ class FastText(Model):
         """
         You should filter words not in the vocab before you use this.
         """
-        if self.isin_vocab(word):
-            return self.model.get_word_vector(word)
-        else:
-            raise RuntimeError(f'{word} is not in the model vocab.')
+        @lru_cache(maxsize=10000)
+        def embed(word: str) -> np.ndarray:
+            """
+            Isolated from the main part because FastText object is not
+            hashable, which means we cannot use lru_cache.
+            """
+            if self.isin_vocab(word):
+                return self.model.get_word_vector(word)
+            else:
+                raise RuntimeError(f'{word} is not in the model vocab.')
+        return embed(word)
 
     def embed_words(self,
                     words: List[str]) -> np.ndarray:
-        emb_dic: Dict[str, np.ndarray] = defaultdict(lambda w: self.embed(w))
-        embs: List[np.ndarray] = [emb_dic[w] for w in words]
+        embs: List[np.ndarray] = [self.embed(w) for w in words]
         return np.array(embs)

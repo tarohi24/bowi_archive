@@ -44,8 +44,8 @@ class FuzzyNaive(Method[FuzzyParam]):
                          doc: Document) -> List[str]:
         tfidf_dict: Dict[str, Tuple[int, float]] = {
             word: tfidf
-            for word, tfidf in self.es_client.get_tfidfs(docid=doc.docid)
-            if word in self.fasttext.isin_vocab(word)
+            for word, tfidf in self.es_client.get_tfidfs(docid=doc.docid).items()
+            if self.fasttext.isin_vocab(word)
         }
         words, tfidfs = list(zip(*tfidf_dict.items()))
         tfs, idfs = [np.array(lst) for lst in list(zip(*tfidfs))]
@@ -99,6 +99,7 @@ class FuzzyNaive(Method[FuzzyParam]):
             'keywords': node_get_keywords
         })
         (self.dump_node < node_match)('res')
-        flow: Flow = Flow(dump_nodes=[self.dump_node, keywords_dumper])
+        flow: Flow = Flow(dump_nodes=[self.dump_node, keywords_dumper],
+                          debug=debug)
         flow.typecheck()
         return flow
