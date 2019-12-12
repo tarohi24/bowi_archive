@@ -93,14 +93,17 @@ def get_keyword_embs(embs: np.ndarray,
     residual_inds: np.ndarray = np.array([not np.array_equal(vec, new_keyword_emb) for vec in embs])
     new_dims: np.ndarray = _get_new_kemb_cand(cand_emb=new_keyword_emb,
                                               keyword_embs=keyword_embs)
+    if sum(residual_inds) == 0:
+        return new_dims
     pbar.update(1)
     if n_remains == 1:
         return new_dims
     else:
         res_dims: np.ndarray = embs[residual_inds]
+        new_idfs: np.ndarray = idfs[residual_inds]
         return get_keyword_embs(embs=res_dims,
                                 keyword_embs=new_dims,
                                 n_remains=(n_remains - 1),
-                                idfs=idfs[residual_inds],
+                                idfs=new_idfs,
                                 coef=coef,
                                 pbar=pbar)
