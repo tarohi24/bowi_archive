@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Set, Optional
+from collections import defaultdict
+from typing import Dict, List, Set
 
 import fasttext
 import numpy as np
 
-from bowi.embedding.base import Model, return_matrix, return_vector
+from bowi.embedding.base import Model
 from bowi.settings import models_dir
 
 
@@ -17,23 +18,23 @@ class FastText(Model):
             str(models_dir.joinpath('fasttext/cc.en.300.bin').resolve()))
         self.dim: int = 300
 
-    @return_vector
+    def isin_vocab(self, word: str) -> bool:
+        return len(self.model.get_subwords(word)[0]) > 0
+
+    def filter_tokens(self, words: List[str]) -> List[str]:
+        return [w for w in words if self.isin_vocab(w)]
+
     def embed(self, word: str) -> np.ndarray:
-        return self.model.get_word_vector(word)
+        """
+        You should filter words not in the vocab before you use this.
+        """
+        if self.isin_vocab(word):
+            return self.model.get_word_vector(word)
+        else:
+            raise RuntimeError(f'{word} is not in the model vocab.')
 
     def embed_words(self,
-                    words: List[str]) -> List[Optional[np.ndarray]]:
-        emb_caches: Dict[str, np.ndarray] = dict()
-        unknown_words: Set[str] = set()
-        for w in words:
-            if w in unknown_words:
-                continue
-            if w not in emb_caches:
-                embedding: np.ndarray = self.embed(w)
-                if np.linalg.norm(embedding) > 0:
-                    emb_caches[w] = embedding
-                else:
-                    unknown_words.add(w)
-        lst: List[Optional[np.ndarray]] = [
-            emb_caches[w] if w not in unknown_words else None for w in words]
-        return lst
+                    words: List[str]) -> np.ndarray:
+        emb_dic: Dict[str, np.ndarray] = defaultdict(lambda w: self.embed(w))
+        embs: List[np.ndarray] = [emb_dic[w] for w in words]
+        return np.array(embs)

@@ -38,17 +38,20 @@ class EsClient:
         except NotFoundError:
             logger.info(f'{self.es_index} does not exist')
 
-    def get_tokens_and_idfs(self,
-                            docid: str) -> Tuple[List[str], np.ndarray]:
+    def get_tfidfs(self,
+                   docid: str) -> Dict[str, Tuple[int, float]]:
+        """
+        Get (TF, IDF) of each token in  a doucment
+        """
         res: Dict = self.es.termvectors(index=self.es_index,
                                         id=docid,
                                         term_statistics=True,
                                         fields=['text', ])
-        tuples: List[Tuple[str, float]] = [(word, np.log(1 / val['doc_freq']))
-                                           for word, val
-                                           in res['term_vectors']['text']['terms'].items()]
-        tokens, idfs = list(zip(*tuples))
-        return tokens, np.array(idfs)
+        tfidfs: Dict[str, float] = {
+            word: (val['term_freq'], np.log(1 / val['doc_freq']))
+            for word, val in res['term_vectors']['text']['terms'].items()
+        }
+        return tfidfs
 
     def get_tokens_from_doc(self, docid: str) -> List[str]:
         res: Dict = self.es.termvectors(index=self.es_index,

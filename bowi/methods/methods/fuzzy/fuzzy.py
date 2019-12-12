@@ -26,6 +26,7 @@ def _get_new_kemb_cand(cand_emb: np.ndarray,
 def rec_loss(embs: np.ndarray,
              keyword_embs: Optional[np.ndarray],
              cand_emb: np.ndarray,
+             tfs: np.ndarray,
              idfs: np.ndarray) -> float:
     """
     Reconstruct error. In order to enable unittests, two errors are
@@ -34,76 +35,120 @@ def rec_loss(embs: np.ndarray,
     dims: np.ndarray = _get_new_kemb_cand(cand_emb=cand_emb,
                                           keyword_embs=keyword_embs)
     assert dims.ndim == 2
+    assert tfs.ndim == 1
     assert idfs.ndim == 1
     assert embs.shape[1] == dims.shape[1]
-    assert embs.shape[0] == len(idfs)
+    assert embs.shape[0] == len(tfs) == len(idfs)
 
     with warnings.catch_warnings():
         try:
-            maxes: np.ndarray = np.amax(np.dot(embs, dims.T), axis=1) * idfs
+            maxes: np.ndarray = np.amax(np.dot(embs, dims.T), axis=1) * tfs * idfs
         except Warning as w:
             raise RuntimeError(str(w))
     val: float = (1 - maxes).mean()
     return val
 
 
-def cent_sim_loss(keyword_embs: np.ndarray,
-                  cand_emb: np.ndarray) -> float:
-    """
-    Loss penalizing for similar dimensions
-    """
-    val: float = np.dot(keyword_embs, cand_emb).mean()
-    return val
-
-
 def calc_error(embs: np.ndarray,
                keyword_embs: Optional[np.ndarray],
                cand_emb: np.ndarray,
-               idfs: np.ndarray,
-               coef: float) -> float:
+               tfs: np.ndarray,
+               idfs: np.ndarray) -> float:
     rec_error: float = rec_loss(embs, keyword_embs, cand_emb, idfs)
-    if keyword_embs is not None and coef != 0:
-        assert keyword_embs.ndim == 2
-        cent_sim_error: float = cent_sim_loss(keyword_embs, cand_emb)
-        logger.debug(
-            f'rec: {str(rec_error)}, cent: {str(cent_sim_error)}, kemb: {str(keyword_embs.shape)} cand: {str(cand_emb.shape)}')
-    else:
-        cent_sim_error: float = 0  # type: ignore
-    return rec_error + coef * cent_sim_error
+    logger.debug(f'recerror: {str(rec_error)}')
+    return rec_error
 
 
 @return_matrix
-def get_keyword_embs(embs: np.ndarray,
-                     keyword_embs: Optional[np.ndarray],
+def get_keyword_embs(*,
+                     embs: np.ndarray,
+                     tfs: np.ndarray,
                      idfs: np.ndarray,
                      n_remains: int,
-                     coef: float,
-                     pbar=None) -> np.ndarray:
+                     keyword_embs: Optional[np.ndarray] = None,
+                     prev_key_inds: List[int] = [],
+                     pbar=None) -> List[int]:
+    """
+    To prevent from being confused, you have to specify args with keywords.
+
+    Returns
+    -----
+    indices of keywords in the original embedding
+
+    Parameters
+    -----
+    embs
+        word embeddings (each two vectors should be different)
+
+    tfs
+        Term Frequencies of each word
+
+    idfs
+        Inverted Document Frequencies of each word
+
+    keyword_embs
+        You don't have to set this value (only inside this function this arg is used).
+
+    prev_key_inds
+        You don't need to set
+
+    pbar
+        Progress bar. If none, this method automatically creates a new one.
+    """
+    def offsetted_ind(ind: int, ranges: List[int]) -> int:
+        """
+        Calculate the original index of given ind
+
+        >>> offset(1, [0])
+        2
+        >>> offset(1, [1])
+        2
+        >>> offset(1, [2])
+        1
+        >>> offset(100, [1, 3, 5, 101])
+        103
+        """
+        if len(ranges) == 0:
+            return ind
+        else:
+            head, *tail = ranges
+            if ind < head:
+                return ind
+            else:
+                return offsetted_ind(ind, tail) + 1
+
+    # Create a progress bar.
     if pbar is None:
         pbar = tqdm(total=n_remains)  # noqa
-    uniq_vecs: np.ndarray = np.unique(embs, axis=0)
+
+    # Compute errors
     errors: List[float] = [calc_error(embs=embs,
-                                      keyword_embs=keyword_embs,
-                                      cand_emb=cand,
+                                      cand_emb=cand_vec,
+                                      tffs=tfs,
                                       idfs=idfs,
-                                      coef=coef)
-                           for cand in uniq_vecs]
+                                      keyword_embs=keyword_embs) for cand_vec in embs]
+
+    # Choose words which marked least error as a new keyword
     argmin: int = np.argmin(errors)
-    new_keyword_emb = uniq_vecs[argmin]
-    residual_inds: np.ndarray = np.array([not np.array_equal(vec, new_keyword_emb) for vec in embs])
-    new_dims: np.ndarray = _get_new_kemb_cand(cand_emb=new_keyword_emb,
-                                              keyword_embs=keyword_embs)
-    if sum(residual_inds) == 0:
-        return new_dims
-    pbar.update(1)
-    if n_remains == 1:
-        return new_dims
+    offsetted: int = offsetted_ind(argmin, prev_key_inds)
+
+    # Stop selection if all words are selected
+    # or if # keywords are equal to specified one
+    if (len(embs) == 1) or (n_remains == 1):
+        return offsetted
     else:
-        res_dims: np.ndarray = embs[residual_inds]
-        new_idfs: np.ndarray = idfs[residual_inds]
-        return get_keyword_embs(embs=res_dims,
-                                keyword_embs=new_dims,
-                                n_remains=(n_remains - 1),
-                                idfs=new_idfs,
-                                coef=coef,
-                                pbar=pbar)
+        new_dims: np.ndarray = _get_new_kemb_cand(cand_emb=embs[argmin],
+                                                  keyword_embs=keyword_embs)
+        pbar.update(1)
+        inds: np.ndarray = np.ones(len(embs), bool)
+        inds[argmin] = False
+        res_embs: np.ndarray = embs[inds, :]
+        res_tfs: np.ndarray = tfs[inds, :]
+        res_idfs: np.ndarray = idfs[inds, :]
+        return [offsetted] + get_keyword_embs(embs=res_embs,
+                                              keyword_embs=new_dims,
+                                              n_remains=(n_remains - 1),
+                                              tfs=res_tfs,
+                                              idfs=res_idfs,
+                                              prev_key_inds=prev_key_inds + [offsetted],
+                                              pbar=pbar)

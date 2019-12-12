@@ -4,7 +4,7 @@ Available only for fasttext
 from __future__ import annotations
 from dataclasses import dataclass, field
 import logging
-from typing import ClassVar, List, Type, Optional
+from typing import ClassVar, List, Type, Optional, Dict, Tuple
 
 import numpy as np
 from typedflow.flow import Flow
@@ -42,27 +42,20 @@ class FuzzyNaive(Method[FuzzyParam]):
 
     def extract_keywords(self,
                          doc: Document) -> List[str]:
-        _tokens, idfs = self.es_client.get_tokens_and_idfs(docid=doc.docid)
-        optional_embs: List[Optional[np.ndarray]] = self.fasttext.embed_words(_tokens)
-        assert len(optional_embs) == len(idfs)
-
-        indices: List[bool] = [vec is not None for vec in optional_embs]
-        idfs = idfs[indices]  # type: ignore
-        tokens: List[str] = [w for w, is_valid in zip(_tokens, indices) if is_valid]
-        matrix = mat_normalize(np.array([vec for vec in optional_embs if vec is not None]))
-        assert len(tokens) == matrix.shape[0] == len(idfs)
-
-        k_embs: np.ndarray = get_keyword_embs(
-            embs=matrix,
-            keyword_embs=None,
-            n_remains=self.param.n_words,
-            idfs=idfs,
-            coef=self.param.coef)
-        logger.info(k_embs.sum(axis=1))
-        indices: List[int] = [np.argmin(np.linalg.norm(matrix - vec, axis=1))
-                              for vec in k_embs]
-        logger.info(indices)
-        keywords: List[str] = list(set([tokens[i] for i in indices]))
+        tfidf_dict: Dict[str, Tuple[int, float]] = {
+            word: tfidf
+            for word, tfidf in self.es_client.get_tfidfs(docid=doc.docid)
+            if word in self.fasttext.isin_vocab(word)
+        }
+        words, tfidfs = list(zip(*tfidf_dict.items()))
+        tfs, idfs = [np.array(lst) for lst in list(zip(*tfidfs))]
+        embs: np.ndarray = self.fasttext.embed_words(words)
+        key_inds: List[int] = get_keyword_embs(embs=embs,
+                                               keyword_embs=None,
+                                               n_remains=self.param.n_words,
+                                               tfs=tfs,
+                                               idfs=idfs)
+        keywords: List[str] = [words[i] for i in key_inds]
         logger.info(keywords)
         return keywords
 
