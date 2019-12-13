@@ -45,7 +45,7 @@ class FuzzyNaive(Method[FuzzyParam]):
         tfidf_dict: Dict[str, Tuple[int, float]] = {
             word: tfidf
             for word, tfidf in self.es_client.get_tfidfs(docid=doc.docid).items()
-            if self.fasttext.isin_vocab(word)
+            if self.fasttext.isin_vocab(word) and tfidf[0] >= self.param.min_tf
         }
         words, tfidfs = list(zip(*tfidf_dict.items()))
         tfs, idfs = [np.array(lst) for lst in list(zip(*tfidfs))]
