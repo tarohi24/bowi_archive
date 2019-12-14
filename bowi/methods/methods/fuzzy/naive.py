@@ -18,7 +18,6 @@ from bowi.methods.common.methods import Method
 from bowi.methods.common.types import TRECResult
 from bowi.models import Document
 from bowi.methods.common.dumper import dump_keywords
-from bowi.utils.text import get_all_tokens
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
 from bowi.methods.methods.fuzzy.fuzzy import get_keyword_inds
@@ -49,7 +48,7 @@ class FuzzyNaive(Method[FuzzyParam]):
         }
         words, tfidfs = list(zip(*tfidf_dict.items()))
         tfs, idfs = [np.array(lst) for lst in list(zip(*tfidfs))]
-        embs: np.ndarray = self.fasttext.embed_words(words)
+        embs: np.ndarray = mat_normalize(self.fasttext.embed_words(words))
         key_inds: List[int] = get_keyword_inds(embs=embs,
                                                keyword_embs=None,
                                                n_keywords=self.param.n_words,

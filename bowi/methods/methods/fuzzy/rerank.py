@@ -11,7 +11,7 @@ from typing import ClassVar, Dict, List, Type, Tuple
 
 import numpy as np
 from typedflow.flow import Flow
-from typedflow.nodes import TaskNode, LoaderNode
+from typedflow.nodes import TaskNode, LoaderNode, DumpNode
 from tqdm import tqdm
 
 from bowi.embedding.base import mat_normalize
@@ -19,6 +19,7 @@ from bowi.embedding.fasttext import FastText
 from bowi.methods.common.methods import Method
 from bowi.methods.common.pre_filtering import load_cols
 from bowi.methods.common.types import TRECResult
+from bowi.methods.common.dumper import get_dump_dir
 from bowi.elas.client import EsClient
 from bowi import settings
 
@@ -53,7 +54,7 @@ class FuzzyRerank(Method[FuzzyParam]):
 
     def load_keywords(self) -> List[QueryKeywords]:
         path: Path = settings.cache_dir.joinpath(
-            f'{self.context.es_index}/keywords/fuzzy.naive/100.json')
+            f'{self.context.es_index}/keywords/fuzzy.naive/{str(self.param.n_words)}.json')
         with open(path) as fin:
             data: Dict[str, List[str]] = json.load(fin)
         lst: List[QueryKeywords] = [QueryKeywords(docid=key, keywords=val)
@@ -90,7 +91,6 @@ class FuzzyRerank(Method[FuzzyParam]):
         Get documents cached by keywrod search
         """
         tfidf_embs: Dict[str, TfidfEmb] = dict()
-
         for doc in tqdm(load_cols(docid=qk.docid,
                                   runname='100',
                                   dataset=self.context.es_index),
@@ -103,11 +103,6 @@ class FuzzyRerank(Method[FuzzyParam]):
                   qk: QueryKeywords) -> np.ndarray:
         """
         Find pre-generated keywords and embed them.
-
-        Parameter
-        -----
-        docFalse
-            Document number (starts with 0)
         """
         embs: np.ndarray = np.array(self.fasttext.embed_words(qk.keywords))
         return mat_normalize(embs)
@@ -137,12 +132,13 @@ class FuzzyRerank(Method[FuzzyParam]):
         1D array whose item[i] is the normalized frequency of ith keyword
         """
         mat: np.ndarray = tfidf_emb.embs
-        tfidfs: np.ndarray = tfidf_emb.tfs * tfidf_emb.idfs
+        # tfidfs: np.ndarray = tfidf_emb.tfs * tfidf_emb.idfs
+        tfidfs: np.ndarray = tfidf_emb.tfs
         assert tfidfs.ndim == 1
         nns: List[int] = self._get_nns(mat=mat, keyword_embs=keyword_embs)
         scores: np.ndarray = np.array([0.0 for _ in range(len(keyword_embs))])
         for i in range(len(nns)):
-            scores[nns[i]] = tfidfs[i]
+            scores[nns[i]] += tfidfs[i]
         return scores / np.sum(scores)  # normalize
 
     def get_collection_fuzzy_bows(self,
@@ -164,13 +160,22 @@ class FuzzyRerank(Method[FuzzyParam]):
         """
         # dot is inadequate
         scores: Dict[str, float] = {docid: np.dot(query_bow, bow)
-                                    for docid, bow in col_bows.items()}
+                                    for docid, bow in tqdm(col_bows.items(),
+                                                           desc='Computing bow...')}
         return TRECResult(query_docid=qk.docid,
                           scores=scores)
 
+    def dump_bow(self,
+                 qk: QueryKeywords,
+                 bow: np.ndarray) -> None:
+        bow_str: str = ','.join([str(val) for val in bow])
+        with open(get_dump_dir(context=self.context).joinpath('bow.json'), 'a') as fout:
+            fout.write(bow_str + '\n')
+
     def create_flow(self, debug: bool = False):
         # loading query
-        loader: LoaderNode = LoaderNode(func=self.load_keywords)
+        loader: LoaderNode = LoaderNode(func=self.load_keywords,
+                                        batch_size=1)
         n_get_cols = TaskNode(self.get_col_tfidfs)({'qk': loader})
         n_get_kembs = TaskNode(self.get_kembs)({'qk': loader})
 
@@ -194,8 +199,12 @@ class FuzzyRerank(Method[FuzzyParam]):
             'col_bows': n_cfbow
         })
 
+        node_bow_dumper = DumpNode(self.dump_bow)({
+            'qk': loader,
+            'bow': n_fbow
+        })
         (self.dump_node < n_match)('res')
-        flow: Flow = Flow(dump_nodes=[self.dump_node, ],
+        flow: Flow = Flow(dump_nodes=[self.dump_node, node_bow_dumper],
                           debug=debug)
         flow.typecheck()
         return flow

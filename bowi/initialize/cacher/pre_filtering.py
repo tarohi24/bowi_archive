@@ -45,12 +45,12 @@ class PreSearcher(Method[KeywordParam]):
             .search()
         return candidates
 
-    def create_flow(self) -> Flow:
-        node_search: TaskNode = TaskNode(self.search)
-        (node_search < self.load_node)('doc')
-        node_dump: DumpNode = DumpNode(func=self.dump)
-        (node_dump < self.load_node)('query_doc')
-        (node_dump < node_search)('res')
-
-        flow: Flow = Flow(dump_nodes=[node_dump, ])
+    def create_flow(self, debug: bool = False) -> Flow:
+        node_search = TaskNode(self.search)({'doc': self.load_node})
+        node_dump = DumpNode(func=self.dump)({
+            'query_doc': self.load_node,
+            'res': node_search
+        })
+        flow: Flow = Flow(dump_nodes=[node_dump, ], debug=debug)
+        flow.typecheck()
         return flow
