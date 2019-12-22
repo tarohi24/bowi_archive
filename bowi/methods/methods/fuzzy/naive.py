@@ -3,8 +3,10 @@ Available only for fasttext
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
+from pathlib import Path
+import json
 import logging
-from typing import ClassVar, List, Type, Optional, Dict, Tuple
+from typing import ClassVar, List, Type, Dict, Tuple
 
 import numpy as np
 from typedflow.flow import Flow
@@ -17,7 +19,7 @@ from bowi.embedding.fasttext import FastText
 from bowi.methods.common.methods import Method
 from bowi.methods.common.types import TRECResult
 from bowi.models import Document
-from bowi.methods.common.dumper import dump_keywords
+from bowi import settings
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
 from bowi.methods.methods.fuzzy.fuzzy import get_keyword_inds
@@ -84,15 +86,20 @@ class FuzzyNaive(Method[FuzzyParam]):
         trec_result: TRECResult = self.to_trec_result(doc=query_doc, es_result=candidates)
         return trec_result
 
+    def dump_kwards(self,
+                    keywords: List[str],
+                    doc: Document) -> None:
+        path: Path = settings.cache_dir\
+            .joinpath(f'{self.context.es_index}/keywords/fuzzy.naive')\
+            .joinpath(f'{self.context.runname}.bulk')
+        with open(path, 'a') as fout:
+            data: str = json.dumps({doc.docid: keywords})
+            fout.write(data + '\n')
+
     def create_flow(self, debug: bool = False):
-
-        def _dump_kwards(keywords: List[str],
-                         doc: Document) -> None:
-            return dump_keywords(keywords=keywords, doc=doc, context=self.context)
-
         node_get_keywords = TaskNode(self.extract_keywords)(
             {'doc': self.load_node})
-        keywords_dumper = DumpNode(_dump_kwards)({
+        keywords_dumper = DumpNode(self.dump_kwards)({
             'keywords': node_get_keywords,
             'doc': self.load_node
         })
