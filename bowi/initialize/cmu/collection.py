@@ -26,7 +26,6 @@ def load_corpus() -> Generator[Dict, None, None]:
     converter: CmuConveter = CmuConveter()
     for fpath in tqdm(list(directory.glob('**/*')),
                       desc='Processing corpus...'):
-        print(fpath)
         try:
             int(fpath.name)
         except ValueError:
@@ -36,7 +35,9 @@ def load_corpus() -> Generator[Dict, None, None]:
         except RuntimeError as e:
             logger.warn(str(e))
             continue
-        yield doc.to_json()
+        dic = doc.to_dict()
+        dic['_index'] = 'cmu'
+        yield dic
 
 
 def insert_doc() -> None:
@@ -77,4 +78,4 @@ def main() -> int:
 
 
 if __name__ == '__main__':
-    exit(insert_doc())
+    exit(main())

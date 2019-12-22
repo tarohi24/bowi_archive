@@ -36,8 +36,12 @@ class FuzzyNaive(Method[FuzzyParam]):
         super(FuzzyNaive, self).__post_init__()
         self.fasttext: FastText = FastText()
         # note that this client is used for processing queries
-        self.es_client: EsClient = EsClient(
-            es_index=f'{self.context.es_index}_query')
+        if self.context.es_index == 'cmu':
+            self.es_client: EsClient = EsClient(
+                es_index=f'{self.context.es_index}')
+        else:
+            self.es_client: EsClient = EsClient(
+                es_index=f'{self.context.es_index}_query')
 
     def extract_keywords(self,
                          doc: Document) -> List[str]:
@@ -51,8 +55,7 @@ class FuzzyNaive(Method[FuzzyParam]):
         embs: np.ndarray = mat_normalize(self.fasttext.embed_words(words))
         key_inds: List[int] = get_keyword_inds(embs=embs,
                                                keyword_embs=None,
-                                               n_keywords=self.param.n_words,
-                                               tfs=tfs,
+                                               n_keywords=self.param.n_words, tfs=tfs,
                                                idfs=idfs)
         keywords: List[str] = [words[i] for i in key_inds]
         logger.info(keywords)
