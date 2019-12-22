@@ -142,11 +142,13 @@ def get_keyword_inds(embs: np.ndarray,
     if (len(embs) == 1) or (n_keywords == 1):
         return [offsetted]
     else:
-        new_dims: np.ndarray = _get_new_kemb_cand(cand_emb=embs[argmin],
-                                                  keyword_embs=keyword_embs)
+        new_dim: np.ndarray = embs[argmin]
+        new_dims: np.ndarray = _get_new_kemb_cand(
+            cand_emb=new_dim,
+            keyword_embs=keyword_embs)
         pbar.update(1)
-        inds: np.ndarray = np.ones(len(embs), bool)
-        inds[argmin] = False
+        # For cutting candidates, see #10 discussion.
+        inds: np.ndarray = np.dot(embs, new_dim) < 0.8
         res_embs: np.ndarray = embs[inds, :]
         res_tfs: np.ndarray = tfs[inds]
         res_idfs: np.ndarray = idfs[inds]
