@@ -1,0 +1,9 @@
+n_docs: 100
+es_index: cmu
+method: fuzzy.naive
+params:
+  - name: "100"
+    n_words: 100
+    model: fasttext
+    prefilter_name: 100
+    min_tf: 2

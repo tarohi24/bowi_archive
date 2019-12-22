@@ -1,0 +1,6 @@
+n_docs: 30
+es_index: cmu
+method: cache.pre_filtering
+params:
+  - name: '100'
+    n_words: 100
