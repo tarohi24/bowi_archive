@@ -80,31 +80,12 @@ class KeywordBaseline(Method[KeywordParam]):
         )
         return res
 
-    def get_and_dump_explain(self,
-                             doc: Document,
-                             keywords: List[str]) -> None:
-        index: str = self.context.es_index
-        searcher: EsSearcher = EsSearcher(es_index=index)
-        body: Dict = searcher\
-            .initialize_query()\
-            .add_query(terms=keywords, field='text')\
-            .add_size(self.context.n_docs)\
-            .add_filter(terms=doc.tags, field='tags')\
-            .add_source_fields(['text'])\
-            .query
-        data = searcher.es.explain(
-            index=index, body=body)['explanation']['details']
-        path: Path = get_dump_dir(context=self.context) / 'explain.bulk'
-        with open(path, 'a') as fout:
-            fout.write(json.dumps(data) + '\n')
-
     def create_flow(self,
                     debug: bool = False) -> Flow:
         node_keywords = TaskNode(self.extract_keywords)({
             'doc': self.load_node})
 
-        # TODO; modify
-        node_search = DumpNode(self.get_and_dump_explain)({
+        node_search = DumpNode(self.search)({
             'doc': self.load_node,
             'keywords': node_keywords
         })
