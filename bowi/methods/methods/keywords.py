@@ -5,7 +5,9 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 import re
-from typing import ClassVar, Generator, List, Pattern, Set, Type  # type: ignore
+from pathlib import Path
+import json
+from typing import ClassVar, Dict, Generator, List, Pattern, Set, Type  # type: ignore
 
 from nltk.corpus import stopwords as nltk_sw
 from nltk.tokenize import RegexpTokenizer
@@ -15,7 +17,7 @@ from typedflow.nodes import TaskNode, DumpNode, LoaderNode
 from bowi.elas.search import EsResult, EsSearcher
 from bowi.models import Document
 from bowi.methods.common.methods import Method
-from bowi.methods.common.dumper import dump_keywords
+from bowi.methods.common.dumper import get_dump_dir
 from bowi.methods.common.types import Param, TRECResult, Context
 
 
@@ -78,28 +80,34 @@ class KeywordBaseline(Method[KeywordParam]):
         )
         return res
 
-    def create_flow(self) -> Flow:
+    def get_and_dump_explain(self,
+                             doc: Document,
+                             keywords: List[str]) -> None:
+        index: str = self.context.es_index
+        searcher: EsSearcher = EsSearcher(es_index=index)
+        body: Dict = searcher\
+            .initialize_query()\
+            .add_query(terms=keywords, field='text')\
+            .add_size(self.context.n_docs)\
+            .add_filter(terms=doc.tags, field='tags')\
+            .add_source_fields(['text'])\
+            .query
+        data = searcher.es.explain(
+            index=index, body=body)['explanation']['details']
+        path: Path = get_dump_dir(context=self.context) / 'explain.bulk'
+        with open(path, 'a') as fout:
+            fout.write(json.dumps(data) + '\n')
 
-        def provide_context() -> Generator[Context, None, None]:
-            while True:
-                yield self.context
+    def create_flow(self,
+                    debug: bool = False) -> Flow:
+        node_keywords = TaskNode(self.extract_keywords)({
+            'doc': self.load_node})
 
-        node_keywords: TaskNode[List[str]] = TaskNode(self.extract_keywords)
-        (node_keywords < self.load_node)('doc')
-        node_search: TaskNode[EsResult] = TaskNode(self.search)
-        (node_search < self.load_node)('doc')
-        (node_search < node_keywords)('keywords')
-        keyword_dumper: DumpNode = DumpNode(func=dump_keywords)
-        (keyword_dumper < node_keywords)('keywords')
-        (keyword_dumper < self.load_node)('doc')
-        context_loader: LoaderNode[Context] = LoaderNode(provide_context,
-                                                         batch_size=1)
-        (keyword_dumper < context_loader)('context')
-
-        node_trec: TaskNode[TRECResult] = TaskNode(self.to_trec_result)
-        (node_trec < self.load_node)('doc')
-        (node_trec < node_search)('es_result')
-
-        (node_trec > self.dump_node)('res')
-        flow: Flow = Flow(dump_nodes=[self.dump_node, keyword_dumper])
+        # TODO; modify
+        node_search = DumpNode(self.get_and_dump_explain)({
+            'doc': self.load_node,
+            'keywords': node_keywords
+        })
+        flow: Flow = Flow(dump_nodes=[node_search, ],
+                          debug=debug)
         return flow

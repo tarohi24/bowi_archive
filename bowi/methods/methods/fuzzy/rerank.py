@@ -4,9 +4,7 @@ in advance. Run fuzzy.naive in the same params
 before running this script
 """
 from dataclasses import dataclass, field
-import json
 import logging
-from pathlib import Path
 from typing import ClassVar, Dict, List, Type, Tuple
 
 import numpy as np
@@ -19,9 +17,9 @@ from bowi.embedding.fasttext import FastText
 from bowi.methods.common.methods import Method
 from bowi.methods.common.pre_filtering import load_cols
 from bowi.methods.common.types import TRECResult
+from bowi.methods.common.cache import KeywordCacher
 from bowi.methods.common.dumper import get_dump_dir
 from bowi.elas.client import EsClient
-from bowi import settings
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
 
@@ -47,18 +45,17 @@ class TfidfEmb:
 class FuzzyRerank(Method[FuzzyParam]):
     param_type: ClassVar[Type] = FuzzyParam
     fasttext: FastText = field(init=False)
+    keywords_dict: Dict[str, List[str]] = field(init=False)
 
     def __post_init__(self):
         super(FuzzyRerank, self).__post_init__()
         self.fasttext: FastText = FastText()
+        cacher = KeywordCacher(context=self.context)
+        self.keywords_dict: Dict[str, List[str]] = cacher.load()
 
     def load_keywords(self) -> List[QueryKeywords]:
-        path: Path = settings.cache_dir.joinpath(
-            f'{self.context.es_index}/keywords/fuzzy.naive/{str(self.param.n_words)}.json')
-        with open(path) as fin:
-            data: Dict[str, List[str]] = json.load(fin)
         lst: List[QueryKeywords] = [QueryKeywords(docid=key, keywords=val)
-                                    for key, val in data.items()]
+                                    for key, val in self.keywords_dict.items()]
         return lst
 
     def _get_tfidf_emb(self,

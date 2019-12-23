@@ -27,6 +27,9 @@ def dump_prel(res: TRECResult,
 def dump_keywords(keywords: List[str],
                   doc: Document,
                   context: Context) -> None:
+    """
+    DEPRECATED
+    """
     path: Path = get_dump_dir(context=context).joinpath('keywords.txt')
     with open(path, 'a') as fout:
         fout.write(','.join(keywords))

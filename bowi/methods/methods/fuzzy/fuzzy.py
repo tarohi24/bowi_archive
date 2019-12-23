@@ -65,7 +65,8 @@ def rec_loss(embs: np.ndarray,
 
     with warnings.catch_warnings():
         try:
-            tfidfs: np.ndarray = tfs * idfs
+            # tfidfs: np.ndarray = tfs * idfs
+            tfidfs: np.ndarray = tfs
             maxes: np.ndarray = np.amax(np.dot(embs, dims.T), axis=1)
         except Warning as w:
             raise RuntimeError(str(w))

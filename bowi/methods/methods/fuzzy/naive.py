@@ -3,8 +3,6 @@ Available only for fasttext
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from pathlib import Path
-import json
 import logging
 from typing import ClassVar, List, Type, Dict, Tuple
 
@@ -17,9 +15,9 @@ from bowi.elas.search import EsResult, EsSearcher
 from bowi.embedding.base import mat_normalize
 from bowi.embedding.fasttext import FastText
 from bowi.methods.common.methods import Method
+from bowi.methods.common.cache import KeywordCacher
 from bowi.methods.common.types import TRECResult
 from bowi.models import Document
-from bowi import settings
 
 from bowi.methods.methods.fuzzy.param import FuzzyParam
 from bowi.methods.methods.fuzzy.fuzzy import get_keyword_inds
@@ -33,6 +31,7 @@ class FuzzyNaive(Method[FuzzyParam]):
     param_type: ClassVar[Type] = FuzzyParam
     fasttext: FastText = field(init=False)
     es_client: EsClient = field(init=False)
+    keyword_cacher: KeywordCacher = field(init=False)
 
     def __post_init__(self):
         super(FuzzyNaive, self).__post_init__()
@@ -44,6 +43,11 @@ class FuzzyNaive(Method[FuzzyParam]):
         else:
             self.es_client: EsClient = EsClient(
                 es_index=f'{self.context.es_index}_query')
+        self.keyword_cacher = KeywordCacher(context=self.context)
+
+    def get_docid(self,
+                  doc: Document) -> str:
+        return doc.docid
 
     def extract_keywords(self,
                          doc: Document) -> List[str]:
@@ -86,22 +90,14 @@ class FuzzyNaive(Method[FuzzyParam]):
         trec_result: TRECResult = self.to_trec_result(doc=query_doc, es_result=candidates)
         return trec_result
 
-    def dump_kwards(self,
-                    keywords: List[str],
-                    doc: Document) -> None:
-        path: Path = settings.cache_dir\
-            .joinpath(f'{self.context.es_index}/keywords/fuzzy.naive')\
-            .joinpath(f'{self.context.runname}.bulk')
-        with open(path, 'a') as fout:
-            data: str = json.dumps({doc.docid: keywords})
-            fout.write(data + '\n')
-
     def create_flow(self, debug: bool = False):
-        node_get_keywords = TaskNode(self.extract_keywords)(
-            {'doc': self.load_node})
-        keywords_dumper = DumpNode(self.dump_kwards)({
+        node_get_docid = TaskNode(self.get_docid)({
+            'doc': self.load_node})
+        node_get_keywords = TaskNode(self.extract_keywords)({
+            'doc': self.load_node})
+        keywords_dumper = DumpNode(self.keyword_cacher.dump)({
             'keywords': node_get_keywords,
-            'doc': self.load_node
+            'docid': node_get_docid
         })
         node_match = TaskNode(self.match)({
             'query_doc': self.load_node,
