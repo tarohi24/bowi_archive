@@ -25,6 +25,8 @@ class KeywordCacher:
              docid: str,
              keywords: List[str]) -> None:
         path: Path = self._get_dump_path()
+        if not path.parent.exists():
+            path.parent.mkdir(parents=True)
         with open(path, 'a') as fout:
             formatted: str = f'{docid}\t{",".join(keywords)}'
             fout.write(formatted + '\n')
@@ -32,8 +34,8 @@ class KeywordCacher:
     def load(self) -> Dict[str, List[str]]:
         path: Path = self._get_dump_path()
         data: Dict[str, List[str]] = {
-            docid: keywords.split('\n')
+            docid: keywords.split(',')
             for docid, keywords
-            in [line.split('\t') for line in path.read_text.splitlines()]
+            in [line.split('\t') for line in path.read_text().splitlines()]
         }
         return data
