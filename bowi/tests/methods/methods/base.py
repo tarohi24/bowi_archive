@@ -1,10 +1,13 @@
+from pathlib import Path
 import pytest
 
 from bowi.methods.common.types import Context
 from bowi.models import Document
+from bowi.methods.common.cache import KeywordCacher
+from bowi import settings
 
 
-__all__ = ('context', 'text', 'doc')
+__all__ = ('context', 'text', 'doc', 'patch_cachedir')
 
 
 @pytest.fixture
@@ -31,3 +34,11 @@ def doc() -> Document:
         text=text,
         tags=['G10P'])
     return doc
+
+
+@pytest.fixture
+def patch_cachedir(monkeypatch) -> None:
+    new_cache_dir: Path = settings.project_root / 'bowi/tests/cache'
+    monkeypatch.setattr(settings,
+                        'cache_dir',
+                        new_cache_dir)

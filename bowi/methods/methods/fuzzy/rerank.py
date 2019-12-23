@@ -129,8 +129,7 @@ class FuzzyRerank(Method[FuzzyParam]):
         1D array whose item[i] is the normalized frequency of ith keyword
         """
         mat: np.ndarray = tfidf_emb.embs
-        # tfidfs: np.ndarray = tfidf_emb.tfs * tfidf_emb.idfs
-        tfidfs: np.ndarray = tfidf_emb.tfs
+        tfidfs: np.ndarray = tfidf_emb.tfs * tfidf_emb.idfs
         assert tfidfs.ndim == 1
         nns: List[int] = self._get_nns(mat=mat, keyword_embs=keyword_embs)
         scores: np.ndarray = np.array([0.0 for _ in range(len(keyword_embs))])
