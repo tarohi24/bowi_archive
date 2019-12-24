@@ -1,0 +1,9 @@
+n_docs: 100
+es_index: clef
+method: fuzzy.naive
+params:
+  - name: "3_idf"
+    n_words: 3
+    model: fasttext
+    prefilter_name: 100
+    min_tf: 3

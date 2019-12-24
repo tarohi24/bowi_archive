@@ -150,6 +150,7 @@ def get_keyword_inds(embs: np.ndarray,
         pbar.update(1)
         # For cutting candidates, see #10 discussion.
         inds: np.ndarray = np.dot(embs, new_dim) < 0.8
+        logger.info(f'# of the new concept covers = {str(np.logical_not(inds).sum())}')
         res_embs: np.ndarray = embs[inds, :]
         res_tfs: np.ndarray = tfs[inds]
         res_idfs: np.ndarray = idfs[inds]
