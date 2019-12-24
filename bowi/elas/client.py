@@ -60,3 +60,19 @@ class EsClient:
         tokens: List[str] = list(
             res['term_vectors']['text']['terms'].keys())
         return tokens
+
+    def get_all_terms(self) -> List[str]:
+        query: Dict = {
+            'aggs' : {
+                'texts' : {
+                    'terms' : {
+                        'field': 'text',
+                        'size': 999999
+                    }
+                }
+            }
+        }
+        res = self.es.search(index=self.es_index,
+                             body=query,
+                             request_timeout=300)
+        return res
