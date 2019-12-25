@@ -33,13 +33,14 @@ class BM25I(Method[BM25IParam]):
     es_topic_client: EsClient = field(init=False)
 
     def __post_init__(self):
+        super(BM25I, self).__post_init__()
         self.knn_cacher = KNNCacher(dataset=self.context.es_index)
         self.df_cacher = DFCacher(dataset=self.context.es_index)
         self.avgdl: float = {
             'clef': 3804.996
         }[self.context.es_index]
         self.es_client = EsClient(self.context.es_index)
-        self.es_topic_client = EsClient(f'{self.context.es_index}_topic')
+        self.es_topic_client = EsClient(f'{self.context.es_index}_query')
 
     def get_query_keywords(self, doc: Document) -> List[str]:
         tfidfs: Dict[str, Tuple[int, float]] = self.es_topic_client.get_tfidfs(doc.docid)
@@ -84,7 +85,14 @@ class BM25I(Method[BM25IParam]):
         score: float = 0
         col_dl_factor: float = sum(collection.values()) / self.avgdl
         for q in query:
-            simwords: Dict[str, float] = self.knn_cacher(q, include_self=True)
+            try:
+                simwords: Dict[str, float] = self.knn_cacher.get_nn(
+                    word=q,
+                    include_self=True)
+            except KeyError:
+                # Maybe simowrds should contain only the word
+                # and keep processing
+                continue
             for word, dist in simwords.items():
                 try:
                     tf: int = collection[word]
@@ -92,8 +100,8 @@ class BM25I(Method[BM25IParam]):
                     continue
                 idf: float = self.df_cacher.get_idf(word)
                 sim: float = 1 - dist
-                numerator: float = sim * idf * tf * (self.k1 + 1)
-                denominator: float = tf * self.k1 * (1 - self.b + self.b * col_dl_factor)
+                numerator: float = sim * idf * tf * (self.param.k1 + 1)
+                denominator: float = tf * self.param.k1 * (1 - self.param.b + self.param.b * col_dl_factor)
                 score += (numerator / denominator)
         return score
 
@@ -126,7 +134,7 @@ class BM25I(Method[BM25IParam]):
             'query': node_keywords,
             'col_tfs': node_get_cols
         })
-        (self.dump < node_get_bm25)('res')
+        (self.dump_node < node_get_bm25)('res')
         flow: Flow = Flow(dump_nodes=[self.dump_node, ],
                           debug=debug)
         return flow

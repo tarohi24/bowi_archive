@@ -11,7 +11,7 @@ from bowi.methods.common.methods import Method
 from bowi.methods.common.dumper import get_dump_dir
 
 # methods
-from bowi.methods.methods import keywords
+from bowi.methods.methods import keywords, bm25
 from bowi.methods.methods.fuzzy import naive, rerank
 from bowi.initialize.cacher import embedding, pre_filtering, col_embs
 
@@ -32,6 +32,8 @@ def get_method(method_name: str) -> Type[M]:
         return embedding.EmbeddingCacher
     elif method_name == 'cache.colembs':
         return col_embs.ColEmbs
+    elif method_name == 'bm25i':
+        return bm25.BM25I
     else:
         raise KeyError(f'{method_name} is not found')
 

@@ -1,0 +1,6 @@
+n_docs: 300
+es_index: clef
+method: bm25i
+params:
+  - name: "100"
+    n_words: 100

@@ -60,7 +60,7 @@ class KNNCacher:
         # load Annoy index
         cdir: Path = settings.cache_dir / f'{self.dataset}/knn'
         self.ann = AnnoyIndex(self.dim, 'angular')
-        self.ann.load(cdir / 'knn.ann')
+        self.ann.load(str((cdir / 'knn.ann').resolve()))
 
         # load id <--> word converters
         with open(cdir / 'w2i.json') as fin:
@@ -72,16 +72,14 @@ class KNNCacher:
                threhsold: float = 0.5,
                include_self: bool = False) -> Dict[str, float]:
         """
-        Get words whose distance to the given word is below threshold
+        Get words whose distance to the given word is below threshold.
+        Raise KeyError when word is not in the vocab
 
         Return
         -----
         {word: dist}
         """
-        try:
-            id_: int = self.w2i[word]
-        except KeyError:
-            raise RuntimeError(f'{word} is not in the vocab')
+        id_: int = self.w2i[word]
         dist_threshold: float = np.sqrt(2 * (1 - threhsold))
         ids, dists = self.ann.get_nns_by_item(id_,
                                               20,  # whatever you like
