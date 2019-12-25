@@ -65,6 +65,9 @@ class EsResult:
             for hit in self.hits}
         return RankItem(query_id=query_id, scores=scores)
 
+    def get_ids(self) -> List[str]:
+        return [hit.docid for hit in self.hits]
+
     def get_scores(self) -> Dict[str, float]:
         dic: Dict[str, float] = {
             hit.docid: hit.score
