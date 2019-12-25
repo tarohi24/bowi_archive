@@ -1,4 +1,4 @@
-n_docs: 300
+n_docs: 500
 es_index: clef
 method: cache.embedding
 params:

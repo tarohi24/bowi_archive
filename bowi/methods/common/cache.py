@@ -58,7 +58,7 @@ class KNNCacher:
 
     def __post_init__(self):
         # load Annoy index
-        cdir: Path = settings.cache_dir / self.dataset
+        cdir: Path = settings.cache_dir / f'{self.dataset}/knn'
         self.ann = AnnoyIndex(self.dim, 'angular')
         self.ann.load(cdir / 'knn.ann')
 
@@ -69,7 +69,15 @@ class KNNCacher:
 
     def get_nn(self,
                word: str,
-               threhsold: float = 0.5) -> List[str]:
+               threhsold: float = 0.5,
+               include_self: bool = False) -> Dict[str, float]:
+        """
+        Get words whose distance to the given word is below threshold
+
+        Return
+        -----
+        {word: dist}
+        """
         try:
             id_: int = self.w2i[word]
         except KeyError:
@@ -78,5 +86,36 @@ class KNNCacher:
         ids, dists = self.ann.get_nns_by_item(id_,
                                               20,  # whatever you like
                                               include_distances=True)
-        return [self.i2w[i] for i, dist in zip(ids, dists)
-                if dist < dist_threshold]
+        data: Dict[str, float] = {
+            self.i2w[i]: dist for i, dist in zip(ids, dists)
+            if dist < dist_threshold
+        }
+        if include_self:
+            data[word] = 0.0
+        return data
+
+
+@dataclass
+class DFCacher:
+    dataset: str
+    df_dict: Dict[str, int] = field(init=False)
+    total_docs: int = field(init=False)
+
+    def __post_init__(self):
+        path: Path = settings.cache_dir / f'{self.dataset}/df.json'
+        with open(path) as fin:
+            self.df_dict = json.load(fin)
+        self.total_docs = {
+            'clef': 993910,
+            'ntcir': 1315355,
+            'aan': 23596,
+            'cmu': 19865,
+        }[self.dataset]
+
+    def get_idf(self, word: str) -> float:
+        try:
+            df: int = self.df_dict[word]
+        except KeyError:
+            raise RuntimeError(f'{word} is not in the vocab')
+        # Elasticsearch-style IDF
+        return np.log(1 + (self.total_docs - df + 0.5) / (df + 0.5))

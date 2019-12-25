@@ -85,10 +85,15 @@ class KeywordBaseline(Method[KeywordParam]):
         node_keywords = TaskNode(self.extract_keywords)({
             'doc': self.load_node})
 
-        node_search = DumpNode(self.search)({
+        node_search = TaskNode(self.search)({
             'doc': self.load_node,
             'keywords': node_keywords
         })
-        flow: Flow = Flow(dump_nodes=[node_search, ],
+        node_trec = TaskNode(self.to_trec_result)({
+            'doc': self.load_node,
+            'es_result': node_search
+        })
+        (self.dump_node < node_trec)('res')
+        flow: Flow = Flow(dump_nodes=[self.dump_node, ],
                           debug=debug)
         return flow
