@@ -72,7 +72,7 @@ class EmbeddingCacher(Method[EmbeddingCacheParam]):
         embs: np.ndarray = np.array(emb_list)
         np.save(dump_dir.joinpath('embeddings.npy'), embs)
 
-    def create_flow(self) -> Flow:
+    def create_flow(self, debug: bool = False) -> Flow:
         node_embed: TaskNode = TaskNode(func=self.embed)
         (node_embed < self.load_node)('doc')
         node_dump: DumpNode = DumpNode(func=self.dump)

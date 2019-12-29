@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Callable, List, Optional
- 
+
 import numpy as np
 
 
@@ -30,8 +30,7 @@ def return_matrix(func: Callable[..., np.ndarray]):
 def mat_normalize(mat: np.ndarray) -> np.ndarray:
     assert len(mat.shape) == 2
     norm = np.linalg.norm(mat, axis=1)
-    mat: np.ndarray = (mat.T / norm).T
-    return mat
+    return (mat.T / norm).T
 
 
 @dataclass

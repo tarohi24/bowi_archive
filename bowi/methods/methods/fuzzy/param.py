@@ -6,7 +6,7 @@ from bowi.methods.common.types import Param
 
 @dataclass
 class FuzzyParam(Param):
-    n_words: str
+    n_words: int
     model: str
     prefilter_name: str
     min_tf: int

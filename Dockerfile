@@ -15,7 +15,6 @@ ENV PYENV_ROOT="${HOME}/.pyenv"
 ENV PATH=${PYENV_ROOT}/bin:${PATH}
 ENV PYTHON_VERSION=3.8.0
 
-
 # Install pyenv
 RUN git clone --recursive --shallow-submodules \
         https://github.com/pyenv/pyenv.git \

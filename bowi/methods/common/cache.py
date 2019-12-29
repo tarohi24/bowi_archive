@@ -69,7 +69,7 @@ class KNNCacher:
 
     def get_nn(self,
                word: str,
-               threhsold: float = 0.5,
+               threshold: float = 0.5,
                include_self: bool = False) -> Dict[str, float]:
         """
         Get words whose distance to the given word is below threshold.
@@ -80,7 +80,7 @@ class KNNCacher:
         {word: dist}
         """
         id_: int = self.w2i[word]
-        dist_threshold: float = np.sqrt(2 * (1 - threhsold))
+        dist_threshold: float = np.sqrt(2 * (1 - threshold))
         ids, dists = self.ann.get_nns_by_item(id_,
                                               20,  # whatever you like
                                               include_distances=True)
@@ -114,6 +114,6 @@ class DFCacher:
         try:
             df: int = self.df_dict[word]
         except KeyError:
-            raise RuntimeError(f'{word} is not in the vocab')
+            df: int = 2  # type: ignore
         # Elasticsearch-style IDF
         return np.log(1 + (self.total_docs - df + 0.5) / (df + 0.5))

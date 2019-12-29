@@ -55,8 +55,8 @@ if __name__ == '__main__':
     (task_node < pre_task_node)('pre')
 
     def dump_to_one_file(doc: Document) -> None:
-        with open(data_dir.joinpath('ntcir/query/dump.bulk'), 'a') as fout:
-            fout.write(doc.to_json() + '\n')  # noqa
+        with open(settings.data_dir / 'ntcir/query/dump.bulk', 'a') as fout:
+            fout.write(doc.to_json() + '\n')  # type: ignore
 
     dump_node: DumpNode[Document] = DumpNode(func=dump_to_one_file)
     flow: Flow = Flow(dump_nodes=[dump_node, ])

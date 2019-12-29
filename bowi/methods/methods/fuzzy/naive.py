@@ -58,10 +58,10 @@ class FuzzyNaive(Method[FuzzyParam]):
         }
         words, tfidfs = list(zip(*tfidf_dict.items()))
         tfs, idfs = [np.array(lst) for lst in list(zip(*tfidfs))]
-        embs: np.ndarray = mat_normalize(self.fasttext.embed_words(words))
+        embs: np.ndarray = mat_normalize(self.fasttext.embed_words(words))  # type: ignore
         key_inds: List[int] = get_keyword_inds(embs=embs,
-                                               keyword_embs=None,
-                                               n_keywords=self.param.n_words, tfs=tfs,
+                                               n_keywords=self.param.n_words,
+                                               tfs=tfs,
                                                idfs=idfs)
         keywords: List[str] = [words[i] for i in key_inds]
         logger.info(keywords)

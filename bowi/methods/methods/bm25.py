@@ -44,7 +44,10 @@ class BM25I(Method[BM25IParam]):
 
     def get_query_keywords(self, doc: Document) -> List[str]:
         tfidfs: Dict[str, Tuple[int, float]] = self.es_topic_client.get_tfidfs(doc.docid)
-        words: List[str] = [word for word, _ in sorted(tfidfs.items(), key=lambda x: x[1][0])]
+        words: List[str] = [
+            word for word, _
+            in sorted(tfidfs.items(), key=lambda x: x[1][0], reverse=True)
+        ][:self.param.n_words]
         return words
 
     def get_cols(self,
@@ -88,11 +91,10 @@ class BM25I(Method[BM25IParam]):
             try:
                 simwords: Dict[str, float] = self.knn_cacher.get_nn(
                     word=q,
+                    threshold=self.param.threshold,
                     include_self=True)
             except KeyError:
-                # Maybe simowrds should contain only the word
-                # and keep processing
-                continue
+                simwords: Dict[str, float] = {q: 0.0}  # type: ignore
             for word, dist in simwords.items():
                 try:
                     tf: int = collection[word]

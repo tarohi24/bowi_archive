@@ -2,6 +2,6 @@ n_docs: 300
 es_index: clef
 method: bm25i
 params:
-  - name: "100_nosim"
+  - name: "100_noexp"
     threshold: 0
     n_words: 100

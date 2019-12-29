@@ -40,6 +40,7 @@ services:
     image: hirota/lsp-bowi
     environment:
       - MYPYPATH=/home/${USER}/bowi/stubs
+      - MYPY_CONFIG=/home/${USER}/bowi/mypy.ini
     volumes:
       - "/home/${USER}/bowi:/home/${USER}/bowi"
     ports:

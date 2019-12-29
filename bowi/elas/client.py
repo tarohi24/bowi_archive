@@ -66,9 +66,9 @@ class EsClient:
         CAUTION: too heavy.
         """
         query: Dict = {
-            'aggs' : {
-                'texts' : {
-                    'terms' : {
+            'aggs': {
+                'texts': {
+                    'terms': {
                         'field': 'text',
                         'size': 999999
                     }

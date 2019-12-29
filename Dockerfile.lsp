@@ -4,6 +4,9 @@ ARG mount_dir
 WORKDIR /tmp
 ADD requirements /tmp/requirements
 WORKDIR /tmp/requirements
+
+# Install dependencies
+ARG CACHEBUST=1
 RUN pip install -r requirements.txt
 RUN pip install -r requirements_dev.txt
 

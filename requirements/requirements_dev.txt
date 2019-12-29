@@ -1,5 +1,6 @@
 autoflake
 flake8
+git+https://github.com/tarohi24/pyls-mypy
 git+https://github.com/python/mypy
 python-language-server
 pytest

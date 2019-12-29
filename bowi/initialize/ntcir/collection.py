@@ -11,7 +11,6 @@ from tqdm import tqdm
 from typedflow.typedflow import Task, DataLoader, Dumper, Pipeline
 from typedflow.utils import dump_to_each_file
 
-from bowi.elas import models
 from bowi.initialize.converters.ntcir import NTCIRConverter
 from bowi.models import Document
 from bowi.settings import data_dir
@@ -46,10 +45,10 @@ def get_document(root: ET.Element) -> Document:
     tags: List[str] = converter._get_tags(root)
     title: str = converter._get_title(root)
     text: str = converter._get_text(root)
-    doc: Document = Document(docid=models.KeywordField(docid),
-                                   title=models.TextField(title),
-                                   text=models.TextField(text),
-                                   tags=models.KeywordListField(tags))
+    doc: Document = Document(docid=docid,
+                             title=title,
+                             text=text,
+                             tags=tags)
     return doc
 
 

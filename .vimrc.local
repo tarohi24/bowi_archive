@@ -6,7 +6,7 @@ function Lsp()
         \ 'name': 'pyls',
         \ 'cmd': {server_info -> ['docker-compose', 'run', '--rm', 'lsp', 'pyls', '--port', '11001']},
         \ 'whitelist': ['python'],
-        \ 'workspace_config': {'pyls': {'configurationSources': ['flake8'], 'plugins': {'mypy': {'enabled': v:true}, 'pylint': {'enabled': v:false}, 'pycodestyle': {'enabled': v:false}, 'flake8': {'enabled': v:true}}}},
+        \ 'workspace_config': {'pyls': {'configurationSources': ['flake8'], 'plugins': {'pyls_mypy': {'enabled': v:true, 'live_mode': v:false}, 'pylint': {'enabled': v:false}, 'pycodestyle': {'enabled': v:false}, 'flake8': {'enabled': v:true}}}},
         \ })
 endfunction
 
