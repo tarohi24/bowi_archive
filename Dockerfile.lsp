@@ -11,7 +11,6 @@ RUN mkdir -p ${mount_dir}
 WORKDIR ${mount_dir}
 ADD setup.py ${mount_dir}/
 ADD bowi ${mount_dir}/bowi
-ADD stub ${mount_dir}/stub
 RUN pip install --editable .
 
 VOLUME ${mount_dir}
