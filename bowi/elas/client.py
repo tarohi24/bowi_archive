@@ -79,3 +79,11 @@ class EsClient:
                              body=query,
                              request_timeout=300)
         return res
+
+    def get_source(self, docid: str) -> Dict:
+        body: Dict = {'query': {'match': {'docid': docid}}, 'size': 1}
+        res: Dict = self.es.search(index=self.es_index,
+                                   body=body)
+        initial_hit: Dict = res['hits']['hits'][0]  # type: ignore
+        return initial_hit['_source']
+                      

@@ -5,7 +5,9 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 import re
-from typing import cast, Dict, List, Pattern, Match
+from typing import cast, Counter, Dict, List, Pattern, Match
+
+from bowi.elas.client import EsClient
 
 
 @dataclass
@@ -35,7 +37,39 @@ class KNNClassifier():
         knns: Dict[str, List[str]] = defaultdict(create_str_list)
         lines: List[str] = prel_file.read_text().splitlines()
         for line in lines:
-            if (match := self.prel_pat.match(line)) is None:
+            if (match := self.prel_pat.match(line)) is None:  # noqa
                 continue
-            knns[match.group('qid')].append(match.group('relid'))
+            if len(knns[match.group('qid')]) < self.n_neigh:
+                knns[match.group('qid')].append(match.group('relid'))
         return knns
+
+    def _get_labels(self,
+                    ids: List[str],
+                    es_client: EsClient) -> List[List[str]]:
+        if len(ids) == 0:
+            return []
+        else:
+            head, *tail = ids
+            source: Dict = es_client.get_source(docid=head)
+            tags: List[str] = source['tags']
+            return [tags] + self._get_labels(tail, es_client=es_client)
+
+    def _get_repr(self,
+                  tags: List[List[str]]) -> Dict[str, str]:
+        counter: Counter[str] = Counter(sum(tags, []))
+        return counter.most_common(1)[0][0]
+
+    def clf(self,
+            prel_file: Path,
+            es_client: EsClient) -> Dict[str, str]:
+        """
+        For each document, choose the most popular class to which
+        kNN documents belong to.
+        """
+        clf_res: Dict[str, str] = dict()
+        rel_docs: Dict[str, List[str]] = self._load_prel_file(prel_file=prel_file)
+        for qid, relids in rel_docs.items():
+            tags_list: List[List[str]] = self._get_labels(relids,
+                                                          es_client=es_client)
+            clf_res[qid] = self._get_repr(tags_list)
+        return clf_res
