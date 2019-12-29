@@ -13,6 +13,7 @@
       },
       "title": {
         "type": "text",
+        "fielddata": true,
         "analyzer": "english"
       }
     }

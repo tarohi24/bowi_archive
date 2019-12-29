@@ -47,7 +47,7 @@ class EsClient:
                                         id=docid,
                                         term_statistics=True,
                                         fields=['text', ])
-        tfidfs: Dict[str, float] = {
+        tfidfs: Dict[str, Tuple[int, float]] = {
             word: (val['term_freq'], np.log(1 / val['doc_freq']))
             for word, val in res['term_vectors']['text']['terms'].items()
         }
@@ -60,3 +60,22 @@ class EsClient:
         tokens: List[str] = list(
             res['term_vectors']['text']['terms'].keys())
         return tokens
+
+    def get_all_terms(self) -> List[str]:
+        """
+        CAUTION: too heavy.
+        """
+        query: Dict = {
+            'aggs': {
+                'texts': {
+                    'terms': {
+                        'field': 'text',
+                        'size': 999999
+                    }
+                }
+            }
+        }
+        res = self.es.search(index=self.es_index,
+                             body=query,
+                             request_timeout=300)
+        return res

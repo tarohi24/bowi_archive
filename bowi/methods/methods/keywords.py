@@ -5,20 +5,17 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 import re
-from pathlib import Path
-import json
-from typing import ClassVar, Dict, Generator, List, Pattern, Set, Type  # type: ignore
+from typing import ClassVar, List, Pattern, Set, Type  # type: ignore
 
 from nltk.corpus import stopwords as nltk_sw
 from nltk.tokenize import RegexpTokenizer
 from typedflow.flow import Flow
-from typedflow.nodes import TaskNode, DumpNode, LoaderNode
+from typedflow.nodes import TaskNode
 
 from bowi.elas.search import EsResult, EsSearcher
 from bowi.models import Document
 from bowi.methods.common.methods import Method
-from bowi.methods.common.dumper import get_dump_dir
-from bowi.methods.common.types import Param, TRECResult, Context
+from bowi.methods.common.types import Param, TRECResult
 
 
 stopwords: Set[str] = set(nltk_sw.words('english'))
@@ -85,10 +82,15 @@ class KeywordBaseline(Method[KeywordParam]):
         node_keywords = TaskNode(self.extract_keywords)({
             'doc': self.load_node})
 
-        node_search = DumpNode(self.search)({
+        node_search = TaskNode(self.search)({
             'doc': self.load_node,
             'keywords': node_keywords
         })
-        flow: Flow = Flow(dump_nodes=[node_search, ],
+        node_trec = TaskNode(self.to_trec_result)({
+            'doc': self.load_node,
+            'es_result': node_search
+        })
+        (self.dump_node < node_trec)('res')
+        flow: Flow = Flow(dump_nodes=[self.dump_node, ],
                           debug=debug)
         return flow

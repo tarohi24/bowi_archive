@@ -65,7 +65,7 @@ Siemens Corporate Research	Phone:   609-734-6569
 755 College Road East		FAX:     609-734-6565
 Princeton, NJ  08540-6668
 ''')
-    doc: Document = converter.to_document(fpath)
+    doc: Document = converter.to_document(fpath)[0]
     assert doc.title == 'Radio for Toyota Tercel'
     assert doc.tags == ['rec.autos', ]
     assert doc.text[:5] == "I'm l"

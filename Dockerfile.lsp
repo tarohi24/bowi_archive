@@ -4,6 +4,9 @@ ARG mount_dir
 WORKDIR /tmp
 ADD requirements /tmp/requirements
 WORKDIR /tmp/requirements
+
+# Install dependencies
+ARG CACHEBUST=1
 RUN pip install -r requirements.txt
 RUN pip install -r requirements_dev.txt
 
@@ -11,7 +14,6 @@ RUN mkdir -p ${mount_dir}
 WORKDIR ${mount_dir}
 ADD setup.py ${mount_dir}/
 ADD bowi ${mount_dir}/bowi
-ADD stub ${mount_dir}/stub
 RUN pip install --editable .
 
 VOLUME ${mount_dir}

@@ -56,7 +56,7 @@ class CmuConveter(Converter):
         return [cat, ]
 
     def to_document(self,
-                    fpath: Path) -> Document:
+                    fpath: Path) -> List[Document]:
         docid: str = self._get_docid(fpath)
         tags: List[str] = self._get_tags(fpath)
         with open(fpath) as fin:
@@ -81,4 +81,4 @@ class CmuConveter(Converter):
         except NameError:
             raise RuntimeError(f'Body is not found in {docid}')
 
-        return Document(docid=docid, tags=tags, text=body, title=title)
+        return [Document(docid=docid, tags=tags, text=body, title=title), ]

@@ -1,7 +1,8 @@
 import argparse
+from collections import namedtuple
 import logging
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Type, TypeVar
+from typing import cast, Dict, List, Type
 
 import yaml
 from typedflow.flow import Flow
@@ -11,29 +12,12 @@ from bowi.methods.common.methods import Method
 from bowi.methods.common.dumper import get_dump_dir
 
 # methods
-from bowi.methods.methods import keywords
+from bowi.methods.methods import keywords, bm25
 from bowi.methods.methods.fuzzy import naive, rerank
-from bowi.initialize.cacher import embedding, pre_filtering, col_embs
+from bowi.initialize.cacher import embedding, pre_filtering
 
 
-M = TypeVar('M', bound=Method)
-
-
-def get_method(method_name: str) -> Type[M]:
-    if method_name == 'keywords':
-        return keywords.KeywordBaseline
-    elif method_name == 'fuzzy.naive':
-        return naive.FuzzyNaive
-    elif method_name == 'fuzzy.rerank':
-        return rerank.FuzzyRerank
-    elif method_name == 'cache.pre_filtering':
-        return pre_filtering.PreSearcher
-    elif method_name == 'cache.embedding':
-        return embedding.EmbeddingCacher
-    elif method_name == 'cache.colembs':
-        return col_embs.ColEmbs
-    else:
-        raise KeyError(f'{method_name} is not found')
+RunArg = namedtuple('RunArg', ['paramfile', 'debug'])
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -51,7 +35,24 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def parse(args: NamedTuple) -> List[M]:
+def get_method(method_name: str) -> Type[Method]:
+    if method_name == 'keywords':
+        return keywords.KeywordBaseline
+    elif method_name == 'fuzzy.naive':
+        return naive.FuzzyNaive
+    elif method_name == 'fuzzy.rerank':
+        return rerank.FuzzyRerank
+    elif method_name == 'cache.pre_filtering':
+        return pre_filtering.PreSearcher
+    elif method_name == 'cache.embedding':
+        return embedding.EmbeddingCacher
+    elif method_name == 'bm25i':
+        return bm25.BM25I
+    else:
+        raise KeyError(f'{method_name} is not found')
+
+
+def parse(args: RunArg) -> List[Method]:
     if args.debug:
         logging.basicConfig(level=logging.INFO)
     else:
@@ -77,14 +78,14 @@ def parse(args: NamedTuple) -> List[M]:
         )
         del p['name']
         param: Param = param_type(**p)
-        method: M = method_type(context=context, param=param)
+        method: Method = method_type(context=context, param=param)
         lst.append(method)
     return lst
 
 
 def main() -> int:
     parser = create_parser()
-    args = parser.parse_args()
+    args: RunArg = cast(RunArg, parser.parse_args())
     methods: List[Method] = parse(args)
     for met in methods:
         dump_dir: Path = get_dump_dir(met.context)

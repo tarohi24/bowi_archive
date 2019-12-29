@@ -4,7 +4,7 @@ load -> create bulk query -> insert to ES
 import logging
 import json
 from pathlib import Path
-from typing import Dict, Generator, Iterable
+from typing import Dict, Generator
 
 from elasticsearch.exceptions import NotFoundError
 from elasticsearch.helpers import streaming_bulk
@@ -31,11 +31,11 @@ def load_corpus() -> Generator[Dict, None, None]:
         except ValueError:
             continue
         try:
-            doc: Document = converter.to_document(fpath)
+            doc: Document = converter.to_document(fpath)[0]
         except RuntimeError as e:
             logger.warn(str(e))
             continue
-        dic = doc.to_dict()
+        dic = doc.to_dict()  # type: ignore
         dic['_index'] = 'cmu'
         yield dic
 
@@ -43,9 +43,9 @@ def load_corpus() -> Generator[Dict, None, None]:
 def insert_doc() -> None:
     dump_file: Path = settings.data_dir / 'cmu/query/dump.bulk'
     with open(dump_file, 'a') as fout:
-        for data in load_corpus():
+        for dic in load_corpus():
+            data: str = json.dumps(dic)
             fout.write(data + '\n')
-    return 0
 
 
 def main() -> int:

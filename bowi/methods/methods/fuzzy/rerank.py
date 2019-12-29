@@ -61,7 +61,7 @@ class FuzzyRerank(Method[FuzzyParam]):
     def _get_tfidf_emb(self,
                        docid: str,
                        es_index: str) -> TfidfEmb:
-        previous_level = logging.root.manager.disable
+        previous_level = logging.root.manager.disable  # type: ignore
         logging.disable(logging.WARN)  # supress logger of Elasticsearch
         es_client: EsClient = EsClient(es_index=es_index)
         tfidf_dict: Dict[str, Tuple[int, float]] = {
@@ -71,9 +71,9 @@ class FuzzyRerank(Method[FuzzyParam]):
         }
         words, tfidfs = list(zip(*tfidf_dict.items()))
         tfs, idfs = [np.array(lst) for lst in list(zip(*tfidfs))]
-        embs: np.ndarray = self.fasttext.embed_words(words)
+        embs: np.ndarray = self.fasttext.embed_words(words)  # type: ignore
         logging.disable(previous_level)
-        return TfidfEmb(words=words, tfs=tfs, idfs=idfs, embs=embs)
+        return TfidfEmb(words=words, tfs=tfs, idfs=idfs, embs=embs)  # type: ignore
 
     def load_query(self,
                    qk: QueryKeywords) -> TfidfEmb:
