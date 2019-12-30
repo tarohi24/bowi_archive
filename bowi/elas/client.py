@@ -86,4 +86,3 @@ class EsClient:
                                    body=body)
         initial_hit: Dict = res['hits']['hits'][0]  # type: ignore
         return initial_hit['_source']
-                      

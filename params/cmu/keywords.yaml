@@ -1,0 +1,6 @@
+n_docs: 30
+es_index: cmu
+method: keywords
+params:
+  - name: '100'
+    n_words: 100

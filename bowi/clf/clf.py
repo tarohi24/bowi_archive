@@ -1,11 +1,15 @@
 """
-Modules for CLF
+KNN Document Classifier
 """
+import argparse
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
+import json
 import re
 from typing import cast, Counter, Dict, List, Pattern, Match
+
+from tqdm import tqdm
 
 from bowi.elas.client import EsClient
 
@@ -68,8 +72,32 @@ class KNNClassifier():
         """
         clf_res: Dict[str, str] = dict()
         rel_docs: Dict[str, List[str]] = self._load_prel_file(prel_file=prel_file)
-        for qid, relids in rel_docs.items():
+        for qid, relids in tqdm(rel_docs.items()):
             tags_list: List[List[str]] = self._get_labels(relids,
                                                           es_client=es_client)
             clf_res[qid] = self._get_repr(tags_list)
         return clf_res
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('dataset',
+                        type=str)
+    parser.add_argument('prel_path',
+                        type=Path)
+    args = parser.parse_args()
+    es_client: EsClient = EsClient(args.dataset)
+    knn_clf = KNNClassifier()
+    prel_path: Path = args.prel_path
+    res: Dict[str, str] = knn_clf.clf(prel_file=prel_path,
+                                      es_client=es_client)
+    # save result
+    dump_dir: Path = prel_path.parent
+    dump_path: Path = dump_dir / 'clf.json'
+    with open(dump_path, 'w') as fout:
+        json.dump(res, fout)
+    return 0
+
+
+if __name__ == '__main__':
+    exit(main())
