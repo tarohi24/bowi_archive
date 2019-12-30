@@ -43,8 +43,12 @@ class KNNClassifier():
         for line in lines:
             if (match := self.prel_pat.match(line)) is None:  # noqa
                 continue
-            if len(knns[match.group('qid')]) < self.n_neigh:
-                knns[match.group('qid')].append(match.group('relid'))
+            qid: str = match.group('qid')
+            relid: str = match.group('relid')
+            if qid == relid:
+                continue
+            if len(knns[qid]) < self.n_neigh:
+                knns[qid].append(relid)
         return knns
 
     def _get_labels(self,

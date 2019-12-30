@@ -11,7 +11,7 @@ from bowi import settings
 
 @pytest.fixture
 def resdir(tmpdir) -> Path:
-    dump_dir: Path = Path(tmpdir) / 'dummy' / 'keywords'
+    dump_dir: Path = Path(tmpdir) / 'dummy' / 'keywords' / '100'
     dump_dir.mkdir(parents=True)
     dummy_res: Dict[str, List[str]] = {
         'A': ['AAA', 'BBB'],
