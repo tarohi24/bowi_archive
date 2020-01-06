@@ -1,7 +1,9 @@
 """
 Improved BM25
 """
+from collections import defaultdict
 from dataclasses import dataclass, field
+import logging
 from typing import ClassVar, Dict, List, Type, Tuple  # type: ignore
 
 from typedflow.flow import Flow
@@ -13,6 +15,10 @@ from bowi.elas.search import EsSearcher
 from bowi.methods.common.methods import Method
 from bowi.methods.common.types import Param, TRECResult
 from bowi.methods.common.cache import KNNCacher, DFCacher
+from bowi import settings
+
+
+logger = logging.getLogger(__file__)
 
 
 @dataclass
@@ -31,6 +37,7 @@ class BM25I(Method[BM25IParam]):
     avgdl: float = field(init=False)
     es_client: EsClient = field(init=False)
     es_topic_client: EsClient = field(init=False)
+    reldocs: Dict[str, List[str]] = field(init=False)
 
     def __post_init__(self):
         super(BM25I, self).__post_init__()
@@ -41,6 +48,14 @@ class BM25I(Method[BM25IParam]):
         }[self.context.es_index]
         self.es_client = EsClient(self.context.es_index)
         self.es_topic_client = EsClient(f'{self.context.es_index}_query')
+
+        # get relevance documents
+        dataset: str = self.context.es_index
+        lines: List[str] = (settings.data_dir / f'{dataset}/query/gt.qrel').read_text().splitlines()
+        self.rels: Dict[str, List[str]] = defaultdict(list)
+        for line in lines:
+            qid, _, cid, _ = line.split()
+            self.rels[qid].append(cid)
 
     def get_query_keywords(self, doc: Document) -> List[str]:
         tfidfs: Dict[str, Tuple[int, float]] = self.es_topic_client.get_tfidfs(doc.docid)
@@ -57,20 +72,25 @@ class BM25I(Method[BM25IParam]):
         Search by given keywords and extract collection docs
         with their tokens and their frequencies
         """
-        searcher: EsSearcher = EsSearcher(es_index=self.context.es_index)
-        colids: List[str] = searcher\
-            .initialize_query()\
-            .add_query(terms=keywords, field='text')\
-            .add_size(300)\
-            .add_filter(terms=doc.tags, field='tags')\
-            .add_source_fields(['docid', ])\
-            .search()\
-            .get_ids()
+        # searcher: EsSearcher = EsSearcher(es_index=self.context.es_index)
+        # colids: List[str] = searcher\
+        #     .initialize_query()\
+        #     .add_query(terms=keywords, field='text')\
+        #     .add_size(300)\
+        #     .add_filter(terms=doc.tags, field='tags')\
+        #     .add_source_fields(['docid', ])\
+        #     .search()\
+        #     .get_ids()
+        colids: List[str] = self.rels[doc.docid]
 
         tfs: Dict[str, Dict[str, int]] = dict()
         for docid in colids:
-            tfidfs: Dict[str, Tuple[int, float]] = self.es_client.get_tfidfs(
-                docid=docid)
+            try:
+                tfidfs: Dict[str, Tuple[int, float]] = self.es_client.get_tfidfs(docid=docid)
+            except KeyError:
+                # Document not found
+                logger.warn(f'{docid} not found')
+                continue
             tfs[docid] = {word: tf for word, (tf, _) in tfidfs.items()}
         return tfs
 
