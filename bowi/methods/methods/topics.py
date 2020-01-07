@@ -58,7 +58,7 @@ class Topicrank(Method[TopicParam]):
         """
         Return
         -----
-        (word, topics), wid
+        (topics, word), wid
         """
         doclen: int = len(tokens)
         chunk_size: int = doclen // self.param.n_topics
@@ -72,10 +72,14 @@ class Topicrank(Method[TopicParam]):
             counter: Counter[str] = Counter(part)
             for word, freq in counter.items():
                 wid: int = vocab[word]
-                mat[(wid, i)] = freq
+                try:
+                    idf: float = self.df_cacher.get_idf(word)
+                except KeyError:
+                    idf = 1
+                mat[(wid, i)] = freq * idf
 
         # normalize
-        mat = (mat.T / mat.sum(axis=1)).T
+        mat = (mat.T / mat.sum(axis=1))
         return WordMatrix(mat=mat, word_to_id=vocab)
 
     def get_keywords(self,
