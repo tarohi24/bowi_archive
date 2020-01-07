@@ -44,6 +44,7 @@ class Topicrank(Method[TopicParam]):
     es_topic_client: EsClient = field(init=False)
 
     def __post_init__(self):
+        super(Topicrank, self).__post_init__()
         self.df_cacher = DFCacher(dataset=self.context.es_index)
         self.es_topic_client = EsClient(f'{self.context.es_index}_query')
 
