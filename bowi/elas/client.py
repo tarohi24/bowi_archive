@@ -38,6 +38,16 @@ class EsClient:
         except NotFoundError:
             logger.info(f'{self.es_index} does not exist')
 
+    def isin(self, docid: str) -> bool:
+        body: Dict = {'query': {'match': {'docid': docid}}}
+        hits: List = self.es.search(index=self.es_index, body=body)['hits']['hits']
+        return len(hits) > 0
+
+    def get_elasid(self, docid: str) -> str:
+        body: Dict = {'query': {'match': {'docid': docid}}, '_source': False}
+        hit: Dict = self.es.search(index=self.es_index, body=body)['hits']['hits'][0]
+        return hit['_id']
+
     def get_tfidfs(self,
                    docid: str) -> Dict[str, Tuple[int, float]]:
         """
@@ -54,8 +64,10 @@ class EsClient:
         return tfidfs
 
     def get_tokens_from_doc(self, docid: str) -> List[str]:
+        # get id
+        elasid: str = self.get_elasid(docid=docid)
         res: Dict = self.es.termvectors(index=self.es_index,
-                                        id=docid,
+                                        id=elasid,
                                         fields=['text', ])
         tokens: List[str] = list(
             res['term_vectors']['text']['terms'].keys())

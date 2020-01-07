@@ -1,6 +1,7 @@
 """
 Topic ranking w/o topic modeling
 """
+from collections import defaultdict
 from dataclasses import dataclass, field
 import logging
 from typing import ClassVar, Counter, Dict, List, Type  # type: ignore
@@ -10,6 +11,7 @@ from typedflow.flow import Flow
 from typedflow.nodes import TaskNode
 
 from bowi.models import Document
+from bowi.elas.search import EsSearcher
 from bowi.elas.client import EsClient
 from bowi.methods.common.methods import Method
 from bowi.methods.common.types import Param, TRECResult
@@ -84,6 +86,42 @@ class Topicrank(Method[TopicParam]):
             ind: np.ndarray = arr.argsort()[-1 * self.param.n_words:][::-1]
             keywords.append([word_mat.id_to_word[i] for i in ind])
         return keywords
-            
-            
-                     
+
+    def search(self,
+               doc: Document,
+               keywords: List[List[str]]) -> TRECResult:
+        searcher: EsSearcher = EsSearcher(es_index=self.context.es_index)
+        scores: Dict[str, float] = defaultdict(float)
+        for terms in keywords:
+            sc: Dict[str, float] = searcher\
+                .initialize_query()\
+                .add_query(terms=terms, field='text')\
+                .add_size(300)\
+                .add_filter(terms=doc.tags, field='tags')\
+                .add_source_fields(['docid', ])\
+                .search()\
+                .get_scores()
+            for docid, point in sc.items():
+                scores[docid] += point
+        res: TRECResult = TRECResult(
+            query_docid=doc.docid,
+            scores=scores)
+        return res
+
+    def create_flow(self, debug: bool = False) -> Flow:
+        node_tokens = TaskNode(self.get_all_tokens)({
+            'doc': self.load_node,
+        })
+        node_wmat = TaskNode(self.get_portion_of_each_word)({
+            'tokens': node_tokens,
+        })
+        node_keywords = TaskNode(self.get_keywords)({
+            'word_mat': node_wmat,
+        })
+        node_search = TaskNode(self.search)({
+            'doc': self.load_node,
+            'keywords': node_keywords
+        })
+        (self.dump_node < node_search)('res')
+        flow: Flow = Flow(dump_nodes=[self.dump_node, ], debug=debug)
+        return flow
