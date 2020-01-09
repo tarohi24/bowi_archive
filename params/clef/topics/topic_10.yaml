@@ -1,0 +1,7 @@
+n_docs: 300
+es_index: clef
+method: topics
+params:
+  - name: "topic10_idf"
+    n_words: 30
+    n_topics: 10

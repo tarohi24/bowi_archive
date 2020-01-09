@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 import json
 from pathlib import Path
-from typing import Dict, List
+from typing import Counter, Dict, List
 
 from annoy import AnnoyIndex
 import numpy as np
@@ -117,3 +117,8 @@ class DFCacher:
             df: int = 2  # type: ignore
         # Elasticsearch-style IDF
         return np.log(1 + (self.total_docs - df + 0.5) / (df + 0.5))
+
+    def to_tfidf(self,
+                 tokens: List[str]) -> Dict[str, float]:
+        counter: Counter[str] = Counter(tokens)
+        return {word: counter[word] * self.get_idf(word) for word in counter.keys()}

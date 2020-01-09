@@ -1,0 +1,7 @@
+n_docs: 300
+es_index: ntcir
+method: topics
+params:
+  - name: "topic1_idf"
+    n_words: 30
+    n_topics: 5
