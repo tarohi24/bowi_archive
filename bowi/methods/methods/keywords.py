@@ -2,20 +2,21 @@
 extract keywords -> do search
 """
 from __future__ import annotations
-from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import re
-from typing import ClassVar, List, Pattern, Set, Type  # type: ignore
+from typing import ClassVar, Dict, List, Pattern, Set, Type  # type: ignore
 
 from nltk.corpus import stopwords as nltk_sw
 from nltk.tokenize import RegexpTokenizer
 from typedflow.flow import Flow
 from typedflow.nodes import TaskNode
 
+from bowi.elas.client import EsClient
 from bowi.elas.search import EsResult, EsSearcher
 from bowi.models import Document
 from bowi.methods.common.methods import Method
 from bowi.methods.common.types import Param, TRECResult
+from bowi.methods.common.cache import DFCacher
 
 
 stopwords: Set[str] = set(nltk_sw.words('english'))
@@ -32,28 +33,45 @@ class KeywordParam(Param):
         return KeywordParam(n_words=args.n_keywords)
 
 
-def extract_keywords_from_text(text: str,
-                               n_words: int) -> List[str]:
-    # lower and tokenize
-    tokens: List[str] = tokenizer.tokenize(text.lower())
-    # remove stopwords
-    tokens: List[str] = [w for w in tokens if w not in stopwords]  # type: ignore
-    tokens: List[str] = [w for w in tokens  # type: ignore
-                         if not_a_word_pat.match(w) is None
-                         and not w.isdigit()]
-    counter: Counter = Counter(tokens)
+def is_valid_word(word: str) -> bool:
+    if not_a_word_pat.match(word) is not None:
+        return False
+    elif word.isdigit():
+        return False
+    else:
+        return True
+
+
+def extract_keywords(tfs: Dict[str, int],
+                     n_words: int,
+                     df_cacher: DFCacher) -> List[str]:
+    tfidf_dict: Dict[str, float] = {
+        word: tf * df_cacher.get_idf(word)
+        for word, tf in tfs.items()
+        if is_valid_word(word)
+    }
     keywords: List[str] = [
-        w for w, _ in counter.most_common(n_words)]
+        word for word, _ in sorted(
+            tfidf_dict.items(), reverse=True, key=lambda x: x[1])][:n_words]
     return keywords
 
 
 @dataclass
 class KeywordBaseline(Method[KeywordParam]):
     param_type: ClassVar[Type] = KeywordParam
+    escl_query: EsClient = field(init=False)
+    df_cacher: DFCacher = field(init=False)
+
+    def __post_init__(self):
+        super(KeywordBaseline, self).__post_init__()
+        self.escl_query = EsClient(f'{self.context.es_index}_query')
+        self.df_cacher = DFCacher(dataset=self.context.es_index)
 
     def extract_keywords(self, doc: Document) -> List[str]:
-        return extract_keywords_from_text(text=doc.text,
-                                          n_words=self.param.n_words)
+        tfs: Dict[str, int] = self.escl_query.get_tfs(doc.docid)
+        return extract_keywords(tfs=tfs,
+                                n_words=self.param.n_words,
+                                df_cacher=self.df_cacher)
 
     def search(self,
                doc: Document,

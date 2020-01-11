@@ -57,12 +57,12 @@ class TTT(Method[TTTParam]):
 
     def get_keywords(self,
                      doc: Document) -> List[List[str]]:
-        text: str = self.escl_query.get_source(doc.docid)['text']
+        text: str = doc.text
         # Add \n\n because paragraph boundaries cannot be obtained from dataset
         segments: List[str] = self.ttt.tokenize(text.replace('.', '.\n\n'))
         keywords: List[List[str]] = []
         for chunk in segments:
-            tokens: List[str] = [tok for tok in self.escl_query.analyze_text(chunk)
+            tokens: List[str] = [tok for tok in self.escl_query.analyze_text(chunk.replace('\n\n', ' '))
                                  if is_valid_word(tok)]
             tfidf: pd.Series = pd.Series(self.df_cacher.to_tfidf(tokens))
             keywords.append(

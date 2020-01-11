@@ -3,11 +3,10 @@ Client module
 """
 from dataclasses import dataclass
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
-import numpy as np
 
 from bowi.settings import es as ses
 
@@ -48,20 +47,17 @@ class EsClient:
         hit: Dict = self.es.search(index=self.es_index, body=body)['hits']['hits'][0]
         return hit['_id']
 
-    def get_tfidfs(self,
-                   docid: str) -> Dict[str, Tuple[int, float]]:
-        """
-        Get (TF, IDF) of each token in  a doucment
-        """
+    def get_tfs(self,
+                docid: str) -> Dict[str, int]:
         res: Dict = self.es.termvectors(index=self.es_index,
                                         id=docid,
                                         term_statistics=True,
                                         fields=['text', ])
-        tfidfs: Dict[str, Tuple[int, float]] = {
-            word: (val['term_freq'], np.log(1 / val['doc_freq']))
+        tfs: Dict[str, int] = {
+            word: val['term_freq']
             for word, val in res['term_vectors']['text']['terms'].items()
         }
-        return tfidfs
+        return tfs
 
     def get_tokens_from_doc(self, docid: str) -> List[str]:
         # get id
@@ -98,3 +94,19 @@ class EsClient:
                                    body=body)
         initial_hit: Dict = res['hits']['hits'][0]  # type: ignore
         return initial_hit['_source']
+
+    def analyze_text(self, text: str) -> List[str]:
+        chunk_size: int = 500
+        words: List[str] = text.split()
+        n_chunk: int = len(words) // chunk_size + 1
+        tokens: List[str] = []
+        for i in range(n_chunk):
+            body: Dict = {
+                'analyzer': 'english',
+                'text': ' '.join(
+                    words[i * chunk_size:(i + 1) * chunk_size])
+            }
+            res: List[Dict] = self.es.indices.analyze(index=self.es_index,
+                                                      body=body)['tokens']
+            tokens.extend([dic['token'] for dic in res])
+        return tokens
