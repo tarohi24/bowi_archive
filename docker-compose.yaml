@@ -48,6 +48,22 @@ services:
     stdin_open: true
     working_dir: "${PWD}"
 
+  jnote:
+    image: hirota/bowi
+    networks:
+      - bowi_default
+    volumes:
+      - "${PWD}:/home/jovyan/bowi"
+      - "${PWD}/bowi:/home/jovyan/.pyenv/versions/3.8.0/lib/python3.8/site-packages/bowi:ro"
+    environment:
+      - HOME=/home/jovyan
+      - PROJECT_ROOT=/home/jovyan/bowi
+    env_file:
+      - .env
+    ports:
+      - 18888:8888
+    working_dir: /home/jovyan/bowi/notebooks
+    command: bash ../scripts/jnote.bash
 
 networks:
   bowi_default:

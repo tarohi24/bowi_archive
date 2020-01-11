@@ -4,13 +4,17 @@ dataclasses-json
 elasticsearch
 fasttext
 gitpython
+gensim
+jupyter
 lxml
 nltk
 numpy
 pandas
 PuLP
+pyldavis
 pyyaml
 pybind11
+matplotlib
 requests
 scipy
 spherecluster
