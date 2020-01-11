@@ -105,3 +105,4 @@ ENV/
 .vscode/
 *.todo
 log.txt
+notebooks
