@@ -57,12 +57,13 @@ class Topicrank(Method[TopicParam]):
         """
         {word: [pos1, pos2, ...]}
         """
+        elasid: str = self.escl_query.get_elasid(doc.docid)
         tokens: Dict[str, List[int]] = {
             word: [p['position'] for p in val['tokens']]
             for word, val
             in self.escl_query.es.termvectors(
-                index='clef_query',
-                id=doc.docid,
+                index=f'{self.context.es_index}_query',
+                id=elasid,
                 fields=['text', ]
             )['term_vectors']['text']['terms'].items()
             if is_valid_word(word)
