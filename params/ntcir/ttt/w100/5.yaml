@@ -1,0 +1,7 @@
+n_docs: 300
+es_index: ntcir
+method: ttt
+params:
+  - name: "ttt_100_5"
+    n_words: 5
+    w: 100
