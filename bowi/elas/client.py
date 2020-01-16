@@ -49,8 +49,9 @@ class EsClient:
 
     def get_tfs(self,
                 docid: str) -> Dict[str, int]:
+        elasid: str = self.get_elasid(docid=docid)
         res: Dict = self.es.termvectors(index=self.es_index,
-                                        id=docid,
+                                        id=elasid,
                                         term_statistics=True,
                                         fields=['text', ])
         tfs: Dict[str, int] = {
