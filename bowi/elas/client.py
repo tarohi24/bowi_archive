@@ -3,11 +3,13 @@ Client module
 """
 from dataclasses import dataclass
 import logging
-from typing import Dict, List
+from operator import itemgetter
+from typing import Dict, List, Tuple
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
 
+from bowi.utils.text import is_valid_word
 from bowi.settings import es as ses
 
 
@@ -60,14 +62,25 @@ class EsClient:
         }
         return tfs
 
-    def get_tokens_from_doc(self, docid: str) -> List[str]:
+    def get_tokens_from_doc(self,
+                            docid: str,
+                            filtering: bool = True) -> List[str]:
         # get id
         elasid: str = self.get_elasid(docid=docid)
-        res: Dict = self.es.termvectors(index=self.es_index,
-                                        id=elasid,
-                                        fields=['text', ])
-        tokens: List[str] = list(
-            res['term_vectors']['text']['terms'].keys())
+        res: Dict[str, Dict] = self.es.termvectors(
+            index=self.es_index,
+            id=elasid,
+            fields=['text', ])['term_vectors']['text']['terms']
+        positions: List[Tuple[str, int]] = sum(
+            [
+                [(word, p['position']) for p in val['tokens']
+                 if (not filtering) or is_valid_word(word)]
+                for word, val in res.items()
+            ],
+            []
+        )
+        tokens: List[str] = [tok for tok, _ in sorted(positions,
+                                                      key=itemgetter(1))]
         return tokens
 
     def get_all_terms(self) -> List[str]:

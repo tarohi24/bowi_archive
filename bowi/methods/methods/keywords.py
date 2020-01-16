@@ -3,11 +3,8 @@ extract keywords -> do search
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-import re
 from typing import ClassVar, Dict, List, Pattern, Set, Type  # type: ignore
 
-from nltk.corpus import stopwords as nltk_sw
-from nltk.tokenize import RegexpTokenizer
 from typedflow.flow import Flow
 from typedflow.nodes import TaskNode
 
@@ -17,11 +14,7 @@ from bowi.models import Document
 from bowi.methods.common.methods import Method
 from bowi.methods.common.types import Param, TRECResult
 from bowi.methods.common.cache import DFCacher
-
-
-stopwords: Set[str] = set(nltk_sw.words('english'))
-tokenizer: RegexpTokenizer = RegexpTokenizer(r'\w+|\$[\d\.]+|\S+')
-not_a_word_pat: Pattern = re.compile(r'^[^a-z0-9]*$')
+from bowi.utils.text import is_valid_word
 
 
 @dataclass
@@ -31,15 +24,6 @@ class KeywordParam(Param):
     @classmethod
     def from_args(cls, args) -> KeywordParam:
         return KeywordParam(n_words=args.n_keywords)
-
-
-def is_valid_word(word: str) -> bool:
-    if not_a_word_pat.match(word) is not None:
-        return False
-    elif word.isdigit():
-        return False
-    else:
-        return True
 
 
 def extract_keywords(tfs: Dict[str, int],
