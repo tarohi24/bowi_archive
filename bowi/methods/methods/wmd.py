@@ -4,29 +4,55 @@ Word Mover Distance
 from collections import Counter
 from dataclasses import dataclass, field
 from itertools import product
-from typing import Dict, List, Tuple
+from typing import Dict, List, ClassVar, Type
 
-from dataclasses_jsonschema import JsonSchemaMixin
+import datetime
+import logging
 import numpy as np
 import pulp
 from scipy.spatial.distance import euclidean
+from typedflow.nodes import TaskNode
+from typedflow.flow import Flow
 
-from docsim.elas.search import EsResult
-from docsim.embedding.fasttext import FastText
-from docsim.methods.base import Method, Param
-from docsim.models import QueryDocument, RankItem
-from docsim.text import Filter, TextProcessor
+from bowi.elas.search import EsClient, EsResult
+from bowi.methods.methods.keywords import KeywordParam, KeywordBaseline
+from bowi.methods.common.methods import Method
+from bowi.methods.common.types import TRECResult, Param
+from bowi.embedding.fasttext import FastText
+from bowi.models import Document
+
+
+logger = logging.getLogger(__file__)
 
 
 @dataclass
-class WMDParam(Param, JsonSchemaMixin):
-    n_words: int
+class WMDParam(Param):
+    n_words: int = 100
+
+    def to_keyword_param(self) -> KeywordParam:
+        return KeywordParam(n_words=self.n_words)
 
 
 @dataclass
-class WMD(Method):
-    param: WMDParam
-    fasttext: FastText = field(default_factory=FastText.create)
+class WMD(Method[WMDParam]):
+    param_type: ClassVar[Type] = WMDParam
+    fasttext: FastText = field(init=False)
+    kb: KeywordBaseline = field(init=False)
+    escl: EsClient = field(init=False)
+
+    def __post_init__(self):
+        super(WMD, self).__post_init__()
+        self.fasttext: FastText = FastText()
+        self.kb = KeywordBaseline(context=self.context,
+                                  param=self.param.to_keyword_param())
+        self.escl = EsClient(self.context.es_index)
+
+    def filter_in_advance(self,
+                          doc: Document) -> EsResult:
+        logger.warn(f'starting time: {datetime.datetime.now()}')
+        keywords: List[str] = self.kb.extract_keywords(doc)
+        res: EsResult = self.kb.search(doc, keywords)
+        return res
 
     def count_prob(self,
                    tokens: List[str]) -> Dict[str, float]:
@@ -70,25 +96,26 @@ class WMD(Method):
         return -pulp.value(prob.objective)
 
     def retrieve(self,
-                 query_doc: QueryDocument,
-                 size: int = 100) -> RankItem:
-        filters: List[Filter] = self.get_default_filtes(
-            n_words=self.param.n_words)
-        processor: TextProcessor = TextProcessor(filters=filters)
-        q_words: List[str] = processor.apply(query_doc.text)
-        candidates: EsResult = self.filter_by_terms(
-            query_doc=query_doc,
-            n_words=self.param.n_words,
-            size=size)
+                 doc: Document,
+                 res: EsResult) -> TRECResult:
+        scores: Dict[str, float] = dict()
+        q_tokens: List[str] = self.kb.escl_query.get_tokens_from_doc(doc.docid)
+        for docid in res.get_ids():
+            tokens: List[str] = self.escl.get_tokens_from_doc(docid)
+            scores[docid] = self.wmd(q_tokens, tokens)
+        logger.warn(f'end time: {datetime.datetime.now()}')
+        return TRECResult(doc.docid, scores)
 
-        tokens_dict: Dict[Tuple[str, str], List[str]] = {
-            (hit.source['docid'], hit.source['tags'][0]): processor.apply(hit.source['text'])
-            for hit in candidates.hits
-        }
-
-        scores: Dict[Tuple[str, str], float] = dict()
-        for key, tokens in tokens_dict.items():
-            score: float = self.wmd(q_words, tokens)
-            scores[key] = score
-
-        return RankItem(query_id=query_doc.docid, scores=scores)
+    def create_flow(self,
+                    debug: bool = False) -> Flow:
+        node_filter = TaskNode(self.filter_in_advance)({  # type: ignore
+            'doc': self.load_node,
+        })
+        node_retrieve = TaskNode(self.retrieve)({  # type: ignore
+            'doc': self.load_node,
+            'res': node_filter
+        })
+        (self.dump_node < node_retrieve)('res')
+        flow: Flow = Flow(dump_nodes=[self.dump_node, ],
+                          debug=debug)
+        return flow
