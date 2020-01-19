@@ -1,0 +1,8 @@
+n_docs: 300
+es_index: clef
+method: linear
+params:
+  - name: "li_200_30"
+    n_words: 30
+    window: 200
+    w: 100

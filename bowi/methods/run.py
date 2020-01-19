@@ -12,7 +12,7 @@ from bowi.methods.common.methods import Method
 from bowi.methods.common.dumper import get_dump_dir
 
 # methods
-from bowi.methods.methods import keywords, bm25, topics, ttt, lda, poisson
+from bowi.methods.methods import keywords, bm25, topics, ttt, lda, poisson, linear
 from bowi.methods.methods.fuzzy import naive, rerank
 from bowi.initialize.cacher import embedding, pre_filtering
 
@@ -56,6 +56,8 @@ def get_method(method_name: str) -> Type[Method]:
         return lda.LDASearcher
     elif method_name == 'poisson':
         return poisson.Poisson
+    elif method_name == 'linear':
+        return linear.Linear
     else:
         raise KeyError(f'{method_name} is not found')
 
