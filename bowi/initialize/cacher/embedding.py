@@ -15,7 +15,6 @@ from bowi.embedding.fasttext import FastText
 from bowi.methods.common.types import Param
 from bowi.methods.common.methods import Method
 from bowi.models import Document
-from bowi.utils.text import get_all_tokens
 
 
 @dataclass

@@ -12,7 +12,6 @@ from bowi.elas.search import EsResult, EsSearcher
 from bowi.methods.common.methods import Method
 from bowi.methods.methods.keywords import KeywordParam, KeywordBaseline
 from bowi.models import Document
-from bowi.utils.text import get_all_tokens
 from bowi import settings
 
 
