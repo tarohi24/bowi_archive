@@ -9,7 +9,6 @@ from bowi.embedding.base import Model, mat_normalize
 from bowi.settings import models_dir
                                   
 
-
 @dataclass
 class FastText(Model):
     model: fasttext.FastText._FastText = field(init=False)
