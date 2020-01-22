@@ -1,4 +1,5 @@
 from pathlib import Path
+import datetime
 from typing import List
 
 from bowi.methods.common.types import Context, TRECResult
@@ -21,4 +22,12 @@ def dump_prel(res: TRECResult,
     path: Path = get_dump_dir(context=context).joinpath('pred.prel')
     with open(path, 'a') as fout:
         fout.write(res.to_prel())
+        fout.write('\n')
+
+
+def dump_time(start_time: datetime.datetime,
+              context: Context) -> None:
+    path: Path = get_dump_dir(context=context) / 'time.txt'
+    with open(path, 'a') as fout:
+        fout.write(str(start_time))
         fout.write('\n')
