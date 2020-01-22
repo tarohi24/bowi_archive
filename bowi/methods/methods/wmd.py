@@ -1,16 +1,11 @@
 """
 Word Mover Distance
 """
-from collections import Counter
 from dataclasses import dataclass, field
-from itertools import product
 from typing import Dict, List, ClassVar, Type
 
-import datetime
 import logging
 import numpy as np
-import pulp
-from scipy.spatial.distance import euclidean
 from typedflow.nodes import TaskNode
 from typedflow.flow import Flow
 
@@ -48,62 +43,44 @@ class WMD(Method[WMDParam]):
         self.escl = EsClient(self.context.es_index)
 
     def filter_in_advance(self,
-                          doc: Document) -> EsResult:
-        logger.warn(f'starting time: {datetime.datetime.now()}')
+                          doc: Document) -> Dict[str, List[str]]:
         keywords: List[str] = self.kb.extract_keywords(doc)
         res: EsResult = self.kb.search(doc, keywords)
-        return res
+        tokens_dict: Dict[str, List[str]] = dict()
+        for docid in res.get_ids():
+            try:
+                tokens: List[str] = self.escl.get_tokens_from_doc(docid)
+            except KeyError:
+                pass
+            tokens_dict[docid] = (tokens)
+        return tokens_dict
 
-    def count_prob(self,
-                   tokens: List[str]) -> Dict[str, float]:
-        """
-        Compute emergence probabilities for each word
-        """
-        n_tokens: int = len(tokens)
-        counter: Dict[str, int] = Counter(tokens)
-        return {word: counter[word] / n_tokens for word in counter.keys()}
-
-    def wmd(self,
-            A_tokens: List[str],
-            B_tokens: List[str]) -> float:
+    def embed_res(self,
+                  tokens_dict: Dict[str, List[str]]) -> Dict[str, np.ndarray]:
         """
         Return
-        ---------------------
-        Similarity
+        -----
+        {docid: (n_words, dim)}
         """
-        all_tokens: List[str] = list(set(A_tokens) | set(B_tokens))
-
-        A_prob: Dict[str, float] = self.count_prob(A_tokens)
-        B_prob: Dict[str, float] = self.count_prob(B_tokens)
-        wv: Dict[str, np.ndarray] = {token: self.fasttext.embed(token) for token in all_tokens}
-        var_dict = pulp.LpVariable.dicts(
-            'T_matrix',
-            list(product(all_tokens, all_tokens)),
-            lowBound=0)
-        prob = pulp.LpProblem('WMD', sense=pulp.LpMinimize)
-        prob += pulp.lpSum([var_dict[token1, token2] * euclidean(wv[token1], wv[token2])
-                            for token1, token2 in product(all_tokens, all_tokens)])
-
-        for token2 in B_prob.keys():
-            prob += pulp.lpSum(
-                [var_dict[token1, token2] for token1 in B_prob.keys()]
-            ) == B_prob[token2]
-        for token1 in A_prob.keys():
-            prob += pulp.lpSum(
-                [var_dict[token1, token2] for token2 in A_prob.keys()]
-            ) == A_prob[token1]
-        prob.solve()
-        return -pulp.value(prob.objective)
+        embs: np.ndarray = {
+            docid: self.fasttext.embed_words(tokens)
+            for docid, tokens in tokens_dict.items()
+        }
+        return embs
 
     def retrieve(self,
                  doc: Document,
-                 res: EsResult) -> TRECResult:
+                 embs: Dict[str, np.ndarray]) -> TRECResult:
         scores: Dict[str, float] = dict()
         q_tokens: List[str] = self.kb.escl_query.get_tokens_from_doc(doc.docid)
-        for docid in res.get_ids():
-            tokens: List[str] = self.escl.get_tokens_from_doc(docid)
-            scores[docid] = self.wmd(q_tokens, tokens)
-        logger.warn(f'end time: {datetime.datetime.now()}')
+        # (n_words, dim)
+        q_emb: np.ndarray = self.fasttext.embed_words(q_tokens)
+        for docid, mat in embs.items():
+            # (n_tok_q, n_tok_col)
+            dists: np.ndarray = np.dot(q_emb, mat.T)
+            # (n_tok_q, )
+            costs: np.ndarray = np.amax(dists, axis=1)
+            scores[docid] = costs.sum()
         return TRECResult(doc.docid, scores)
 
     def create_flow(self,
@@ -111,11 +88,14 @@ class WMD(Method[WMDParam]):
         node_filter = TaskNode(self.filter_in_advance)({  # type: ignore
             'doc': self.load_node,
         })
-        node_retrieve = TaskNode(self.retrieve)({  # type: ignore
+        node_embed = TaskNode(self.embed_res)({
+            'tokens_dict': node_filter,
+        })
+        node_retrieve = TaskNode(self.retrieve)({
             'doc': self.load_node,
-            'res': node_filter
+            'embs': node_embed,
         })
         (self.dump_node < node_retrieve)('res')
-        flow: Flow = Flow(dump_nodes=[self.dump_node, ],
+        flow: Flow = Flow(dump_nodes=[self.dump_node, self.dump_time_node],
                           debug=debug)
         return flow
