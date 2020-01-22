@@ -13,7 +13,7 @@ from bowi.methods.common.dumper import get_dump_dir
 
 # methods
 from bowi.methods.methods import keywords, bm25, topics, ttt, lda, poisson, linear, wmd
-from bowi.methods.methods.fuzzy import fbow
+from bowi.methods.methods.fuzzy import fbow, doc2vec
 from bowi.initialize.cacher import embedding, pre_filtering
 
 
@@ -58,6 +58,8 @@ def get_method(method_name: str) -> Type[Method]:
         return linear.Linear
     elif method_name == 'wmd':
         return wmd.WMD
+    elif method_name == 'doc2vec':
+        return doc2vec.Doc2vec
     else:
         raise KeyError(f'{method_name} is not found')
 

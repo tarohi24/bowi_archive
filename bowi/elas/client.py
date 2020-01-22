@@ -44,6 +44,30 @@ class EsClient:
         hits: List = self.es.search(index=self.es_index, body=body)['hits']['hits']
         return len(hits) > 0
 
+    def get_random_id(self) -> str:
+        """
+        Get random elasid from the database
+        CAUTION: returned ID is docid in elasticsearch,
+        which may be different from elasid
+        """
+        body: Dict = {
+            'size': 1,
+            '_source': ['docid'],
+            'query': {
+                'function_score': {
+                    'functions': [
+                        {
+                            'random_score': {
+                                'seed': '42'
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        res: Dict = self.es.search(index=self.es_index, body=body)
+        return res['hits']['hits'][0]['_source']['docid']
+
     def get_elasid(self, docid: str) -> str:
         body: Dict = {'query': {'match': {'docid': docid}}, '_source': False}
         hit: Dict = self.es.search(index=self.es_index, body=body)['hits']['hits'][0]
