@@ -13,7 +13,7 @@ from bowi.methods.common.dumper import get_dump_dir
 
 # methods
 from bowi.methods.methods import keywords, bm25, topics, ttt, lda, poisson, linear, wmd
-from bowi.methods.methods.fuzzy import naive, rerank
+from bowi.methods.methods.fuzzy import fbow
 from bowi.initialize.cacher import embedding, pre_filtering
 
 
@@ -38,10 +38,8 @@ def create_parser() -> argparse.ArgumentParser:
 def get_method(method_name: str) -> Type[Method]:
     if method_name == 'keywords':
         return keywords.KeywordBaseline
-    elif method_name == 'fuzzy.naive':
-        return naive.FuzzyNaive
-    elif method_name == 'fuzzy.rerank':
-        return rerank.FuzzyRerank
+    elif method_name == 'fuzzy.fbow':
+        return fbow.FBoW
     elif method_name == 'cache.pre_filtering':
         return pre_filtering.PreSearcher
     elif method_name == 'cache.embedding':

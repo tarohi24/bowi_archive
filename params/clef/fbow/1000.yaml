@@ -1,0 +1,6 @@
+n_docs: 100
+es_index: clef
+method: fuzzy.fbow
+params:
+  - name: "1000_idf"
+    n_words: 100

@@ -5,8 +5,9 @@ from typing import List
 import fasttext
 import numpy as np
 
-from bowi.embedding.base import Model
+from bowi.embedding.base import Model, mat_normalize
 from bowi.settings import models_dir
+                                  
 
 
 @dataclass
@@ -24,7 +25,8 @@ class FastText(Model):
     def filter_tokens(self, words: List[str]) -> List[str]:
         return [w for w in words if self.isin_vocab(w)]
 
-    def embed(self, word: str) -> np.ndarray:
+    def embed(self,
+              word: str) -> np.ndarray:
         """
         You should filter words not in the vocab before you use this.
         """
@@ -41,6 +43,12 @@ class FastText(Model):
         return embed(word)
 
     def embed_words(self,
-                    words: List[str]) -> np.ndarray:
-        embs: List[np.ndarray] = [self.embed(w) for w in words]
-        return np.array(embs)
+                    words: List[str],
+                    normalize: bool = True,
+                    ignore_missing: bool = True) -> np.ndarray:
+        embs: List[np.ndarray] = [self.embed(w) for w in words
+                                  if (not ignore_missing) or self.isin_vocab(w)]
+        if normalize:
+            return mat_normalize(np.array(embs))
+        else:
+            return np.array(embs)

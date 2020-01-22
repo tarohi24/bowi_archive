@@ -4,6 +4,8 @@ import logging
 from typing import ClassVar, Type, List, Set, Dict
 
 import numpy as np
+from typedflow.nodes import TaskNode
+from typedflow.flow import Flow
 
 from bowi.methods.common.methods import Method
 from bowi.methods.methods.keywords import KeywordBaseline, KeywordParam
@@ -31,7 +33,7 @@ class FBoW(Method[FuzzyParam]):
                                   context=self.context)
         self.escl = EsClient(self.context.es_index)
         logger.info('loading fasttext...')
-        self.fasttext = FastText()
+        self.ft = FastText()
 
     def filter_in_advance(self,
                           doc: Document) -> EsResult:
@@ -46,16 +48,17 @@ class FBoW(Method[FuzzyParam]):
         q_tts: Set[str] = set(self.kb.escl_query.get_tokens_from_doc(doc.docid))
         # (l_x, d)
         X: np.ndarray = self.ft.embed_words(list(q_tts))
+        # (d, )
+        x: np.ndarray = np.amax(X, axis=0)
         scores: Dict[str, float] = dict()
         for docid in res.get_ids():
             tokens: List[str] = self.escl.get_tokens_from_doc(docid)
             tts: Set[str] = set(tokens)
             # (l_y, d)
             Y: np.ndarray = self.ft.embed_words(list(tts))
-            # (l_x + l_y, d)
-            U: np.ndarray = np.concatenate([X, Y], axis=0)
-            x: np.ndarray = np.amax(np.dot(X, U.T), axis=0)
-            y: np.ndarray = np.amax(np.dot(Y, U.T), axis=0)
+            y: np.ndarray = np.amax(Y, axis=0)
+
+            print(x.shape, y.shape)
 
             assert len(x) == len(y)
 
@@ -63,4 +66,19 @@ class FBoW(Method[FuzzyParam]):
             r: np.ndarray = np.amin(np.stack([x, y, zeros]), axis=0)
             q: np.ndarray = np.amax(np.stack([x, y, zeros]), axis=0)
             scores[docid] = r.sum() / q.sum()
+        logger.warn(f'end time: {datetime.datetime.now()}')
         return TRECResult(doc.docid, scores)
+
+    def create_flow(self,
+                    debug: bool = False) -> Flow:
+        node_filter = TaskNode(self.filter_in_advance)({  # type: ignore
+            'doc': self.load_node,
+        })
+        node_retrieve = TaskNode(self.retrieve)({  # type: ignore
+            'doc': self.load_node,
+            'res': node_filter
+        })
+        (self.dump_node < node_retrieve)('res')
+        flow: Flow = Flow(dump_nodes=[self.dump_node, ],
+                          debug=debug)
+        return flow
