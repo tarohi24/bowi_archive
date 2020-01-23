@@ -29,7 +29,6 @@ class FastText(Model):
         """
         You should filter words not in the vocab before you use this.
         """
-        @lru_cache(maxsize=10000)
         def embed(word: str) -> np.ndarray:
             """
             Isolated from the main part because FastText object is not
