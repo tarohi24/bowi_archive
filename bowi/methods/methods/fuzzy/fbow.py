@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-import datetime
 import logging
 from typing import ClassVar, Type, List, Set, Dict
 
@@ -37,36 +36,45 @@ class FBoW(Method[FuzzyParam]):
 
     def filter_in_advance(self,
                           doc: Document) -> EsResult:
-        logger.warn(f'starting time: {datetime.datetime.now()}')
         keywords: List[str] = self.kb.extract_keywords(doc)
         res: EsResult = self.kb.search(doc, keywords)
         return res
 
-    def retrieve(self,
-                 doc: Document,
-                 res: EsResult) -> TRECResult:
+    def _max_pool_query(self,
+                        doc: Document) -> np.ndarray:
+        """
+        Isolated from retrieve() to reduce memory consumption
+        """
         q_tts: Set[str] = set(self.kb.escl_query.get_tokens_from_doc(doc.docid))
         # (l_x, d)
         X: np.ndarray = self.ft.embed_words(list(q_tts))
         # (d, )
         x: np.ndarray = np.amax(X, axis=0)
+        return x
+
+    def _max_pool_col(self,
+                      docid: str) -> np.ndarray:
+        tokens: List[str] = self.escl.get_tokens_from_doc(docid)
+        tts: Set[str] = set(tokens)
+        # (l_y, d)
+        Y: np.ndarray = self.ft.embed_words(list(tts))
+        y: np.ndarray = np.amax(Y, axis=0)
+        return y
+
+    def retrieve(self,
+                 doc: Document,
+                 res: EsResult) -> TRECResult:
         scores: Dict[str, float] = dict()
+        x: np.ndarray = self._max_pool_query(doc)
         for docid in res.get_ids():
-            tokens: List[str] = self.escl.get_tokens_from_doc(docid)
-            tts: Set[str] = set(tokens)
-            # (l_y, d)
-            Y: np.ndarray = self.ft.embed_words(list(tts))
-            y: np.ndarray = np.amax(Y, axis=0)
-
-            print(x.shape, y.shape)
-
+            y: np.ndarray = self._max_pool_col(docid)
             assert len(x) == len(y)
-
             zeros: np.ndarray = np.zeros(len(x))
-            r: np.ndarray = np.amin(np.stack([x, y, zeros]), axis=0)
+            r: np.ndarray = np.amin(np.stack([x, y]), axis=0)
             q: np.ndarray = np.amax(np.stack([x, y, zeros]), axis=0)
-            scores[docid] = r.sum() / q.sum()
-        logger.warn(f'end time: {datetime.datetime.now()}')
+            score: float = r.sum() / q.sum()
+            logger.warn(score)
+            scores[docid] = score
         return TRECResult(doc.docid, scores)
 
     def create_flow(self,
@@ -79,6 +87,6 @@ class FBoW(Method[FuzzyParam]):
             'res': node_filter
         })
         (self.dump_node < node_retrieve)('res')
-        flow: Flow = Flow(dump_nodes=[self.dump_node, ],
+        flow: Flow = Flow(dump_nodes=[self.dump_node, self.dump_time_node],
                           debug=debug)
         return flow
