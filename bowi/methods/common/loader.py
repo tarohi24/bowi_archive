@@ -18,8 +18,12 @@ __all__ = ['load_query_files', ]
 def load_query_files(dataset: str) -> Generator[Document, None, None]:
     qpath: Path = settings.data_dir.joinpath(f'{dataset}/query/dump.bulk')
     pbar = tqdm()
+    i: int = 0
     with open(qpath) as fin:
         while (line := fin.readline()):
+            if i < 0:
+                i += 1
+                continue
             doc: Document = Document.from_json(line)  # type: ignore
             yield doc
             pbar.update(1)

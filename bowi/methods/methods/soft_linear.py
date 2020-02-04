@@ -1,7 +1,7 @@
 """
 Topic ranking w/o topic modeling
 """
-from collections import defaultdict, Counter
+from collections import defaultdict
 from dataclasses import dataclass, field
 from operator import itemgetter
 import logging
@@ -26,11 +26,10 @@ logger = logging.getLogger(__file__)
 
 
 @dataclass
-class LinearParam(Param):
+class SoftLinearParam(Param):
     window: int
     w: int
-    sliding_step: int = 100
-    n_words: int = 30  # words per cluster
+    alpha: float = 0.001
 
 
 @dataclass
@@ -44,15 +43,15 @@ class TFIDF(Param):
 
 
 @dataclass
-class Linear(Method[LinearParam]):
-    param_type: ClassVar[Type] = LinearParam
+class SoftLinear(Method[SoftLinearParam]):
+    param_type: ClassVar[Type] = SoftLinearParam
     df_cacher: DFCacher = field(init=False)
     escl_query: EsClient = field(init=False)
     keyword_cacher: KeywordCacher = field(init=False)
     ttt: TextTilingTokenizer = field(init=False)
 
     def __post_init__(self):
-        super(Linear, self).__post_init__()
+        super(SoftLinear, self).__post_init__()
         self.df_cacher = DFCacher(dataset=self.context.es_index)
         self.escl_query = EsClient(f'{self.context.es_index}_query')
         self.keyword_cacher = KeywordCacher(context=self.context)
@@ -74,70 +73,54 @@ class Linear(Method[LinearParam]):
              count: int) -> float:
         assert count >= 0
         if count == 0:
-            return 1 - p
+            prob: float = 1 - p
         else:
-            return p / (2 ** (count - 1))
+            prob: float = p / (2 ** (count - 1))  # type: ignore
+        return self.param.alpha / (self.param.alpha + prob)
 
     def _get_linear_scores(self,
                            word: str,
-                           seq: List[str],
-                           mult_idf: bool = True) -> np.ndarray:
+                           seq: List[str]) -> np.ndarray:
         window: int = self.param.window
         isin_list: List[int] = [1 if w == word else 0 for w in seq]
-        # counts: List[int] = [sum(isin_list[i:i + window]) for i in range(len(isin_list) - window)]
-        start_inds: List[int] = list(range(0, len(isin_list), self.param.sliding_step))
-        counts: List[int] = [sum(isin_list[start:srart + window]) for start in start_inds]
+        counts: List[int] = [sum(isin_list[i:i + window]) for i in range(len(isin_list) - window)]
         try:
             df: int = self.df_cacher.df_dict[word]
         except KeyError:
             df: int = 1  # type: ignore
         p: float = df / self.df_cacher.total_docs
-        return np.array([1 - self.dist(p, count) for count in counts])
+        return np.array([self.dist(p, count) for count in counts])
 
     def get_keywords(self,
-                     tokens: List[List[str]]) -> List[List[str]]:
-        window: int = self.param.window
-        keywords: List[str] = []
+                     tokens: List[List[str]]) -> List[Dict[str, float]]:
         word2id: Dict[str, int] = {word: i for i, word in enumerate(set(sum(tokens, [])))}
         words: List[str] = [w for w, _ in sorted(word2id.items(), key=itemgetter(1))]
         seq: List[str] = sum(tokens, [])
-        rg: List[int] = list(range(0, len(seq), window))[:-1]
-        # counter = Counter(words)
-
-        scores = []
-        for word in words:
-            try:
-                df: int = self.df_cacher.df_dict[word]
-            except KeyError:
-                df: int = 1  # type: ignore
-            p: float = df / self.df_cacher.total_docs
-            # tf: int = counter[word]
-            sc: np.ndarray = np.array([
-                (2 ** sum(w == word for w in seq[i:j]) - 1) / p
-                for i, j in zip(rg, rg[1:])
-            ])
-            scores.append(sc)
-
-        df: pd.DataFrame = pd.DataFrame(scores, index=words).T
+        # (n_window, n_words)
+        ann_df: pd.DataFrame = pd.DataFrame(
+            [self._get_linear_scores(word=word, seq=seq) for word in words],
+            index=words
+        ).T
         bins: List[int] = [sum([len(lst) for lst in tokens[:i]]) for i in range(len(tokens) + 1)]
-        segments: List[int] = pd.cut([i * window for i in df.index],
+        segments: List[int] = pd.cut(ann_df.index,
                                      bins,
                                      labels=range(len(bins) - 1)).tolist()
-        maxes: pd.DataFrame = df.groupby(segments).max()
-        keywords: List[List[str]] = [
-            maxes.iloc[i, :].sort_values(ascending=False)[:self.param.n_words].index.tolist()
-            for i in range(len(maxes))]
+        maxes: pd.DataFrame = ann_df.groupby(segments).max()
+        keywords: List[Dict[str, float]] = [
+            # maxes.iloc[i].sort_values(ascending=False)[:30].to_dict()
+            {t: 1 for t in maxes.iloc[i].sort_values(ascending=False)[:30].to_dict().keys()}
+            for i in range(len(tokens))]
         return keywords
 
     def search(self,
                doc: Document,
-               keywords: List[List[str]]) -> TRECResult:
+               keywords: List[Dict[str, float]]) -> TRECResult:
         searcher: EsSearcher = EsSearcher(es_index=self.context.es_index)
         scores: Dict[str, float] = defaultdict(float)
-        for terms in keywords:
+        for term_dict in keywords:
             sc: Dict[str, float] = searcher\
                 .initialize_query()\
-                .add_query(terms=terms, field='text')\
+                .add_weighted_query(term_dict=term_dict, field='text')\
                 .add_size(300)\
                 .add_filter(terms=doc.tags, field='tags')\
                 .add_source_fields(['docid', ])\

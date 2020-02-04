@@ -2,5 +2,6 @@ n_docs: 300
 es_index: clef
 method: wmd
 params:
-  - name: 100
-    n_words: 100
+  - name: "30_cut_query"
+    cut: query
+    n_words: 30

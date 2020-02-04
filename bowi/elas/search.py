@@ -139,6 +139,25 @@ class EsSearcher:
         }
         return self
 
+    def add_weighted_query(self,
+                           term_dict: Dict[str, float],
+                           field: str = 'text',
+                           condition: str = 'should') -> EsSearcher:
+        self.query['query'] = {
+            'bool': {
+                condition: [{
+                    'match': {
+                        field: {
+                            'query': t,
+                            'boost': boost
+                        }
+                    }
+                    for t, boost in term_dict.items()
+                }]
+            }
+        }
+        return self
+
     def add_size(self,
                  size: int) -> EsSearcher:
         """

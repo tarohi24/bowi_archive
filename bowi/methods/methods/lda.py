@@ -7,6 +7,7 @@ import logging
 from typing import ClassVar, Dict, List, Type  # type: ignore
 
 from gensim.corpora.dictionary import Dictionary
+from gensim.models import HdpModel
 from gensim.models.ldamodel import LdaModel
 from nltk.tokenize import sent_tokenize
 import numpy as np
@@ -60,7 +61,9 @@ class LDASearcher(Method[LDAParam]):
             for sent in sent_tokenize(doc.text)]
         dictionary: Dictionary = Dictionary(tokens)
         corpus: List[List[int]] = [dictionary.doc2bow(text) for text in tokens]
-        lda: LdaModel = LdaModel(corpus, num_topics=self.param.n_topics)
+        id2word: Dictionary = Dictionary.from_corpus(corpus)
+        hdp_lda: HdpModel = HdpModel(corpus, id2word)
+        lda: LdaModel = hdp_lda.suggested_lda_model()
         keywords: List[List[str]] = [
             [dictionary[w] for w, _ in lda.get_topic_terms(topic_id)]
             for topic_id in range(self.param.n_topics)]
@@ -107,6 +110,6 @@ class LDASearcher(Method[LDAParam]):
             'keywords': node_keywords
         })
         flow: Flow = Flow(
-            dump_nodes=[self.dump_node, node_dump_keywords],
+            dump_nodes=[self.dump_node, node_dump_keywords, self.dump_time_node],
             debug=debug)
         return flow

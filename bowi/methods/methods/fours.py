@@ -1,25 +1,27 @@
 """
-extract keywords -> do search
+Four keyword extraction methods
+Proposed in Far+(2015, SIGIR)
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import ClassVar, Dict, List, Pattern, Set, Type  # type: ignore
 
 from typedflow.flow import Flow
-from typedflow.nodes import TaskNode, DumpNode
+from typedflow.nodes import TaskNode
 
 from bowi.elas.client import EsClient
 from bowi.elas.search import EsResult, EsSearcher
 from bowi.models import Document
 from bowi.methods.common.methods import Method
 from bowi.methods.common.types import Param, TRECResult
-from bowi.methods.common.cache import DFCacher, KeywordCacher
+from bowi.methods.common.cache import DFCacher
 from bowi.utils.text import is_valid_word
 
 
 @dataclass
 class KeywordParam(Param):
-    n_words: int
+    threshold: float
+    strategy: str
 
     @classmethod
     def from_args(cls, args) -> KeywordParam:
@@ -45,12 +47,10 @@ class KeywordBaseline(Method[KeywordParam]):
     param_type: ClassVar[Type] = KeywordParam
     escl_query: EsClient = field(init=False)
     df_cacher: DFCacher = field(init=False)
-    keyword_cacher: KeywordCacher = field(init=False)
 
     def __post_init__(self):
         super(KeywordBaseline, self).__post_init__()
         self.escl_query = EsClient(f'{self.context.es_index}_query')
-        self.keyword_cacher = KeywordCacher(context=self.context)
         self.df_cacher = DFCacher(dataset=self.context.es_index)
 
     def extract_keywords(self, doc: Document) -> List[str]:
@@ -81,11 +81,6 @@ class KeywordBaseline(Method[KeywordParam]):
         )
         return res
 
-    def dump_keywords(self,
-                      doc: Document,
-                      keywords: List[str]) -> None:
-        self.keyword_cacher.dump(docid=doc.docid, keywords=keywords)
-
     def create_flow(self,
                     debug: bool = False) -> Flow:
         node_keywords = TaskNode(self.extract_keywords)({
@@ -99,12 +94,7 @@ class KeywordBaseline(Method[KeywordParam]):
             'doc': self.load_node,
             'es_result': node_search
         })
-        node_dump_keywords = DumpNode(self.dump_keywords)({
-            'doc': self.load_node,
-            'keywords': node_keywords
-        })
         (self.dump_node < node_trec)('res')
-        flow: Flow = Flow(
-            dump_nodes=[self.dump_node, node_dump_keywords, self.dump_time_node],
-            debug=debug)
+        flow: Flow = Flow(dump_nodes=[self.dump_node, ],
+                          debug=debug)
         return flow

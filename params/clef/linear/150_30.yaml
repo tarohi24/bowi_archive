@@ -2,7 +2,7 @@ n_docs: 300
 es_index: clef
 method: linear
 params:
-  - name: "li_100_1000"
+  - name: "li_150_30"
     n_words: 30
-    window: 100
-    w: 1000
+    window: 150
+    w: 100

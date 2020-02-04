@@ -41,11 +41,10 @@ class Doc2vec(Method[FuzzyParam]):
         self.escl = EsClient(self.context.es_index)
         logger.info('loading fasttext...')
         self.model = GDoc2vec.load(
-            str((project_root / f'doc2vec/{self.context.es_index}.model').resolve()))
+            str((project_root / f'doc2vec/clef.model').resolve()))
 
     def filter_in_advance(self,
                           doc: Document) -> EsResult:
-        logger.warn(f'starting time: {datetime.datetime.now()}')
         keywords: List[str] = self.kb.extract_keywords(doc)
         res: EsResult = self.kb.search(doc, keywords)
         return res
@@ -63,7 +62,6 @@ class Doc2vec(Method[FuzzyParam]):
             y /= np.linalg.norm(y)
             assert len(x) == len(y)
             scores[docid] = np.dot(x, y)
-        logger.warn(f'end time: {datetime.datetime.now()}')
         return TRECResult(doc.docid, scores)
 
     def create_flow(self,
@@ -76,6 +74,6 @@ class Doc2vec(Method[FuzzyParam]):
             'res': node_filter
         })
         (self.dump_node < node_retrieve)('res')
-        flow: Flow = Flow(dump_nodes=[self.dump_node, ],
+        flow: Flow = Flow(dump_nodes=[self.dump_node, self.dump_time_node],
                           debug=debug)
         return flow

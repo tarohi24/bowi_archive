@@ -73,7 +73,6 @@ class FBoW(Method[FuzzyParam]):
             r: np.ndarray = np.amin(np.stack([x, y]), axis=0)
             q: np.ndarray = np.amax(np.stack([x, y, zeros]), axis=0)
             score: float = r.sum() / q.sum()
-            logger.warn(score)
             scores[docid] = score
         return TRECResult(doc.docid, scores)
 
@@ -87,6 +86,7 @@ class FBoW(Method[FuzzyParam]):
             'res': node_filter
         })
         (self.dump_node < node_retrieve)('res')
-        flow: Flow = Flow(dump_nodes=[self.dump_node, self.dump_time_node],
+        (self.node_dump_time < node_retrieve)('res')
+        flow: Flow = Flow(dump_nodes=[self.dump_node, self.node_dump_time],
                           debug=debug)
         return flow

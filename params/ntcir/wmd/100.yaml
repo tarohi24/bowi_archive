@@ -1,0 +1,6 @@
+n_docs: 200
+es_index: ntcir
+method: wmd
+params:
+  - name: "100"
+    n_words: 100

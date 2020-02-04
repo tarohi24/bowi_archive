@@ -1,5 +1,5 @@
-n_docs: 1000
-es_index: clef
+n_docs: 100
+es_index: ntcir
 method: fuzzy.fbow
 params:
   - name: "default"

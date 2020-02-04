@@ -4,6 +4,7 @@ Word Mover Distance
 from dataclasses import dataclass, field
 from typing import Dict, List, ClassVar, Type
 
+from annoy import AnnoyIndex
 import logging
 import numpy as np
 from typedflow.nodes import TaskNode
@@ -62,6 +63,7 @@ class WMD(Method[WMDParam]):
         -----
         {docid: (n_words, dim)}
         """
+    
         embs: np.ndarray = {
             docid: self.fasttext.embed_words(tokens)
             for docid, tokens in tokens_dict.items()
@@ -72,15 +74,20 @@ class WMD(Method[WMDParam]):
                  doc: Document,
                  embs: Dict[str, np.ndarray]) -> TRECResult:
         scores: Dict[str, float] = dict()
-        q_tokens: List[str] = self.kb.escl_query.get_tokens_from_doc(doc.docid)
+        q_tokens: List[str] = [
+            w for w in set(self.kb.escl_query.get_tokens_from_doc(doc.docid))
+            if self.fasttext.isin_vocab(w)]
         # (n_words, dim)
         q_emb: np.ndarray = self.fasttext.embed_words(q_tokens)
+        tree: AnnoyIndex = AnnoyIndex(q_emb.shape[1], 'euclidean')
+        for i, vec in enumerate(q_emb):
+            tree.add_item(i, vec)
+        tree.build(10)  # build 10 trees
         for docid, mat in embs.items():
-            # (n_tok_q, n_tok_col)
-            dists: np.ndarray = np.dot(q_emb, mat.T)
-            # (n_tok_q, )
-            costs: np.ndarray = np.amax(dists, axis=1)
-            scores[docid] = costs.sum()
+            scores[docid] = 0
+            for vec in mat:
+                dist = tree.get_nns_by_vector(vec, n=1, include_distances=True)[1][0]
+                scores[docid] += (1 - dist)
         return TRECResult(doc.docid, scores)
 
     def create_flow(self,

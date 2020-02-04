@@ -4,7 +4,7 @@ dataclasses-json
 elasticsearch
 fasttext
 gitpython
-gensim
+git+https://github.com/RaRe-Technologies/gensim@develop
 jupyter
 lxml
 nltk
@@ -17,6 +17,7 @@ pybind11
 matplotlib
 requests
 scipy
-spherecluster
+sklearn
+seaborn
 tqdm
 https://github.com/tarohi24/typedflow/archive/develop.zip

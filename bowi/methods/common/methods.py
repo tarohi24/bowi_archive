@@ -32,7 +32,8 @@ class Method(Generic[T]):
         def dump_result(res: TRECResult) -> None:
             dump_prel(res=res, context=self.context)
 
-        def _dump_time(doc: Document) -> None:
+        def _dump_time(self,
+                       res: TRECResult) -> None:
             """
             Parameter
             -----
@@ -40,15 +41,13 @@ class Method(Generic[T]):
                 A dummy parameter (prevent typedflow from detecting mismatch)
             """
             now: datetime.datetime = datetime.datetime.now()
-            dump_time(start_time=now, context=self.context)
+            dump_time(docid=res.docid, start_time=now, context=self.context)
 
         self.load_node: LoaderNode = LoaderNode(
             func=get_queries,
             batch_size=1)
         self.dump_node: DumpNode = DumpNode(func=dump_result)
-        self.dump_time_node: DumpNode = DumpNode(func=_dump_time)({
-            'doc': self.load_node
-        })
+        self.node_dump_time: DumpNode = DumpNode(func=_dump_time)
 
     def create_flow(self,
                     debug: bool = False) -> Flow:

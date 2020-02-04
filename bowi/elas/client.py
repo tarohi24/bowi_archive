@@ -107,7 +107,8 @@ class EsClient:
                                                       key=itemgetter(1))]
         return tokens
 
-    def get_all_terms(self) -> List[str]:
+    def get_all_terms(self,
+                      field: str) -> List[str]:
         """
         CAUTION: too heavy.
         """
@@ -115,7 +116,7 @@ class EsClient:
             'aggs': {
                 'texts': {
                     'terms': {
-                        'field': 'text',
+                        'field': field,
                         'size': 999999
                     }
                 }

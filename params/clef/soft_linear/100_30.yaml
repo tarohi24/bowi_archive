@@ -1,0 +1,7 @@
+n_docs: 300
+es_index: clef
+method: soft_linear
+params:
+  - name: "soft_linear"
+    window: 100
+    w: 100

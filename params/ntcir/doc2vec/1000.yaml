@@ -1,0 +1,6 @@
+n_docs: 100
+es_index: ntcir
+method: doc2vec
+params:
+  - name: "100"
+    n_words: 100

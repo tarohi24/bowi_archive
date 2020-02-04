@@ -1,0 +1,7 @@
+n_docs: 300
+es_index: clef
+method: lda
+params:
+  - name: "hdp_30"
+    n_topics: 10
+    n_words: 30
