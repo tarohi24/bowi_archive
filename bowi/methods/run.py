@@ -12,8 +12,8 @@ from bowi.methods.common.methods import Method
 from bowi.methods.common.dumper import get_dump_dir
 
 # methods
-from bowi.methods.methods import keywords, bm25, topics, ttt, lda, poisson, linear, wmd, soft_linear
-from bowi.methods.methods.fuzzy import fbow, doc2vec
+from bowi.methods.methods import keywords, bm25, topics, ttt, lda, poisson, linear, wmd, soft_linear, sota
+from bowi.methods.methods.fuzzy import fbow, doc2vec, hdp
 from bowi.initialize.cacher import embedding, pre_filtering
 
 
@@ -62,6 +62,10 @@ def get_method(method_name: str) -> Type[Method]:
         return wmd.WMD
     elif method_name == 'doc2vec':
         return doc2vec.Doc2vec
+    elif method_name == 'hdp':
+        return hdp.HDP
+    elif method_name == 'sota':
+        return sota.Sota
     else:
         raise KeyError(f'{method_name} is not found')
 

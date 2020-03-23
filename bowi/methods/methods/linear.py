@@ -172,6 +172,7 @@ class Linear(Method[LinearParam]):
             'doc': self.load_node,
             'keywords': node_keywords
         })
+        (self.dump_time_node < node_search)('res')
         flow: Flow = Flow(
             dump_nodes=[self.dump_node, node_dump_keywords, self.dump_time_node],
             debug=debug)

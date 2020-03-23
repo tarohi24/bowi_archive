@@ -2,5 +2,5 @@ n_docs: 300
 es_index: ntcir
 method: keywords
 params:
-  - name: 100
-    n_words: 100
+  - name: 30
+    n_words: 30

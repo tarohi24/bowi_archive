@@ -1,0 +1,7 @@
+n_docs: 10
+es_index: clef
+method: norm
+params:
+  - name: "l2"
+    n_words: 2
+    norm: "l2"

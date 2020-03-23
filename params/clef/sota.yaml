@@ -1,0 +1,6 @@
+n_docs: 300
+es_index: clef
+method: sota
+params:
+  - name: "sota"
+    n_words: 100

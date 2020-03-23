@@ -1,0 +1,8 @@
+n_docs: 300
+es_index: ntcir
+method: linear
+params:
+  - name: "100-20-50"
+    window: 100
+    sliding_step: 20
+    w: 50

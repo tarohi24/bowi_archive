@@ -64,9 +64,10 @@ class TTT(Method[TTTParam]):
         for chunk in segments:
             tokens: List[str] = [tok for tok in self.escl_query.analyze_text(chunk.replace('\n\n', ' '))
                                  if is_valid_word(tok)]
-            tfidf: pd.Series = pd.Series(self.df_cacher.to_tfidf(tokens))
-            keywords.append(
-                tfidf.sort_values(ascending=False)[:self.param.n_words].index.tolist())
+            keywords.append(tokens)
+            # tfidf: pd.Series = pd.Series(self.df_cacher.to_tfidf(tokens))
+            # keywords.append(
+            #     tfidf.sort_values(ascending=False)[:self.param.n_words].index.tolist())
         return keywords
 
     def search(self,

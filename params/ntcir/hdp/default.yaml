@@ -1,0 +1,6 @@
+n_docs: 1000
+es_index: ntcir
+method: hdp
+params:
+  - name: "default"
+    n_words: 30
